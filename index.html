@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.df682a99.ico">
+    <link rel="apple-touch-icon" href="/favicon.df682a99.ico">
+    <title>SMSTool on NEAR</title>
+    <link rel="stylesheet" href="/global.e50bbfba.css">
+<script src="/global.e50bbfba.js"></script></head>
+
+<body>
+    <main id="signed-out-flow" style="display: none">
+        <h1>Welcome to SMSTool on NEAR!</h1>
+        <p>
+            To make use SMAApp on NEAR blockchain, you need to sign in. The button
+            below will sign you in using NEAR Wallet.
+        </p>
+        <p>
+            By default, when your app runs in "development" mode, it connects
+            to a test network ("testnet") wallet. This works just like the main
+            network ("mainnet") wallet, but the NEAR Tokens on testnet aren't
+            convertible to other currencies – they're just for testing!
+        </p>
+        <p>
+            Go ahead and click the button below to try it out:
+        </p>
+        <p style="text-align: center; margin-top: 2.5em">
+            <button id="sign-in-button">Sign in</button>
+        </p>
+    </main>
+
+    <div id="signed-in-flow" style="display: none">
+        <button class="link" style="float: right" id="sign-out-button">
+            Sign out
+        </button>
+        <main>
+            <h1>
+                <label for="smsapp" data-behavior="smsapp" style="color: var(--secondary); border-bottom: 2px solid var(--secondary);">
+                </label>
+                <span data-behavior="account-id"></span>!
+            </h1>
+
+            <div id="newMessage">
+                <div><h3>Compose new message <span id="btnShowHideNewMsg" style="float: right;cursor: pointer;">&#9196;</span></h3></div>
+                <div id="newMsgBoard" style="display: none;">
+                    <form>
+                        <div>
+                            <label for="toAccount" style="display: block; color: var(--gray); margin-bottom: 0.5em">
+                                To Account
+                            </label>
+                            <div style="display: flex">
+                                <input style="flex: 1" autocomplete="off" id="toAccount" data-behavior="toAccount">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="title" style="display: block; color: var(--gray); margin-bottom: 0.5em">
+                                Title
+                            </label>
+                            <div style="display: flex">
+                                <input style="flex: 1" autocomplete="off" id="title" data-behavior="title">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="content" style="display: block; color: var(--gray); margin-bottom: 0.5em">
+                                Content
+                            </label>
+                            <div style="display: flex">
+                                <input style="flex: 1" autocomplete="off" id="content" data-behavior="content">
+                            </div>
+                        </div>
+                        <div style="padding-top: 10px;">
+                            <button disabled="" style="border-radius: 5px 5px 5px 5px" data-behavior="sendmessage">Send
+                                Message</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <hr>
+            <p><b>Inbox</b> <span id="inboxInfo"></span></p>
+            <div style="margin: 5px; padding-left: 10px;">
+                <div id="inboxMessages"></div>
+            </div>
+
+            <hr>
+            <p><b>Sent</b> <span id="sentInfo"></span></p>
+            <div style="margin: 5px; padding-left: 10px;">
+                <div id="sentMessages"></div>
+            </div>
+        </main>
+    </div>
+
+    <aside data-behavior="notification" style="display: none">
+        <a target="_blank" href="https://explorer.testnet.near.org/accounts/"></a>
+        called method: 'sendMessage' in contract:
+        <a target="_blank" href="https://explorer.testnet.near.org/accounts/"></a>
+        <footer>
+            <div>✔ Succeeded</div>
+            <div>Just now</div>
+        </footer>
+    </aside>
+
+    <script src="/src.e31bb0bc.js"></script>
+</body>
+
+</html>
