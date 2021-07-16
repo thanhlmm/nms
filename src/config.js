@@ -1,4 +1,4 @@
-const CONTRACT_NAME = process.env.CONTRACT_NAME ||'sms-tool'
+const CONTRACT_NAME = process.env.CONTRACT_NAME || 'dev-1626400442960-15347105963967'
 
 function getConfig(env) {
   switch (env) {

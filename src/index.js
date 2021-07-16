@@ -132,7 +132,7 @@ function showSentMessages(sentMsgNum, sentMessages) {
         let msg = sentMessages[idx];
         let itemHtml = `<div id="sentMsg-${idx}" class="msgItem${idx%2}">`;
         itemHtml += `<b>To:</b> ${msg.to}`;
-        itemHtml += `<br /><b>Time:</b> ${msg.timestamp}`;
+        itemHtml += `<br /><b>Time:</b> ${(new Date(msg.timestamp/10**6)).toLocaleString()}`;
         itemHtml += `<br /><b>Title:</b> ${msg.title}`;
         itemHtml += `<br /><b>Content:</b>`;
         itemHtml += `<br />${msg.content}`;
@@ -149,7 +149,7 @@ function showInboxMessages(inboxMsgNum, inboxMessages) {
         let msg = inboxMessages[idx];
         let itemHtml = `<div id="inboxMsg-${idx}" class="msgItem${idx%2}">`;
         itemHtml += `<b>From:</b> ${msg.from}`;
-        itemHtml += `<br /><b>Time:</b> ${msg.timestamp}`;
+        itemHtml += `<br /><b>Time:</b> ${(new Date(msg.timestamp/10**6)).toLocaleString()}`;
         itemHtml += `<br /><b>Title:</b> ${msg.title}`;
         itemHtml += `<br /><b>Content:</b>`;
         itemHtml += `<br />${msg.content}`;
