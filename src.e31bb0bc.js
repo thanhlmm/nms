@@ -17457,9 +17457,17 @@ function _fetchMessages() {
   return _fetchMessages.apply(this, arguments);
 }
 
+function sortMessages(messages) {
+  if (!messages) return;
+  messages.sort(function (item1, item2) {
+    return item2.timestamp - item1.timestamp;
+  });
+}
+
 function showSentMessages(sentMsgNum, sentMessages) {
   document.querySelector('#sentInfo').innerHTML = "(".concat(sentMessages.length, "/").concat(sentMsgNum, ")");
   var html = "";
+  sortMessages(sentMessages);
 
   for (var idx = 0; idx < sentMessages.length; idx++) {
     var msg = sentMessages[idx];
@@ -17479,6 +17487,7 @@ function showSentMessages(sentMsgNum, sentMessages) {
 function showInboxMessages(inboxMsgNum, inboxMessages) {
   document.querySelector('#inboxInfo').innerHTML = "(".concat(inboxMessages.length, "/").concat(inboxMsgNum, ")");
   var html = "";
+  sortMessages(inboxMessages);
 
   for (var idx = 0; idx < inboxMessages.length; idx++) {
     var msg = inboxMessages[idx];
@@ -17527,7 +17536,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55665" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56713" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
