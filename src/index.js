@@ -125,9 +125,18 @@ async function fetchMessages() {
     showInboxMessages(inboxMsgNum, inboxMessages);
 }
 
+function sortMessages(messages) {
+    if (!messages) return;
+
+    messages.sort(function(item1, item2) {
+        return item2.timestamp - item1.timestamp;
+    });
+}
+
 function showSentMessages(sentMsgNum, sentMessages) {
     document.querySelector('#sentInfo').innerHTML = `(${sentMessages.length}/${sentMsgNum})`;
     let html = "";
+    sortMessages(sentMessages);
     for (let idx=0; idx<sentMessages.length; idx++) {
         let msg = sentMessages[idx];
         let itemHtml = `<div id="sentMsg-${idx}" class="msgItem${idx%2}">`;
@@ -145,6 +154,7 @@ function showSentMessages(sentMsgNum, sentMessages) {
 function showInboxMessages(inboxMsgNum, inboxMessages) {
     document.querySelector('#inboxInfo').innerHTML = `(${inboxMessages.length}/${inboxMsgNum})`;
     let html = "";
+    sortMessages(inboxMessages);
     for (let idx=0; idx<inboxMessages.length; idx++) {
         let msg = inboxMessages[idx];
         let itemHtml = `<div id="inboxMsg-${idx}" class="msgItem${idx%2}">`;
