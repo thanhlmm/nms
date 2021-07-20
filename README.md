@@ -1,8 +1,8 @@
 sms-tool
 ==================
 
-This app was initialized with [create-near-app]
-
+The small tool to send short messages between NEAR accounts.
+Demo: https://near-sms-tool.kiemtienonline360.com/
 
 Quick Start
 ===========
