@@ -19,6 +19,9 @@ document.querySelector('form').onsubmit = async (event) => {
     // send message
     await sendMessage(toAccount.value, title.value, content.value);
 
+    // reset message box
+    resetNewMsgBox();
+
     // update the messages in the UI
     await fetchMessages();
 
@@ -53,6 +56,14 @@ function checkSubmitButton() {
     } else {
         submitButton.disabled = true;
     }
+}
+
+// Reset "new message" box
+function resetNewMsgBox() {
+    document.querySelector('input#toAccount').value = "";
+    document.querySelector('input#title').value = "";
+    document.querySelector('input#content').value = "";
+    submitButton.disabled = false;
 }
 
 // Show/hide "new message" box
