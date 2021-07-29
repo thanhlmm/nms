@@ -32,14 +32,17 @@ document.querySelector('form').onsubmit = async (event) => {
     }, 11000)
 }
 
+// Listen for user input events
 document.querySelector('input#toAccount').oninput = (event) => { checkSubmitButton(); }
 document.querySelector('input#title').oninput = (event) => { checkSubmitButton(); }
 document.querySelector('input#content').oninput = (event) => { checkSubmitButton(); }
 
+// Handle user action events
 document.querySelector('#sign-in-button').onclick = login;
 document.querySelector('#sign-out-button').onclick = logout;
 document.querySelector('#btnShowHideNewMsg').onclick = showHideNewMsg;
 
+// Check user input to enable/disable submit button
 function checkSubmitButton() {
     let value1 = document.querySelector('input#toAccount').value;
     let value2 = document.querySelector('input#title').value;
@@ -52,6 +55,7 @@ function checkSubmitButton() {
     }
 }
 
+// Show/hide "new message" box
 function showHideNewMsg() {
     let obj = document.querySelector('#btnShowHideNewMsg');
     let msgBoard = document.querySelector('#newMsgBoard');
@@ -92,6 +96,7 @@ function signedInFlow() {
     fetchMessages()
 }
 
+// Send new message
 async function sendMessage(toAccount, title, content) {
     await contract.sendMessage({
         to: toAccount,
@@ -100,7 +105,9 @@ async function sendMessage(toAccount, title, content) {
     });
 }
 
+// Fetch sent messages, inbox messages and show messages to UI
 async function fetchMessages() {
+    // Fetch sent messages and show messages to UI
     let viewMsgNum = 5;
     let sentMsgNum = await contract.getSentMsgNum({
         accountId: window.accountId
@@ -113,6 +120,7 @@ async function fetchMessages() {
     // console.log("Sent:", sentMsgNum, sentMessages);
     showSentMessages(sentMsgNum, sentMessages);
 
+    // Fetch inbox messages and show messages to UI
     let inboxMsgNum = await contract.getInboxMsgNum({
         accountId: window.accountId
     });
@@ -125,6 +133,7 @@ async function fetchMessages() {
     showInboxMessages(inboxMsgNum, inboxMessages);
 }
 
+// Sort messages so that recent messages show first
 function sortMessages(messages) {
     if (!messages) return;
 
@@ -133,6 +142,7 @@ function sortMessages(messages) {
     });
 }
 
+// Show sent messages on UI
 function showSentMessages(sentMsgNum, sentMessages) {
     document.querySelector('#sentInfo').innerHTML = `(${sentMessages.length}/${sentMsgNum})`;
     let html = "";
@@ -151,6 +161,7 @@ function showSentMessages(sentMsgNum, sentMessages) {
     document.querySelector('#sentMessages').innerHTML = html;
 }
 
+// Show inbox messages to UI
 function showInboxMessages(inboxMsgNum, inboxMessages) {
     document.querySelector('#inboxInfo').innerHTML = `(${inboxMessages.length}/${inboxMsgNum})`;
     let html = "";
