@@ -14,15 +14,21 @@ test('Send Message', async () => {
     let fromAccount = window.accountId;
     let toAccount = 'a.testnet';
     console.log("fromAccount:", fromAccount);
-    // await window.contract.sendMessage({
-    //     to: toAccount,
-    //     title: 'Testing',
-    //     content: "Only for testing"
-    // });
+    await window.contract.sendMessage({
+        to: toAccount,
+        title: 'Testing',
+        content: "Only for testing"
+    });
     console.log(`sentMsgNum of ${fromAccount}: ${await window.contract.getSentMsgNum({accountId: fromAccount})}`);
     console.log(`inboxMsgNum of ${toAccount}: ${await window.contract.getInboxMsgNum({accountId: toAccount})}`);
-    // const message = await window.contract.getMessage({
-    //     index: 0
-    // })
-    // console.log("Message", message);
+    console.log("Sent Message", await window.contract.getSentMessages({
+        accountId: fromAccount,
+        fromIndex: 0,
+        toIndex: 0
+    }));
+    console.log("Inbox Message", await window.contract.getInboxMessages({
+        accountId: toAccount,
+        fromIndex: 0,
+        toIndex: 0
+    }));
 })
