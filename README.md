@@ -1,8 +1,8 @@
-sms-tool
+near-sms-tool
 ==================
 
 The small tool to send short messages between NEAR accounts.
-Demo: https://near-sms-tool.kiemtienonline360.com/
+<br />Demo: https://near-sms-tool.kiemtienonline360.com/
 
 Quick Start
 ===========
