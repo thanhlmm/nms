@@ -3,7 +3,8 @@ import 'regenerator-runtime/runtime'
 import { initContract, login, logout, isAccountExist } from './utils';
 
 import getConfig from './config';
-const { networkId } = getConfig(process.env.NODE_ENV || 'development');
+// const { networkId } = getConfig(process.env.NODE_ENV || 'development');
+const { networkId } = getConfig('development');
 
 const submitButton = document.querySelector('form button');
 let appInfo = {

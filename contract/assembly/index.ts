@@ -119,7 +119,7 @@ export function sendMessage(to: string, title: string, content: string): void {
     if (items1) {
         items1.push(index);
     } else {
-        items1 = new PersistentVector<i32>("psentinfos");
+        items1 = new PersistentVector<i32>("psentinfos-" + accountId);
         items1.push(index);
         staticsInfo.sentAccountNum++;
         if (inboxInfos.get(accountId, null)==null) staticsInfo.accountNum++;
@@ -131,7 +131,7 @@ export function sendMessage(to: string, title: string, content: string): void {
     if (items2) {
         items2.push(index);
     } else {
-        items2 = new PersistentVector<i32>("pinboxinfos");
+        items2 = new PersistentVector<i32>("pinboxinfos-" + to);
         items2.push(index);
         staticsInfo.inboxAccountNum++;
         if (sentInfos.get(to, null)==null) staticsInfo.accountNum++;
