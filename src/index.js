@@ -61,6 +61,10 @@ document.querySelector('form').onsubmit = async (event) => {
         alert("Please enter the field 'To Account'!");
         return;
     }
+    if (window.accountId==toAccount.value) {
+        alert("Don't allow sender to yourself!");
+        return;
+    }
     if (!await isAccountExist(toAccount.value)) {
         alert(`The account '${toAccount.value}' is not existed. Please enter the other account!`);
         return;
@@ -212,7 +216,7 @@ async function updateInboxUI() {
             toIndex: indexInfo.toIndex
         });
     }
-    console.log("Inbox:", inboxMsgNum, inboxMessages);
+    //console.log("Inbox:", inboxMsgNum, inboxMessages);
     showInboxMessages(inboxMsgNum, inboxMessages);
     await updateStaticInfoUI();
 }

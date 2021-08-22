@@ -106,6 +106,10 @@ export function sendMessage(to: string, title: string, content: string): void {
 
     // Store new message into blockchain
     let accountId = Context.sender;
+    if (accountId==to) {
+        // Don't allow sender to yourself
+        return;
+    }
     let msg = new Message(accountId, to, title, content);
     let index = messages.push(msg);
     staticsInfo.messageNum = messages.length;
@@ -133,6 +137,8 @@ export function sendMessage(to: string, title: string, content: string): void {
         if (sentInfos.get(to, null)==null) staticsInfo.accountNum++;
     }
     inboxInfos.set(to, items2);
+
+    // Store StaticInfo
     staticsInfos.set(STATICS_KEY, staticsInfo);
 }
 
