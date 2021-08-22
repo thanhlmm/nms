@@ -20,8 +20,29 @@ export class Message {
     }
 }
 
+/**
+ * A data structure that stores statics information
+ */
+@nearBindgen
+export class StaticsInfo {
+    messageNum: i32;
+    sentAccountNum: i32;
+    inboxAccountNum: i32;
+    accountNum: i32;
+
+    constructor() {
+        this.messageNum = 0;
+        this.sentAccountNum = 0;
+        this.inboxAccountNum = 0;
+        this.accountNum = 0;
+    }
+}
+
 // An array that stores messages on the blockchain
 export const messages = new PersistentVector<Message>("psms");
+
+// Stores static information
+export const staticsInfos = new PersistentMap<string, StaticsInfo>("pstatics");
 
 // Store list of message indexes for each sender's account.\
 // Note: This avoids using a for loop to search for data, and also reduces duplication of message data

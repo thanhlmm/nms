@@ -1,5 +1,16 @@
 import { Context, PersistentVector, logging, storage } from 'near-sdk-as'
-import { Message, messages, sentInfos, inboxInfos } from './model';
+import { Message, StaticsInfo, messages, staticsInfos, sentInfos, inboxInfos } from './model';
+
+const STATICS_KEY = "statics";
+
+// Get StaticsInfo, auto created if not existed in the Map
+function getStaticsInfo(): StaticsInfo {
+    let staticsInfo = staticsInfos.get(STATICS_KEY, null);
+    if (staticsInfo==null) {
+        staticsInfo = new StaticsInfo();
+    }
+    return staticsInfo;
+}
 
 /**
  * Get number of sent messages corresponding to account id.\
@@ -91,29 +102,40 @@ export function getInboxMessages(accountId: string, fromIndex: i32, toIndex: i32
  * @param content Content of message
  */
 export function sendMessage(to: string, title: string, content: string): void {
+    let staticsInfo = getStaticsInfo();
+
     // Store new message into blockchain
     let accountId = Context.sender;
     let msg = new Message(accountId, to, title, content);
-    messages.push(msg);
+    let index = messages.push(msg);
+    staticsInfo.messageNum = messages.length;
 
     // Store the index of new message for sender account
-    let index = messages.length - 1;
-    let items = sentInfos.get(accountId, null);
-    if (items) {
-        items.push(index);
+    let items1 = sentInfos.get(accountId, null);
+    if (items1) {
+        items1.push(index);
     } else {
-        items = new PersistentVector<i32>("psentinfos");
-        items.push(index);
+        items1 = new PersistentVector<i32>("psentinfos");
+        items1.push(index);
+        staticsInfo.sentAccountNum++;
+        if (inboxInfos.get(accountId, null)==null) staticsInfo.accountNum++;
     }
-    sentInfos.set(accountId, items);
+    sentInfos.set(accountId, items1);
 
     // Store the index of new message for receive account
-    items = inboxInfos.get(to, null);
-    if (items) {
-        items.push(index);
+    let items2 = inboxInfos.get(to, null);
+    if (items2) {
+        items2.push(index);
     } else {
-        items = new PersistentVector<i32>("pinboxinfos");
-        items.push(index);
+        items2 = new PersistentVector<i32>("pinboxinfos");
+        items2.push(index);
+        staticsInfo.inboxAccountNum++;
+        if (sentInfos.get(to, null)==null) staticsInfo.accountNum++;
     }
-    inboxInfos.set(to, items);
+    inboxInfos.set(to, items2);
+    staticsInfos.set(STATICS_KEY, staticsInfo);
+}
+
+export function getStatics(): StaticsInfo | null {
+    return staticsInfos.get(STATICS_KEY, null);
 }

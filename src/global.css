@@ -29,6 +29,18 @@ main {
   max-width: 25em;
 }
 
+.header {
+  background-color: #00FF53;
+  padding: 5px;
+  border-bottom: solid 1px #cccccc;
+}
+
+.footer {
+  background-color: blanchedalmond(248, 225, 194);
+  padding: 5px;
+  border-top: solid 1px #cccccc;
+}
+
 h1 {
   background-image: url(assets/logo-black.svg);
   background-position: center 1em;
@@ -117,7 +129,7 @@ fieldset {
 }
 
 input {
-  background-color: var(--shadow);
+  /* background-color: var(--shadow); */
   border: none;
   border-radius: 5px 0 0 5px;
   caret-color: var(--primary);
@@ -129,6 +141,23 @@ input::selection {
   color: #efefef;
 }
 input:focus {
+  box-shadow: 0 0 10em rgba(0, 0, 0, 0.02) inset;
+}
+
+textarea {
+  /* background-color: var(--shadow); */
+  font-size: 18px;
+  border: none;
+  border-radius: 5px 0 0 5px;
+  caret-color: var(--primary);
+  color: inherit;
+  padding: 0.25em 1em;
+}
+textarea::selection {
+  background-color: var(--secondary);
+  color: #efefef;
+}
+textarea:focus {
   box-shadow: 0 0 10em rgba(0, 0, 0, 0.02) inset;
 }
 
@@ -197,4 +226,23 @@ aside footer *:last-child {
     background-color: azure;
     padding: 5px;
     border: 1px solid #ccc;
+}
+
+.div-column1 {
+  float: left;
+  width: 230px;
+  height: 100%;
+}
+
+.div-column2 {
+  float: left;
+  width: 800px;
+  height: 100%;
+}
+
+/* Clear floats after the columns */
+.div-row:after {
+  content: "";
+  display: table;
+  clear: both;
 }

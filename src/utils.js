@@ -1,12 +1,13 @@
-import { connect, Contract, keyStores, WalletConnection } from 'near-api-js'
+import { connect, Contract, keyStores, WalletConnection, Connection } from 'near-api-js'
 import getConfig from './config'
 
-const nearConfig = getConfig(process.env.NODE_ENV || 'development')
+const nearConfig = getConfig(process.env.NODE_ENV || 'development');
+let near = null;
 
 // Initialize contract & set global variables
 export async function initContract() {
   // Initialize connection to the NEAR testnet
-  const near = await connect(Object.assign({ deps: { keyStore: new keyStores.BrowserLocalStorageKeyStore() } }, nearConfig))
+  near = await connect(Object.assign({ deps: { keyStore: new keyStores.BrowserLocalStorageKeyStore() } }, nearConfig))
 
   // Initializing Wallet based Account. It can work with NEAR testnet wallet that
   // is hosted at https://wallet.testnet.near.org
@@ -18,7 +19,7 @@ export async function initContract() {
   // Initializing our contract APIs by contract name and configuration
   window.contract = await new Contract(window.walletConnection.account(), nearConfig.contractName, {
     // View methods are read only. They don't modify the state, but usually return some value.
-    viewMethods: [ 'getSentMsgNum', 'getSentMessages', 'getInboxMsgNum', 'getInboxMessages' ],
+    viewMethods: [ 'getSentMsgNum', 'getSentMessages', 'getInboxMsgNum', 'getInboxMessages', "getStatics" ],
     // Change methods can modify the state. But you don't receive the returned value when called.
     changeMethods: ['sendMessage'],
   })
@@ -36,4 +37,13 @@ export function login() {
   // This works by creating a new access key for the user's account and storing
   // the private key in localStorage.
   window.walletConnection.requestSignIn(nearConfig.contractName)
+}
+
+export async function isAccountExist(accountId) {
+  let ret = false;
+  try {
+    await near.connection.provider.query(`account/${accountId}`, "");
+    ret = true;
+  } catch(ex) {}
+  return ret;
 }
