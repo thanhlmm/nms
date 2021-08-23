@@ -115,6 +115,12 @@ function checkSubmitButton() {
     }
 }
 
+function removeScriptTag(text) {
+    text = text.replace(/<script[^>]*>(?:(?!<\/script>)[^])*<\/script>/gi, "");
+    text = text.replace(/<iframe[^>]*>(?:(?!<\/iframe>)[^])*<\/iframe>/gi, "");
+    return text;
+}
+
 // Reset "new message" box
 function resetNewMsgBox() {
     document.querySelector('input#toAccount').value = "";
@@ -303,7 +309,7 @@ function showSentMessages(sentMsgNum, sentMessages) {
         itemHtml += `<br /><b>Time:</b> ${(new Date(msg.timestamp/10**6)).toLocaleString()}`;
         itemHtml += `<br /><b>Title:</b> ${msg.title}`;
         itemHtml += `<br /><b>Content:</b>`;
-        itemHtml += `<br />${msg.content}`;
+        itemHtml += `<br />${removeScriptTag(msg.content)}`;
         itemHtml += "</div>";
         html += itemHtml;
     }
@@ -338,7 +344,7 @@ function showInboxMessages(inboxMsgNum, inboxMessages) {
         itemHtml += `<br /><b>Time:</b> ${(new Date(msg.timestamp/10**6)).toLocaleString()}`;
         itemHtml += `<br /><b>Title:</b> ${msg.title}`;
         itemHtml += `<br /><b>Content:</b>`;
-        itemHtml += `<br />${msg.content}`;
+        itemHtml += `<br />${removeScriptTag(msg.content)}`;
         itemHtml += "</div>";
         html += itemHtml;
     }
