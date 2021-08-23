@@ -220,12 +220,14 @@ aside footer *:last-child {
     background-color: beige;
     padding: 5px;
     border: 1px solid #ccc;
+    word-wrap: break-word;
 }
 
 .msgItem1 {
     background-color: azure;
     padding: 5px;
     border: 1px solid #ccc;
+    word-wrap: break-word;
 }
 
 .div-column1 {
