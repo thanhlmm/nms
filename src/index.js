@@ -397,7 +397,7 @@ function showInboxMessages(inboxMsgNum, inboxMessages) {
             itemHtml += "<div class='originMessage'>" + messageItemToHtml('all', msg.prevMsgItem) + "</div>";
         }
         if (msg.id>0) {
-            itemHtml += `<div style="seperatorInMessage"></div>`;
+            itemHtml += `<div class="seperatorInMessage"></div>`;
             itemHtml += `<a href="#" onclick="replyMessage('inbox', ${idx})" style="font-weight:bold;color:navy">Reply</a> &nbsp; <a href="#" onclick="forwardMessage('inbox', ${idx})" style="font-weight:bold;color:navy">Forward</a>`;
         }
         itemHtml += "</div>";
