@@ -127,9 +127,10 @@ function checkSubmitButton() {
     }
 }
 
-function removeScriptTag(text) {
+function standardHtmlData(text) {
     text = text.replace(/<script[^>]*>(?:(?!<\/script>)[^])*<\/script>/gi, "");
     text = text.replace(/<iframe[^>]*>(?:(?!<\/iframe>)[^])*<\/iframe>/gi, "");
+    text = text.replace(/\n/g, "<br />");
     return text;
 }
 
@@ -331,7 +332,7 @@ function messageItemToHtml(type, msg) {
     itemHtml += `<br /><b>Time:</b> ${(new Date(msg.timestamp/10**6)).toLocaleString()}`;
     itemHtml += `<br /><b>Title:</b> ${msg.title}`;
     itemHtml += `<br /><b>Content:</b>`;
-    itemHtml += `<br />${removeScriptTag(msg.content)}`;
+    itemHtml += `<div style="padding:5px">${standardHtmlData(msg.content)}</div>`;
     return itemHtml;
 }
 
