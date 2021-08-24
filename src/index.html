@@ -72,6 +72,7 @@
                         <div id="sentMessages" style="display: none; margin: 5px; padding-left: 10px;"></div>
                         <div id="newMsgBoard" style="display: none; margin: 5px; padding-left: 10px;">
                             <form>
+                                <input type="hidden" id="originMsgId" data-behavior="originMsgId" value="-1" />
                                 <div>
                                     <label for="toAccount" style="display: block; color: var(--gray); margin-bottom: 0.5em">
                                         To Account
@@ -94,6 +95,11 @@
                                     </label>
                                     <div style="display: flex">
                                         <textarea style="flex: 1" autocomplete="off" id="content" data-behavior="content" rows="6" maxlength="1024"></textarea>
+                                    </div>
+                                </div>
+                                <div id="originMessage" style="display: hidden; margin-top: 10px; font-size: small; margin-left: 15px; padding: 5px; background-color: white;">
+                                    <b>Origin Message:</b>
+                                    <div id="originMessageContent" style="max-height: 200px; padding: 15px; overflow: scroll;">
                                     </div>
                                 </div>
                                 <div style="padding-top: 10px;">

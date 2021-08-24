@@ -95,13 +95,30 @@ export function getInboxMessages(accountId: string, fromIndex: i32, toIndex: i32
 }
 
 /**
+ * Get message from index
+ * @param index Index of message 
+ * @returns Return a message or null
+ */
+ export function getMessage(msgId: i32): Message | null {
+    // Checking msgIndex
+    let index = msgId - 1;
+    if (index<0 || index>=messages.length) {
+        // Invalid input
+        return null
+    };
+
+    // Return message
+    return messages[index];
+}
+
+/**
  * Sends new message to other account.
  * NOTE: This is a change method. Which means it will modify the state.
  * @param to The account id that will receive the message
  * @param title Title of message
  * @param content Content of message
  */
-export function sendMessage(to: string, title: string, content: string): void {
+export function sendMessage(to: string, title: string, content: string, prevMsgId: i32): void {
     let staticsInfo = getStaticsInfo();
 
     // Store new message into blockchain
@@ -110,7 +127,8 @@ export function sendMessage(to: string, title: string, content: string): void {
         // Don't allow sender to yourself
         return;
     }
-    let msg = new Message(accountId, to, title, content);
+    let msgId = messages.length + 1;
+    let msg = new Message(msgId, accountId, to, title, content, prevMsgId);
     let index = messages.push(msg);
     staticsInfo.messageNum = messages.length;
 

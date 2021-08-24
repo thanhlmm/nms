@@ -3,7 +3,7 @@ beforeAll(async function () {
     const near = await nearlib.connect(nearConfig);
     window.accountId = nearConfig.contractName;
     window.contract = await near.loadContract(nearConfig.contractName, {
-        viewMethods: ['getSentMessages', 'getInboxMessages', 'getSentMsgNum', 'getInboxMsgNum', 'getStatics'],
+        viewMethods: ['getSentMessages', 'getInboxMessages', 'getSentMsgNum', 'getInboxMsgNum', 'getStatics', 'getMessage'],
         changeMethods: ['sendMessage'],
         sender: window.accountId
     })
@@ -17,7 +17,8 @@ test('Send Message', async () => {
     await window.contract.sendMessage({
         to: toAccount,
         title: 'Testing',
-        content: "Only for testing"
+        content: "Only for testing",
+        prevMsgId: 0,
     });
     console.log(`sentMsgNum of ${fromAccount}: ${await window.contract.getSentMsgNum({accountId: fromAccount})}`);
     console.log(`inboxMsgNum of ${toAccount}: ${await window.contract.getInboxMsgNum({accountId: toAccount})}`);
@@ -30,6 +31,9 @@ test('Send Message', async () => {
         accountId: toAccount,
         fromIndex: 0,
         toIndex: 0
+    }));
+    console.log("Message[0]", await window.contract.getMessage({
+        msgId: 1
     }));
     console.log("Statics", await window.contract.getStatics());
 })

@@ -5,18 +5,22 @@ import { env, PersistentVector, PersistentMap } from "near-sdk-as";
  */
 @nearBindgen
 export class Message {
+    id: i32;                // Must be greater than 0
     from: string;
     to: string;
     title: string;
     content: string;
+    prevMsgId: i32;           // 0: No previous message
     timestamp: u64;
 
-    constructor(_from: string, _to: string, _title: string, _content: string) {
+    constructor(_id: i32, _from: string, _to: string, _title: string, _content: string, _prevMsgId: i32) {
+        this.id = _id;
         this.from = _from;
         this.to = _to;
         this.title = _title;
         this.content = _content;
         this.timestamp = env.block_timestamp();
+        this.prevMsgId = _prevMsgId;
     }
 }
 

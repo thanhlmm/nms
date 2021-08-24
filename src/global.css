@@ -230,6 +230,20 @@ aside footer *:last-child {
     word-wrap: break-word;
 }
 
+.seperatorInMessage {
+  background-color:#cccccc;
+  width:100%;
+  height:1px;
+  margin-top:5px;
+  margin-bottom:5px
+}
+
+.originMessage {
+    padding: 10px;
+    margin-left: 10px;
+    font-size: smaller;
+}
+
 .div-column1 {
   float: left;
   width: 230px;

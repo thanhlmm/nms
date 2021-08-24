@@ -12,9 +12,13 @@ let appInfo = {
     itemPerPage: 5,
     inbox: {
         currentPage: 1,
+        messages: [],
+        msgNum: 0
     },
     sent: {
-        currentPage: 1
+        currentPage: 1,
+        messages: [],
+        msgNum: 0
     }
 };
 
@@ -41,6 +45,12 @@ window.onClickMenuItem = function(type) {
         appInfo.currentMenu = "COMPOSE";
         updateComposeUI();
     }
+}
+window.replyMessage = function(type, msgIndex) {
+    updateComposeUI("reply", type, msgIndex);
+}
+window.forwardMessage = function(type, msgIndex) {
+    updateComposeUI("forward", type, msgIndex);
 }
 
 document.querySelector('form').onsubmit = async (event) => {
@@ -70,12 +80,14 @@ document.querySelector('form').onsubmit = async (event) => {
         alert(`The account '${toAccount.value}' is not existed. Please enter the other account!`);
         return;
     }
+    let originMsgId = Number(document.querySelector('input#originMsgId').value);
+    if (originMsgId==null) originMsgId = 0;
 
     // disable the save button, since it now matches the persisted value
     submitButton.disabled = true
 
     // send message
-    await sendMessage(toAccount.value, title.value, content.value);
+    await sendMessage(toAccount.value, title.value, content.value, originMsgId);
 
     // reset message box
     resetNewMsgBox();
@@ -165,11 +177,12 @@ function signedInFlow() {
 }
 
 // Send new message
-async function sendMessage(toAccount, title, content) {
+async function sendMessage(toAccount, title, content, originMsgId=0) {
     return await contract.sendMessage({
         to: toAccount,
         title: title,
-        content: content
+        content: content,
+        prevMsgId: originMsgId
     });
 }
 
@@ -199,6 +212,17 @@ async function updateAppUI() {
     }
 }
 
+async function updatePreviousMessages(messages) {
+    for (let idx=0; idx<messages.length; idx++) {
+        if (messages[idx].prevMsgId>0) {
+            messages[idx].prevMsgItem = await contract.getMessage({
+                msgId: messages[idx].prevMsgId
+            });
+        }
+        console.log(messages[idx]);
+    }
+}
+
 async function updateInboxUI() {
     // Show inbox block and hide others
     document.querySelector('#inboxMessages').style.display = 'block';
@@ -223,7 +247,11 @@ async function updateInboxUI() {
             toIndex: indexInfo.toIndex
         });
     }
+    await updatePreviousMessages(inboxMessages);
+    
     //console.log("Inbox:", inboxMsgNum, inboxMessages);
+    appInfo.inbox.messages = inboxMessages;
+    appInfo.inbox.msgNum = inboxMsgNum;
     showInboxMessages(inboxMsgNum, inboxMessages);
     await updateStaticInfoUI();
 }
@@ -252,8 +280,11 @@ async function updateSentUI() {
             toIndex: indexInfo.toIndex
         });
     }
+    await updatePreviousMessages(sentMessages);
     
     // console.log("Sent:", sentMsgNum, sentMessages);
+    appInfo.sent.messages = sentMessages;
+    appInfo.sent.msgNum = sentMsgNum;
     showSentMessages(sentMsgNum, sentMessages);
     await updateStaticInfoUI();
 }
@@ -282,10 +313,26 @@ function getPageLinkStr(type, msgNum) {
         } else {
             page += `<a href="#" onclick="onPageChange('${type}', ${idx});">${idx}</a> `
         }
-        
     }
 
     return page;
+}
+
+function messageItemToHtml(type, msg) {
+    let itemHtml = "";
+    if (type=="inbox") {
+        itemHtml += `<b>From:</b> ${msg.from}`;
+    } else if (type=="sent") {
+        itemHtml += `<b>To:</b> ${msg.to}`;
+    } else {
+        itemHtml += `<b>From:</b> ${msg.from}`;
+        itemHtml += `<br /><b>To:</b> ${msg.to}`;
+    }
+    itemHtml += `<br /><b>Time:</b> ${(new Date(msg.timestamp/10**6)).toLocaleString()}`;
+    itemHtml += `<br /><b>Title:</b> ${msg.title}`;
+    itemHtml += `<br /><b>Content:</b>`;
+    itemHtml += `<br />${removeScriptTag(msg.content)}`;
+    return itemHtml;
 }
 
 // Show sent messages on UI
@@ -305,11 +352,15 @@ function showSentMessages(sentMsgNum, sentMessages) {
     for (let idx=0; idx<sentMessages.length; idx++) {
         let msg = sentMessages[idx];
         let itemHtml = `<div id="sentMsg-${idx}" class="msgItem${idx%2}">`;
-        itemHtml += `<b>To:</b> ${msg.to}`;
-        itemHtml += `<br /><b>Time:</b> ${(new Date(msg.timestamp/10**6)).toLocaleString()}`;
-        itemHtml += `<br /><b>Title:</b> ${msg.title}`;
-        itemHtml += `<br /><b>Content:</b>`;
-        itemHtml += `<br />${removeScriptTag(msg.content)}`;
+        itemHtml += messageItemToHtml('sent', msg);
+        if (msg.prevMsgItem) {
+            itemHtml += `<div class="seperatorInMessage"></div>`;
+            itemHtml += "<div class='originMessage'>" + messageItemToHtml('all', msg.prevMsgItem) + "</div>";
+        }
+        if (msg.id>0) {
+            itemHtml += `<div class="seperatorInMessage"></div>`;
+            itemHtml += `<a href="#" onclick="replyMessage('sent', ${idx})" style="font-weight:bold;color:navy">Reply</a> &nbsp; <a href="#" onclick="forwardMessage('sent', ${idx})" style="font-weight:bold;color:navy">Forward</a>`;
+        }
         itemHtml += "</div>";
         html += itemHtml;
     }
@@ -340,11 +391,15 @@ function showInboxMessages(inboxMsgNum, inboxMessages) {
     for (let idx=0; idx<inboxMessages.length; idx++) {
         let msg = inboxMessages[idx];
         let itemHtml = `<div id="inboxMsg-${idx}" class="msgItem${idx%2}">`;
-        itemHtml += `<b>From:</b> ${msg.from}`;
-        itemHtml += `<br /><b>Time:</b> ${(new Date(msg.timestamp/10**6)).toLocaleString()}`;
-        itemHtml += `<br /><b>Title:</b> ${msg.title}`;
-        itemHtml += `<br /><b>Content:</b>`;
-        itemHtml += `<br />${removeScriptTag(msg.content)}`;
+        itemHtml += messageItemToHtml('inbox', msg);
+        if (msg.prevMsgItem) {
+            itemHtml += `<div class="seperatorInMessage"></div>`;
+            itemHtml += "<div class='originMessage'>" + messageItemToHtml('all', msg.prevMsgItem) + "</div>";
+        }
+        if (msg.id>0) {
+            itemHtml += `<div style="seperatorInMessage"></div>`;
+            itemHtml += `<a href="#" onclick="replyMessage('inbox', ${idx})" style="font-weight:bold;color:navy">Reply</a> &nbsp; <a href="#" onclick="forwardMessage('inbox', ${idx})" style="font-weight:bold;color:navy">Forward</a>`;
+        }
         itemHtml += "</div>";
         html += itemHtml;
     }
@@ -358,16 +413,38 @@ function showInboxMessages(inboxMsgNum, inboxMessages) {
     document.querySelector('#pagingInfo').innerHTML = getPageLinkStr("inbox", inboxMsgNum);
 }
 
-async function updateComposeUI() {
+async function updateComposeUI(action, msgType, msgIndex) {
     // Show compose block and hide others
     document.querySelector('#inboxMessages').style.display = 'none';
     document.querySelector('#sentMessages').style.display = 'none';
     document.querySelector('#newMsgBoard').style.display = 'block';
 
     // Update title
-    document.querySelector('#bodyTitle').innerText = "Compose new message";
+    // console.log(msgType, msgIndex, appInfo[msgType])
+    let msgItem = (msgType && msgIndex!=null && msgIndex>=0?appInfo[msgType].messages[msgIndex]:null);
+    if (!msgItem) action = "none";
+    document.querySelector('input#originMsgId').value = (msgItem?msgItem.id:0);
+    if (action=="reply") {
+        document.querySelector('#bodyTitle').innerText = "Reply the message";
+        document.querySelector('input#toAccount').value = (msgType=="inbox"?msgItem.from:msgItem.to);
+        document.querySelector('input#title').value = "Re: " + msgItem.title;
+        document.querySelector('#originMessage').style.display = "block";
+        document.querySelector('#originMessageContent').innerHTML = messageItemToHtml(msgType, msgItem);
+    } else if (action=="forward") {
+        document.querySelector('#bodyTitle').innerText = "Forward the message";
+        document.querySelector('input#toAccount').value =  "";
+        document.querySelector('input#title').value = "Fw: " + msgItem.title;
+        document.querySelector('#originMessage').style.display = "block";
+        document.querySelector('#originMessageContent').innerHTML = messageItemToHtml(msgType, msgItem);
+    } else {
+        document.querySelector('#bodyTitle').innerText = "Compose new message";
+        document.querySelector('input#title').value = "";
+        document.querySelector('input#toAccount').value = "";
+        document.querySelector('#originMessage').style.display = "none";
+    }
     document.querySelector('#bodyTitleInfo').innerText = "";
     document.querySelector('#pagingInfo').innerHTML = "";
+    document.querySelector('textarea#content').value = "";
 
     // Update statics
     await updateStaticInfoUI();
