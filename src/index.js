@@ -86,23 +86,35 @@ document.querySelector('form').onsubmit = async (event) => {
     // disable the save button, since it now matches the persisted value
     submitButton.disabled = true
 
-    // send message
-    await sendMessage(toAccount.value, title.value, content.value, originMsgId);
+    try {
+        // Send message
+        await sendMessage(toAccount.value, title.value, content.value, originMsgId);
+        
+        // Reset message box if sucess
+        resetNewMsgBox();
+        
+        // Show sucess notification
+        document.querySelector('[data-behavior=notification]').style.display = 'block';
+        
+        // Remove notification again after css animation completes
+        setTimeout(() => {
+            document.querySelector('[data-behavior=notification]').style.display = 'none';
+        }, 11000);
 
-    // reset message box
-    resetNewMsgBox();
-
-    // show notification
-    document.querySelector('[data-behavior=notification]').style.display = 'block'
-
-    // remove notification again after css animation completes
-    // this allows it to be shown again next time the form is submitted
-    setTimeout(() => {
-        document.querySelector('[data-behavior=notification]').style.display = 'none'
-    }, 11000);
-
-    // update the messages in the UI
-    await updateAppUI();
+        // Update the messages in the UI
+        await updateAppUI();
+    } catch(ex) {
+        console.log("ERROR", ex);
+        submitButton.disabled = false;
+        
+        // Show error notification
+        document.querySelector('[data-behavior=notification-error]').style.display = 'block';
+        
+        // Remove notification again after css animation completes
+        setTimeout(() => {
+            document.querySelector('[data-behavior=notification-error]').style.display = 'none';
+        }, 11000);
+    }
 }
 
 // Listen for user input events
@@ -163,10 +175,18 @@ function signedInFlow() {
     })
 
     // populate links in the notification box
-    const accountLink = document.querySelector('[data-behavior=notification] a:nth-of-type(1)')
+    let accountLink = document.querySelector('[data-behavior=notification] a:nth-of-type(1)')
     accountLink.href = accountLink.href + window.accountId
     accountLink.innerText = '@' + window.accountId
-    const contractLink = document.querySelector('[data-behavior=notification] a:nth-of-type(2)')
+    let contractLink = document.querySelector('[data-behavior=notification] a:nth-of-type(2)')
+    contractLink.href = contractLink.href + window.contract.contractId
+    contractLink.innerText = '@' + window.contract.contractId
+
+    // populate links in the error notification box
+    accountLink = document.querySelector('[data-behavior=notification-error] a:nth-of-type(1)')
+    accountLink.href = accountLink.href + window.accountId
+    accountLink.innerText = '@' + window.accountId
+    contractLink = document.querySelector('[data-behavior=notification-error] a:nth-of-type(2)')
     contractLink.href = contractLink.href + window.contract.contractId
     contractLink.innerText = '@' + window.contract.contractId
 
