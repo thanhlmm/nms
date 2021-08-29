@@ -33,12 +33,23 @@ main {
   background-color: #00FF53;
   padding: 5px;
   border-bottom: solid 1px #cccccc;
+  color: black;
 }
 
 .footer {
   background-color: blanchedalmond(248, 225, 194);
   padding: 5px;
   border-top: solid 1px #cccccc;
+  color: black;
+}
+
+.main-body {
+  color: black;
+}
+
+.sms-link {
+  color: black;
+  text-decoration: underline;
 }
 
 h1 {

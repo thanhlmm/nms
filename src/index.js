@@ -312,7 +312,7 @@ function getPageLinkStr(type, msgNum) {
         if (idx==currentPage) {
             page += `${idx} `;
         } else {
-            page += `<a href="#" onclick="onPageChange('${type}', ${idx});">${idx}</a> `
+            page += `<a href="#" class="sms-link" onclick="onPageChange('${type}', ${idx});">${idx}</a> `
         }
     }
 
