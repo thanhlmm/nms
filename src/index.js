@@ -5,6 +5,9 @@ import { initContract, login, logout, isAccountExist } from './utils';
 import getConfig from './config';
 // const { networkId } = getConfig(process.env.NODE_ENV || 'development');
 const { networkId } = getConfig('development');
+let isSendNear = false;
+const ONE_YOCTO_NEAR = 1;
+const BOATLOAD_OF_GAS = (60*10**12).toFixed();
 
 const submitButton = document.querySelector('form button');
 let appInfo = {
@@ -197,14 +200,30 @@ function signedInFlow() {
     updateAppUI();
 }
 
+function getSiteLink() {
+    let link = window.location.href;
+    return link.toString().replace(/^(.*\/\/[^\/?#]*).*$/,"$1");
+}
+
 // Send new message
 async function sendMessage(toAccount, title, content, originMsgId=0) {
-    return await contract.sendMessage({
-        to: toAccount,
-        title: title,
-        content: content,
-        prevMsgId: originMsgId
-    });
+    if (isSendNear) {
+        return await contract.sendMessage({
+            to: toAccount,
+            title: title,
+            content: content,
+            prevMsgId: originMsgId,
+            link: getSiteLink()
+        }, BOATLOAD_OF_GAS, ONE_YOCTO_NEAR);
+    } else {
+        return await contract.sendMessage({
+            to: toAccount,
+            title: title,
+            content: content,
+            prevMsgId: originMsgId,
+            link: getSiteLink()
+        });
+    }
 }
 
 function getIndexInfo(messageNum, currentPage, itemPerPage) {

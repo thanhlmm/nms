@@ -19,6 +19,7 @@ test('Send Message', async () => {
         title: 'Testing',
         content: "Only for testing",
         prevMsgId: 0,
+        link: 'https://nms.kiemtienonline360.com'
     });
     console.log(`sentMsgNum of ${fromAccount}: ${await window.contract.getSentMsgNum({accountId: fromAccount})}`);
     console.log(`inboxMsgNum of ${toAccount}: ${await window.contract.getInboxMsgNum({accountId: toAccount})}`);

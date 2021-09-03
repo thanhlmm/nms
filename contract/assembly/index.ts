@@ -1,7 +1,9 @@
-import { Context, PersistentVector, logging, storage } from 'near-sdk-as'
+import { Context, PersistentVector, ContractPromiseBatch } from 'near-sdk-as'
 import { Message, StaticsInfo, messages, staticsInfos, sentInfos, inboxInfos } from './model';
 
 const STATICS_KEY = "statics";
+const NEAR_DECIMAL = 24
+const ONE_YOCTO_NEAR = 1;
 
 // Get StaticsInfo, auto created if not existed in the Map
 function getStaticsInfo(): StaticsInfo {
@@ -118,17 +120,17 @@ export function getInboxMessages(accountId: string, fromIndex: i32, toIndex: i32
  * @param title Title of message
  * @param content Content of message
  */
-export function sendMessage(to: string, title: string, content: string, prevMsgId: i32): void {
+export function sendMessage(to: string, title: string, content: string, prevMsgId: i32, link: string): boolean {
     let staticsInfo = getStaticsInfo();
 
     // Store new message into blockchain
     let accountId = Context.sender;
     if (accountId==to) {
         // Don't allow sender to yourself
-        return;
+        return false;
     }
     let msgId = messages.length + 1;
-    let msg = new Message(msgId, accountId, to, title, content, prevMsgId);
+    let msg = new Message(msgId, accountId, to, title, content, prevMsgId, link);
     let index = messages.push(msg);
     staticsInfo.messageNum = messages.length;
 
@@ -158,6 +160,14 @@ export function sendMessage(to: string, title: string, content: string, prevMsgI
 
     // Store StaticInfo
     staticsInfos.set(STATICS_KEY, staticsInfo);
+
+    // Send NEAR to receiver
+    let attachedDeposit = Context.attachedDeposit;
+    if (!attachedDeposit.isZero()) {
+        ContractPromiseBatch.create(to).transfer(attachedDeposit);
+    }
+
+    return true;
 }
 
 export function getStatics(): StaticsInfo | null {

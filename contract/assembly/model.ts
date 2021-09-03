@@ -10,15 +10,17 @@ export class Message {
     to: string;
     title: string;
     content: string;
+    link: string;
     prevMsgId: i32;           // 0: No previous message
     timestamp: u64;
 
-    constructor(_id: i32, _from: string, _to: string, _title: string, _content: string, _prevMsgId: i32) {
+    constructor(_id: i32, _from: string, _to: string, _title: string, _content: string, _prevMsgId: i32, _serviceLink: string) {
         this.id = _id;
         this.from = _from;
         this.to = _to;
         this.title = _title;
         this.content = _content;
+        this.link = _serviceLink;
         this.timestamp = env.block_timestamp();
         this.prevMsgId = _prevMsgId;
     }

@@ -7,7 +7,7 @@ describe('Send Message ', () => {
         let fromAccount = Context.sender;
         let toAccount = "a.testnet";
         // let toAccount = Context.sender;
-        sendMessage(toAccount, 'Testing ' + now, " Only for testing:" + now, -1);
+        sendMessage(toAccount, 'Testing ' + now, " Only for testing:" + now, -1, "https://nms.kiemtienonline360.com");
         logging.log(`sentMsgNum of ${fromAccount}: ${getSentMsgNum(fromAccount)}`);
         logging.log(`inboxMsgNum of ${toAccount}: ${getInboxMsgNum(toAccount)}`);
         getSentMessages(fromAccount, 0, 0);

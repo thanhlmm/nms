@@ -1,5 +1,5 @@
 {
-  "name": "sms-tool",
+  "name": "near-messaging-service",
   "version": "0.0.1",
   "license": "UNLICENSED",
   "scripts": {
