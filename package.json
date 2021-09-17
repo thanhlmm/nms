@@ -26,6 +26,7 @@
     "shelljs": "~0.8.4"
   },
   "dependencies": {
+    "ipfs": "^0.58.5",
     "near-api-js": "~0.41.0",
     "near-cli": "^2.0.0",
     "regenerator-runtime": "~0.13.5"

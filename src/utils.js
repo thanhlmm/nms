@@ -8,7 +8,7 @@ let near = null;
 // Initialize contract & set global variables
 export async function initContract() {
   // Initialize connection to the NEAR testnet
-  console.log("nearConfig", nearConfig);
+  // console.log("nearConfig", nearConfig);
   near = await connect(Object.assign({ deps: { keyStore: new keyStores.BrowserLocalStorageKeyStore() } }, nearConfig));
 
   // Initializing Wallet based Account. It can work with NEAR testnet wallet that
