@@ -1,4 +1,4 @@
-import { Context, PersistentVector, ContractPromiseBatch, env, u128 } from 'near-sdk-as'
+import { Context, PersistentVector, ContractPromiseBatch, env, u128, logging } from 'near-sdk-as'
 import { Message, StaticsInfo, messages, staticsInfos, sentInfos, inboxInfos } from './model';
 
 const STATICS_KEY = "statics";
@@ -121,11 +121,13 @@ export function getInboxMessages(accountId: string, fromIndex: i32, toIndex: i32
  */
 export function sendMessage(to: string, dataId: string, sKey: string, rKey: string, baseSite: string, prevMsgId: i32): boolean {
     // Checking input
-    if (env.isValidAccountID(to)) {
+    if (!env.isValidAccountID(to)) {
+        logging.log("To account is invalid!");
         return false;
     }
     let attachedDeposit = Context.attachedDeposit;
     if (u128.lt(attachedDeposit, NEAR_FEE)) {
+        logging.log("Attached deposit is too small!");
         return false;
     }
 

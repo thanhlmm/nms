@@ -14,7 +14,7 @@ test('Send Message', async () => {
     let fromAccount = window.accountId;
     let toAccount = 'abc.testnet';
     console.log("fromAccount:", fromAccount);
-    await window.contract.sendMessage({
+    let ret = await window.contract.sendMessage({
         to: toAccount,
         dataId: 'QmcT7Jwz5Ckt7dfnMdcNsvRiYEf3H5xn8No5JkqoKPP3uy',
         sKey: "",
@@ -22,6 +22,7 @@ test('Send Message', async () => {
         prevMsgId: 0,
         baseSite: 'https://nms.kiemtienonline360.com'
     });
+    console.log("Send message return:", ret);
     console.log(`sentMsgNum of ${fromAccount}: ${await window.contract.getSentMsgNum({accountId: fromAccount})}`);
     console.log(`inboxMsgNum of ${toAccount}: ${await window.contract.getInboxMsgNum({accountId: toAccount})}`);
     console.log("Sent Message", await window.contract.getSentMessages({

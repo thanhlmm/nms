@@ -1,11 +1,12 @@
 import 'regenerator-runtime/runtime'
 
-import { initContract, login, logout, isAccountExist } from './utils';
-
+import { initContract, login, logout, isAccountExist, checkTransaction, getTransaction } from './utils';
+import mesageIpfs from './message-ipfs';
 import getConfig from './config';
 // const { networkId } = getConfig(process.env.NODE_ENV || 'development');
 const { networkId } = getConfig('development');
-let isSendNear = false;
+
+let APP_FEE = "1000000000000000000000";
 const ONE_YOCTO_NEAR = 1;
 const BOATLOAD_OF_GAS = (60*10**12).toFixed();
 
@@ -56,6 +57,8 @@ window.forwardMessage = function(type, msgIndex) {
     updateComposeUI("forward", type, msgIndex);
 }
 
+let initTransHash = findGetParameter("transactionHashes");
+
 document.querySelector('form').onsubmit = async (event) => {
     event.preventDefault()
 
@@ -89,35 +92,15 @@ document.querySelector('form').onsubmit = async (event) => {
     // disable the save button, since it now matches the persisted value
     submitButton.disabled = true
 
+    let ret = false;
     try {
         // Send message
-        await sendMessage(toAccount.value, title.value, content.value, originMsgId);
-        
-        // Reset message box if sucess
-        resetNewMsgBox();
-        
-        // Show sucess notification
-        document.querySelector('[data-behavior=notification]').style.display = 'block';
-        
-        // Remove notification again after css animation completes
-        setTimeout(() => {
-            document.querySelector('[data-behavior=notification]').style.display = 'none';
-        }, 11000);
-
-        // Update the messages in the UI
-        await updateAppUI();
+        ret = await sendMessage(toAccount.value, title.value, content.value, originMsgId);
     } catch(ex) {
         console.log("ERROR", ex);
-        submitButton.disabled = false;
-        
-        // Show error notification
-        document.querySelector('[data-behavior=notification-error]').style.display = 'block';
-        
-        // Remove notification again after css animation completes
-        setTimeout(() => {
-            document.querySelector('[data-behavior=notification-error]').style.display = 'none';
-        }, 11000);
     }
+
+    await showNotificationByResult(ret);
 }
 
 // Listen for user input events
@@ -163,6 +146,59 @@ function updateWidthForDivColumn2() {
     obj.style.width = (width - 230 - 20) + "px";
 }
 
+function findGetParameter(parameterName) {
+    var result = null,
+        tmp = [];
+    location.search
+        .substr(1)
+        .split("&")
+        .forEach(function (item) {
+          tmp = item.split("=");
+          if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+        });
+    return result;
+}
+
+async function showNotificationByTransHash(transHash) {
+    let result = await getTransaction(transHash);
+    let ret = false;
+    if (result && result.status && result.status.SuccessValue) {
+        let returnValue = (new Buffer.from(result.status.SuccessValue, "base64")).toString();
+        if (returnValue=="true" || returnValue=="TRUE") {
+            ret = true;
+        }
+    }
+    await showNotificationByResult(ret);
+}
+
+async function showNotificationByResult(isSuccess) {
+    if (isSuccess) {
+        // Reset message box if sucess
+        resetNewMsgBox();
+                
+        // Show sucess notification
+        document.querySelector('[data-behavior=notification]').style.display = 'block';
+
+        // Remove notification again after css animation completes
+        setTimeout(() => {
+            document.querySelector('[data-behavior=notification]').style.display = 'none';
+        }, 11000);
+
+        // Update the messages in the UI
+        await updateAppUI();
+    } else {
+        submitButton.disabled = false;
+        
+        // Show error notification
+        document.querySelector('[data-behavior=notification-error]').style.display = 'block';
+        
+        // Remove notification again after css animation completes
+        setTimeout(() => {
+            document.querySelector('[data-behavior=notification-error]').style.display = 'none';
+        }, 11000);
+    }
+}
+
 // Display the signed-out-flow container
 function signedOutFlow() {
     document.querySelector('#signed-out-flow').style.display = 'block';
@@ -198,6 +234,12 @@ function signedInFlow() {
     contractLink.href = contractLink.href.replace('testnet', networkId)
 
     updateAppUI();
+
+    if (initTransHash) {
+        showNotificationByTransHash(initTransHash).then(function() {
+            initTransHash = null;
+        });
+    }
 }
 
 function getSiteLink() {
@@ -207,23 +249,43 @@ function getSiteLink() {
 
 // Send new message
 async function sendMessage(toAccount, title, content, originMsgId=0) {
-    if (isSendNear) {
-        return await contract.sendMessage({
-            to: toAccount,
-            title: title,
-            content: content,
-            prevMsgId: originMsgId,
-            link: getSiteLink()
-        }, BOATLOAD_OF_GAS, ONE_YOCTO_NEAR);
-    } else {
-        return await contract.sendMessage({
-            to: toAccount,
-            title: title,
-            content: content,
-            prevMsgId: originMsgId,
-            link: getSiteLink()
-        });
+    let ret = false;
+    let msgData = {
+        title: title,
+        content: content,
+        attachmentFiles: {
+        }
     }
+    try {
+        let resp = await mesageIpfs.storeMesageData(msgData);
+        if (resp && resp.success) {
+            if (APP_FEE) {
+                ret = await contract.sendMessage({
+                    to: toAccount,
+                    dataId: resp.cid,
+                    sKey: "",
+                    rKey: "",
+                    baseSite: getSiteLink(),
+                    prevMsgId: originMsgId,
+                }, BOATLOAD_OF_GAS, APP_FEE);
+            } else {
+                ret = await contract.sendMessage({
+                    to: toAccount,
+                    dataId: resp.cid,
+                    sKey: "",
+                    rKey: "",
+                    baseSite: getSiteLink(),
+                    prevMsgId: originMsgId,
+                });
+            }
+        } else {
+            console.error("Error when to store data to IPFS", resp);
+        }
+    } catch(ex) {
+        console.error("Error to send message", ex);
+    }
+    
+    return ret;
 }
 
 function getIndexInfo(messageNum, currentPage, itemPerPage) {
@@ -252,14 +314,37 @@ async function updateAppUI() {
     }
 }
 
-async function updatePreviousMessages(messages) {
-    for (let idx=0; idx<messages.length; idx++) {
-        if (messages[idx].prevMsgId>0) {
-            messages[idx].prevMsgItem = await contract.getMessage({
-                msgId: messages[idx].prevMsgId
+async function updateDataMessage(message) {
+    let msgInfo = await mesageIpfs.getMesageData(message.dataId);
+    if (msgInfo && msgInfo.success) {
+        message.msgData = msgInfo.data;
+        
+        if (message.prevMsgId>0) {
+            let prevItem = await contract.getMessage({
+                msgId: message.prevMsgId
             });
+            if (prevItem!=null) {
+                msgInfo = await mesageIpfs.getMesageData(prevItem.dataId);
+                if (msgInfo && msgInfo.success) {
+                    prevItem.msgData = msgInfo.data;
+                    message.prevMsgItem = prevItem;
+                }
+            }
         }
-        console.log(messages[idx]);
+        // console.log(message);
+    } else {
+        message.msgData = {
+            title: "Unable to get message",
+            content: "",
+            attachmentFiles: {}
+        };
+    }
+}
+
+async function updateDataMessages(messages) {
+    // Get data of the messages
+    for (let idx=0; idx<messages.length; idx++) {
+        await updateDataMessage(messages[idx]);
     }
 }
 
@@ -287,7 +372,7 @@ async function updateInboxUI() {
             toIndex: indexInfo.toIndex
         });
     }
-    await updatePreviousMessages(inboxMessages);
+    await updateDataMessages(inboxMessages);
     
     //console.log("Inbox:", inboxMsgNum, inboxMessages);
     appInfo.inbox.messages = inboxMessages;
@@ -320,7 +405,8 @@ async function updateSentUI() {
             toIndex: indexInfo.toIndex
         });
     }
-    await updatePreviousMessages(sentMessages);
+    // console.log("sentMessages", indexInfo, sentMessages);
+    await updateDataMessages(sentMessages);
     
     // console.log("Sent:", sentMsgNum, sentMessages);
     appInfo.sent.messages = sentMessages;
@@ -369,9 +455,9 @@ function messageItemToHtml(type, msg) {
         itemHtml += `<br /><b>To:</b> ${msg.to}`;
     }
     itemHtml += `<br /><b>Time:</b> ${(new Date(msg.timestamp/10**6)).toLocaleString()}`;
-    itemHtml += `<br /><b>Title:</b> ${msg.title}`;
+    itemHtml += `<br /><b>Title:</b> ${msg.msgData.title}`;
     itemHtml += `<br /><b>Content:</b>`;
-    itemHtml += `<div style="padding:5px">${standardHtmlData(msg.content)}</div>`;
+    itemHtml += `<div style="padding:5px">${standardHtmlData(msg.msgData.content)}</div>`;
     return itemHtml;
 }
 
@@ -467,13 +553,13 @@ async function updateComposeUI(action, msgType, msgIndex) {
     if (action=="reply") {
         document.querySelector('#bodyTitle').innerText = "Reply the message";
         document.querySelector('input#toAccount').value = (msgType=="inbox"?msgItem.from:msgItem.to);
-        document.querySelector('input#title').value = "Re: " + msgItem.title;
+        document.querySelector('input#title').value = "Re: " + msgItem.msgData.title;
         document.querySelector('#originMessage').style.display = "block";
         document.querySelector('#originMessageContent').innerHTML = messageItemToHtml(msgType, msgItem);
     } else if (action=="forward") {
         document.querySelector('#bodyTitle').innerText = "Forward the message";
         document.querySelector('input#toAccount').value =  "";
-        document.querySelector('input#title').value = "Fw: " + msgItem.title;
+        document.querySelector('input#title').value = "Fw: " + msgItem.msgData.title;
         document.querySelector('#originMessage').style.display = "block";
         document.querySelector('#originMessageContent').innerHTML = messageItemToHtml(msgType, msgItem);
     } else {
