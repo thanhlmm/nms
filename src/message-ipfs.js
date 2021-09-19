@@ -1,5 +1,6 @@
 const IPFS = require('ipfs');
 const zlib = require('zlib');
+const aes256 = require('aes256');
 
 let ipfsNode = null;
 let isSupportZip = true;
@@ -39,22 +40,28 @@ async function decompressData(buffer) {
     return (await promise);
 }
 
-async function encodeMsgData(msgData) {
+async function encodeMsgData(msgData, aesKey) {
     let buffer = Buffer.from(JSON.stringify(msgData), 'utf8');
+    if (aesKey) {
+        buffer = aes256.encrypt(aesKey, buffer);
+    }
     if (isSupportZip) {
         buffer = await compressData(buffer);
     }
     return buffer;
 }
 
-async function decodeMsgData(buffer) {
+async function decodeMsgData(buffer, aesKey) {
     if (isSupportZip) {
         buffer = await decompressData(buffer);
+    }
+    if (aesKey) {
+        buffer = aes256.decrypt(aesKey, buffer);
     }
     return JSON.parse(buffer.toString("utf8"));
 }
 
-export async function storeMesageData(msgData) {
+async function storeMesageData(msgData, aesKey) {
     let ret = {
         success: false,
         message: null,
@@ -62,7 +69,7 @@ export async function storeMesageData(msgData) {
     };
     try {
         // Encode data
-        let buffer = await encodeMsgData(message);
+        let buffer = await encodeMsgData(msgData, aesKey);
 
         // Store data on IPFS
         let node = await getIpfsNode();
@@ -80,8 +87,9 @@ export async function storeMesageData(msgData) {
     }
     return ret;
 }
+exports.storeMesageData = storeMesageData;
 
-export async function getMesageData(cid) {
+async function getMesageData(cid, aesKey) {
     let ret = {
         success: false,
         message: null,
@@ -99,7 +107,7 @@ export async function getMesageData(cid) {
 
         if (buffer) {
             // Decode data
-            let data = await decodeMsgData(buffer);
+            let data = await decodeMsgData(buffer, aesKey);
             if (data) {
                 ret.success = true;
                 ret.message = "SUCCESS";
@@ -117,3 +125,19 @@ export async function getMesageData(cid) {
     }
     return ret;
 }
+exports.getMesageData = getMesageData;
+
+async function test() {
+    let msgData = {
+        title: "Testing",
+        content: "This is only for testing...",
+        attachmentFiles: {
+            "file01.zip": "ddsgfđfsgdfgfdgdgdgdfgd",
+            "file01.zip": "sdfsdfadsfdasfsdf"
+        }
+    };
+    let aesKey = 'my passphrase';
+    // console.log("storeMesageData", await storeMesageData(msgData, aesKey));
+    console.log("getMesageData", await getMesageData("QmYwACc9paENhTqS3Rt5vEMQVN3TB3se5PHUEQuGQuCjWB", aesKey));
+}
+// test();

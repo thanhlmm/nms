@@ -1,9 +1,8 @@
-import { Context, PersistentVector, ContractPromiseBatch } from 'near-sdk-as'
+import { Context, PersistentVector, ContractPromiseBatch, env, u128 } from 'near-sdk-as'
 import { Message, StaticsInfo, messages, staticsInfos, sentInfos, inboxInfos } from './model';
 
 const STATICS_KEY = "statics";
-const NEAR_DECIMAL = 24
-const ONE_YOCTO_NEAR = 1;
+const NEAR_FEE = u128.from("1000000000000000000000");
 
 // Get StaticsInfo, auto created if not existed in the Map
 function getStaticsInfo(): StaticsInfo {
@@ -120,17 +119,23 @@ export function getInboxMessages(accountId: string, fromIndex: i32, toIndex: i32
  * @param title Title of message
  * @param content Content of message
  */
-export function sendMessage(to: string, title: string, content: string, prevMsgId: i32, link: string): boolean {
+export function sendMessage(to: string, dataId: string, sKey: string, rKey: string, baseSite: string, prevMsgId: i32): boolean {
+    // Checking input
+    if (env.isValidAccountID(to)) {
+        return false;
+    }
+    let attachedDeposit = Context.attachedDeposit;
+    if (u128.lt(attachedDeposit, NEAR_FEE)) {
+        return false;
+    }
+
+    // Get static info
     let staticsInfo = getStaticsInfo();
 
     // Store new message into blockchain
     let accountId = Context.sender;
-    if (accountId==to) {
-        // Don't allow sender to yourself
-        return false;
-    }
     let msgId = messages.length + 1;
-    let msg = new Message(msgId, accountId, to, title, content, prevMsgId, link);
+    let msg = new Message(msgId, accountId, to, dataId, sKey, rKey, baseSite, prevMsgId);
     let index = messages.push(msg);
     staticsInfo.messageNum = messages.length;
 
@@ -162,10 +167,9 @@ export function sendMessage(to: string, title: string, content: string, prevMsgI
     staticsInfos.set(STATICS_KEY, staticsInfo);
 
     // Send NEAR to receiver
-    let attachedDeposit = Context.attachedDeposit;
-    if (!attachedDeposit.isZero()) {
-        ContractPromiseBatch.create(to).transfer(attachedDeposit);
-    }
+    // if (!attachedDeposit.isZero()) {
+    //     ContractPromiseBatch.create(to).transfer(attachedDeposit);
+    // }
 
     return true;
 }

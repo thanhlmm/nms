@@ -16,10 +16,11 @@ test('Send Message', async () => {
     console.log("fromAccount:", fromAccount);
     await window.contract.sendMessage({
         to: toAccount,
-        title: 'Testing',
-        content: "Only for testing",
+        dataId: 'QmcT7Jwz5Ckt7dfnMdcNsvRiYEf3H5xn8No5JkqoKPP3uy',
+        sKey: "",
+        rKey: "",
         prevMsgId: 0,
-        link: 'https://nms.kiemtienonline360.com'
+        baseSite: 'https://nms.kiemtienonline360.com'
     });
     console.log(`sentMsgNum of ${fromAccount}: ${await window.contract.getSentMsgNum({accountId: fromAccount})}`);
     console.log(`inboxMsgNum of ${toAccount}: ${await window.contract.getInboxMsgNum({accountId: toAccount})}`);
