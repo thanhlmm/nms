@@ -64,6 +64,7 @@ document.querySelector('form').onsubmit = async (event) => {
 
     // get elements from the form using their id attribute
     const { toAccount, title, content } = event.target.elements
+    let attachedNear = document.querySelector('input[name="attachedNear"]:checked').value;
 
     // Check input
     if (title.value==null || title.value.length<=0) {
@@ -95,7 +96,7 @@ document.querySelector('form').onsubmit = async (event) => {
     let ret = false;
     try {
         // Send message
-        ret = await sendMessage(toAccount.value, title.value, content.value, originMsgId);
+        ret = await sendMessage(toAccount.value, title.value, content.value, attachedNear, originMsgId);
     } catch(ex) {
         console.log("ERROR", ex);
     }
@@ -248,7 +249,7 @@ function getSiteLink() {
 }
 
 // Send new message
-async function sendMessage(toAccount, title, content, originMsgId=0) {
+async function sendMessage(toAccount, title, content, attachedNear, originMsgId=0) {
     let ret = false;
     let msgData = {
         title: title,
@@ -259,7 +260,7 @@ async function sendMessage(toAccount, title, content, originMsgId=0) {
     try {
         let resp = await mesageIpfs.storeMesageData(msgData);
         if (resp && resp.success) {
-            if (APP_FEE) {
+            if (attachedNear) {
                 ret = await contract.sendMessage({
                     to: toAccount,
                     dataId: resp.cid,
@@ -267,7 +268,7 @@ async function sendMessage(toAccount, title, content, originMsgId=0) {
                     rKey: "",
                     baseSite: getSiteLink(),
                     prevMsgId: originMsgId,
-                }, BOATLOAD_OF_GAS, APP_FEE);
+                }, BOATLOAD_OF_GAS, attachedNear);
             } else {
                 ret = await contract.sendMessage({
                     to: toAccount,
@@ -374,7 +375,7 @@ async function updateInboxUI() {
     }
     await updateDataMessages(inboxMessages);
     
-    //console.log("Inbox:", inboxMsgNum, inboxMessages);
+    console.log("Inbox:", inboxMsgNum, inboxMessages);
     appInfo.inbox.messages = inboxMessages;
     appInfo.inbox.msgNum = inboxMsgNum;
     showInboxMessages(inboxMsgNum, inboxMessages);
@@ -405,7 +406,7 @@ async function updateSentUI() {
             toIndex: indexInfo.toIndex
         });
     }
-    // console.log("sentMessages", indexInfo, sentMessages);
+    console.log("sentMessages", indexInfo, sentMessages);
     await updateDataMessages(sentMessages);
     
     // console.log("Sent:", sentMsgNum, sentMessages);
