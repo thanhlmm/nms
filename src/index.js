@@ -1,6 +1,6 @@
 import 'regenerator-runtime/runtime'
 
-import { initContract, login, logout, isAccountExist, checkTransaction, getTransaction } from './utils';
+import { initContract, login, logout, isAccountExist, checkTransaction, getTransaction, getAvatar } from './utils';
 import mesageIpfs from './message-ipfs';
 import getConfig from './config';
 // const { networkId } = getConfig(process.env.NODE_ENV || 'development');
@@ -228,11 +228,20 @@ function signedInFlow() {
     accountLink.innerText = '@' + window.accountId
     contractLink = document.querySelector('[data-behavior=notification-error] a:nth-of-type(2)')
     contractLink.href = contractLink.href + window.contract.contractId
-    contractLink.innerText = '@' + window.contract.contractId
+    contractLink.innerText = '@' + window.contract.contractId;
+
+    // Update avatar
+    getAvatar(window.accountId, function(imageData) {
+        window.accountAvatar = imageData;
+        if (imageData) {
+            document.querySelector('#userAvatar').src = imageData;
+            
+        }
+    });
 
     // update with selected networkId
     accountLink.href = accountLink.href.replace('testnet', networkId)
-    contractLink.href = contractLink.href.replace('testnet', networkId)
+    contractLink.href = contractLink.href.replace('testnet', networkId);
 
     updateAppUI();
 

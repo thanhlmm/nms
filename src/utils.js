@@ -1,5 +1,5 @@
-import { connect, Contract, keyStores, WalletConnection, Connection } from 'near-api-js'
-import getConfig from './config'
+import { connect, Contract, keyStores, WalletConnection, Connection } from 'near-api-js';
+import getConfig from './config';
 
 // const nearConfig = getConfig(process.env.NODE_ENV || 'development');
 const nearConfig = getConfig('development');
@@ -24,7 +24,7 @@ export async function initContract() {
         viewMethods: ['getSentMsgNum', 'getSentMessages', 'getInboxMsgNum', 'getInboxMessages', "getStatics", "getMessage"],
         // Change methods can modify the state. But you don't receive the returned value when called.
         changeMethods: ['sendMessage'],
-    })
+    });
 }
 
 export function logout() {
@@ -61,4 +61,29 @@ export async function getTransaction(transHash) {
         console.error("Unable to get transaction info:", ex);
     }
     return result;
+}
+
+export function getAvatar(accountId, callback) {
+    try {
+        const data = `{
+            "contract": "alpha.neatar.testnet",
+            "method": "avatar_of",
+            "params": { "account_id": "${accountId}" },
+            "rpc_node": "https://rpc.testnet.near.org"
+        }`;
+        const url = 'https://rest.nearapi.org/view';
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', url);
+        xhr.setRequestHeader('Accept', 'application/json');
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4) {
+            callback(xhr.responseText);
+          }
+        }
+        xhr.send(data);
+    } catch (ex) {
+        console.error("Unable to get avatar", ex);
+        callback(null);
+    }
 }
