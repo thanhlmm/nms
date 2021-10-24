@@ -2,7 +2,8 @@ import { Context, PersistentVector, ContractPromiseBatch, env, u128, logging } f
 import { Message, StaticsInfo, messages, staticsInfos, sentInfos, inboxInfos } from './model';
 
 const STATICS_KEY = "statics";
-const NEAR_FEE = u128.from("1000000000000000000000");
+const NEAR_SEND_MIN = u128.from("10000000000000000000000");
+const NEAR_SEND_USER_RATE =  u128.from("85");    // 85:15
 
 // Get StaticsInfo, auto created if not existed in the Map
 function getStaticsInfo(): StaticsInfo {
@@ -126,7 +127,7 @@ export function sendMessage(to: string, dataId: string, sKey: string, rKey: stri
         return false;
     }
     let attachedDeposit = Context.attachedDeposit;
-    if (u128.lt(attachedDeposit, NEAR_FEE)) {
+    if (u128.lt(attachedDeposit, NEAR_SEND_MIN)) {
         logging.log("Attached deposit is too small!");
         return false;
     }
@@ -169,9 +170,10 @@ export function sendMessage(to: string, dataId: string, sKey: string, rKey: stri
     staticsInfos.set(STATICS_KEY, staticsInfo);
 
     // Send NEAR to receiver
-    // if (!attachedDeposit.isZero()) {
-    //     ContractPromiseBatch.create(to).transfer(attachedDeposit);
-    // }
+    if (!attachedDeposit.isZero()) {
+        let userAmount = u128.from(attachedDeposit)*NEAR_SEND_USER_RATE/u128.from(100);
+        ContractPromiseBatch.create(to).transfer(userAmount);
+    }
 
     return true;
 }
