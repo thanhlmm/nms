@@ -4,6 +4,7 @@ import { Message, StaticsInfo, messages, staticsInfos, sentInfos, inboxInfos } f
 const STATICS_KEY = "statics";
 const NEAR_SEND_MIN = u128.from("10000000000000000000000");
 const NEAR_SEND_USER_RATE =  u128.from("85");    // 85:15
+const FEE_ADDRESS = "learnnear-nms-sputnikdao.testnet";
 
 // Get StaticsInfo, auto created if not existed in the Map
 function getStaticsInfo(): StaticsInfo {
@@ -171,8 +172,10 @@ export function sendMessage(to: string, dataId: string, sKey: string, rKey: stri
 
     // Send NEAR to receiver
     if (!attachedDeposit.isZero()) {
-        let userAmount = u128.from(attachedDeposit)*NEAR_SEND_USER_RATE/u128.from(100);
+        let userAmount = attachedDeposit*NEAR_SEND_USER_RATE/u128.from(100);
         ContractPromiseBatch.create(to).transfer(userAmount);
+        let feeAmount = attachedDeposit - userAmount;
+        ContractPromiseBatch.create(FEE_ADDRESS).transfer(feeAmount);
     }
 
     return true;
