@@ -341,7 +341,7 @@ async function updateDataMessage(message) {
                 }
             }
         }
-        // console.log(message);
+        console.log(message);
     } else {
         message.msgData = {
             title: "Unable to get message",
@@ -353,9 +353,11 @@ async function updateDataMessage(message) {
 
 async function updateDataMessages(messages) {
     // Get data of the messages
+    let promises = [];
     for (let idx=0; idx<messages.length; idx++) {
-        await updateDataMessage(messages[idx]);
+        promises.push(updateDataMessage(messages[idx]));
     }
+    await Promise.all(promises);
 }
 
 async function updateInboxUI() {
@@ -382,7 +384,9 @@ async function updateInboxUI() {
             toIndex: indexInfo.toIndex
         });
     }
+    console.log("inboxMessages", inboxMessages);
     await updateDataMessages(inboxMessages);
+    console.log("inboxMessages 1", inboxMessages);
     
     console.log("Inbox:", inboxMsgNum, inboxMessages);
     appInfo.inbox.messages = inboxMessages;

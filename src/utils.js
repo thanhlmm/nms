@@ -76,6 +76,7 @@ export function getAvatar(accountId, callback) {
         xhr.open('POST', url);
         xhr.setRequestHeader('Accept', 'application/json');
         xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.timeout = 60000;
         xhr.onreadystatechange = function () {
           if (xhr.readyState === 4) {
             callback(xhr.responseText);
