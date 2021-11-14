@@ -155,7 +155,6 @@ async function storeMesageData(msgData, aesKey) {
         // Store data on IPFS
         let client = await getIpfsClient();
         const result = await client.add(buffer);
-        let  = await client.add(buffer);
 
         // Output
         if (result && result.cid) {
