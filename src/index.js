@@ -1,7 +1,7 @@
 import 'regenerator-runtime/runtime'
 
-import { initContract, login, logout, isAccountExist, checkTransaction, getTransaction, getAvatar } from './utils';
-import mesageIpfs from './message-ipfs';
+import { initContract, login, logout, isAccountExist, getTransaction, getAvatar } from './utils';
+import message from './message';
 import getConfig from './config';
 // const { networkId } = getConfig(process.env.NODE_ENV || 'development');
 const { networkId } = getConfig('development');
@@ -258,38 +258,39 @@ function getSiteLink() {
 }
 
 // Send new message
-async function sendMessage(toAccount, title, content, attachedNear, originMsgId=0) {
+async function sendMessage(toAccount, title, content, attachedNear, originMsgId=0, expiredTime=0) {
     let ret = false;
-    let msgData = {
-        title: title,
-        content: content,
-        attachmentFiles: {
-        }
-    }
     try {
-        let resp = await mesageIpfs.storeMesageData(msgData);
-        if (resp && resp.success) {
+        let msg = {
+            title: title,
+            content: content,
+            attachmentFiles: {
+            }
+        };
+        let resp = await message.packMessage(msg);
+        let strExpiredTime = "" + expiredTime;
+        if (resp.code==0) {
             if (attachedNear) {
                 ret = await contract.sendMessage({
                     to: toAccount,
-                    dataId: resp.cid,
-                    sKey: "",
-                    rKey: "",
+                    title: resp.title,
+                    data: resp.data,
                     baseSite: getSiteLink(),
                     prevMsgId: originMsgId,
+                    expiredTime: strExpiredTime
                 }, BOATLOAD_OF_GAS, attachedNear);
             } else {
                 ret = await contract.sendMessage({
                     to: toAccount,
-                    dataId: resp.cid,
-                    sKey: "",
-                    rKey: "",
+                    title: resp.title,
+                    data: resp.data,
                     baseSite: getSiteLink(),
                     prevMsgId: originMsgId,
+                    expiredTime: strExpiredTime
                 });
             }
         } else {
-            console.error("Error when to store data to IPFS", resp);
+            console.error("Error when packing messsage", resp);
         }
     } catch(ex) {
         console.error("Error to send message", ex);
@@ -324,26 +325,27 @@ async function updateAppUI() {
     }
 }
 
-async function updateDataMessage(message) {
-    let msgInfo = await mesageIpfs.getMesageData(message.dataId);
-    if (msgInfo && msgInfo.success) {
-        message.msgData = msgInfo.data;
-        
-        if (message.prevMsgId>0) {
+async function updateDataMessage(msg, isLoadPreItem=false) {
+    let msgInfo = await message.depackMessage({ title: msg.title, data: msg.data });
+    if (msgInfo && msgInfo.code==0) {
+        msg.msgData = {
+            title: msgInfo.title,
+            content: msgInfo.content,
+            attachmentFiles: msgInfo.attachmentFiles
+        };
+
+        if (msg.prevMsgId>0 && isLoadPreItem) {
             let prevItem = await contract.getMessage({
-                msgId: message.prevMsgId
+                msgId: msg.prevMsgId
             });
             if (prevItem!=null) {
-                msgInfo = await mesageIpfs.getMesageData(prevItem.dataId);
-                if (msgInfo && msgInfo.success) {
-                    prevItem.msgData = msgInfo.data;
-                    message.prevMsgItem = prevItem;
-                }
+                await updateDataMessage(prevItem, false);
+                msg.prevMsgItem = prevItem;
             }
         }
-        console.log(message);
+        console.log(msg);
     } else {
-        message.msgData = {
+        msg.msgData = {
             title: "Unable to get message",
             content: "",
             attachmentFiles: {}
@@ -355,7 +357,7 @@ async function updateDataMessages(messages) {
     // Get data of the messages
     let promises = [];
     for (let idx=0; idx<messages.length; idx++) {
-        promises.push(updateDataMessage(messages[idx]));
+        promises.push(updateDataMessage(messages[idx], true));
     }
     await Promise.all(promises);
 }

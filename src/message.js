@@ -1,13 +1,15 @@
 const IpfsClient = require('ipfs-http-client');
-const zlib = require('zlib');
 const aes256 = require('aes256');
 const axios = require('axios').default;
 axios.defaults.adapter = require('axios/lib/adapters/http');
 const stream = require('stream');
 
 // Variables
+const clientConfig = {
+    aesKey: "fc2f83976ad1342659c989ff91bc09d4efb891fd877e77fa03f61006467cff0e",         // SHA256("near-message-service")
+    isSupportIpfs: false,
+}
 let ipfsClient = null;
-let isSupportZip = true;
 
 async function getIpfsClient() {
     if (ipfsClient == null) {
@@ -93,43 +95,29 @@ async function getIpfsData3(cid) {
     return (await promise);
 }
 
-async function compressData(buffer) {
-    let promise = new Promise(function(resolve, reject) {
-        zlib.deflate(buffer, function(error, result) {
-            if (error) {
-                console.error(error);
-                resolve(null);
-                return;
-            }
-            resolve(result);
-        });
-    });
-    return (await promise);
+function encodeMsgTitle(msgTitle) {
+    let buffer = Buffer.from(msgTitle, 'utf8');
+    buffer = aes256.encrypt(clientConfig.aesKey, buffer);
+    return buffer.toString('hex');
 }
 
-async function decompressData(buffer) {
-    let promise = new Promise(function(resolve, reject) {
-        zlib.inflate(buffer, function(error, result) {
-            if (error) {
-                console.error(error);
-                resolve(null);
-                return;
-            }
-            resolve(result);
-        });
-    });
-    return (await promise);
+function decodeMsgTitle(hexaTitle) {
+    if (!hexaTitle) return "";
+    let buffer = Buffer.from(hexaTitle, "hex");
+    buffer = aes256.decrypt(clientConfig.aesKey, buffer);
+    return buffer.toString('utf8');
 }
 
-async function encodeMsgData(msgData, aesKey) {
-    let buffer = Buffer.from(JSON.stringify(msgData), 'utf8');
-    if (aesKey) {
-        buffer = aes256.encrypt(aesKey, buffer);
-    }
-    if (isSupportZip) {
-        buffer = await compressData(buffer);
-    }
+function encodeMsgBody(msgBody) {
+    let buffer = Buffer.from(JSON.stringify(msgBody), 'utf8');
+    buffer = aes256.encrypt(clientConfig.aesKey, buffer);
     return buffer;
+}
+
+function decodeMsgBody(bodyBuffer) {
+    let buffer = aes256.decrypt(clientConfig.aesKey, bodyBuffer);
+    let strBody = buffer.toString("utf8");
+    return JSON.parse(strBody);
 }
 
 async function decodeMsgData(buffer, aesKey) {
@@ -141,34 +129,6 @@ async function decodeMsgData(buffer, aesKey) {
     }
     return JSON.parse(buffer.toString("utf8"));
 }
-
-async function storeMesageData(msgData, aesKey) {
-    let ret = {
-        success: false,
-        message: null,
-        cid: null
-    };
-    try {
-        // Encode data
-        let buffer = await encodeMsgData(msgData, aesKey);
-
-        // Store data on IPFS
-        let client = await getIpfsClient();
-        const result = await client.add(buffer);
-
-        // Output
-        if (result && result.cid) {
-            ret.success = true;
-            ret.message = "SUCCESS";
-            ret.cid = result.cid.toString();
-        }
-    } catch(ex) {
-        console.error("Store message on IPFS error", ex);
-        ret.message = ex.toString();
-    }
-    return ret;
-}
-exports.storeMesageData = storeMesageData;
 
 async function getMesageData(cid, aesKey) {
     let ret = {
@@ -201,18 +161,95 @@ async function getMesageData(cid, aesKey) {
 }
 exports.getMesageData = getMesageData;
 
-async function test() {
-    let msgData = {
-        title: "Testing",
-        content: "This is only for testing...",
-        attachmentFiles: {
-            "file01.zip": "filename-00001.zip",
-            "file01.pdf": "filename-00002.pdf"
-        }
+// msg: { title, content, attachmentFiles }
+// return: { code, message, title, data}
+async function packMessage(msg) {
+    let resp = {
+        code: 1,
+        message: "Unknow error"
     };
-    let aesKey = 'my passphrase';
-    // console.log("storeMesageData", await storeMesageData(msgData, aesKey));
-    // https://ipfs.io/ipfs/QmZGwtHnHP8RhsDgwotmGUMeDCo6P2jy4Syu5R5R4uut81
-    console.log("getMesageData", await getMesageData("Qmc7ADqdWWyhuKBHeP4NNuTh2A6njnEuXHDNXk3RVS5iHt", ""));
+    try {
+        // Encode title
+        resp.title = encodeMsgTitle(msg.title);
+
+        // Encode body
+        let msgBody = {
+            content: msg.content,
+            attachmentFiles: content.attachmentFiles
+        };
+        let bodyBuffer = await encodeMsgBody(msgBody);
+
+        // Check is support IPFS or not?
+        if (clientConfig.isSupportIpfs) {
+            // Support IPFS => Store body on IPFS
+            let client = await getIpfsClient();
+            const result = await client.add(bodyBuffer);
+            if (result && result.cid) {
+                resp.data = "#IPFS:" + result.cid.toString();
+                resp.code = 0;
+                resp.message = "SUCCESS";
+                
+            } else {
+                resp.message = "Unable to store data on IPFS"
+            }
+        } else {
+            // Not support IPFS
+            resp.data = "#NONE:" + bodyBuffer.toString('hex');
+            resp.code = 0;
+            resp.message = "SUCCESS";
+        }
+    } catch(ex) {
+        console.error("Error to pack message", ex);
+        resp.message = ex.toString();
+    }
+    return resp;
 }
-test();
+exports.packMessage = packMessage;
+
+// msg: { title, data }
+// return: { code, message, title, content, attachmentFiles}
+async function depackMessage(msg, isLoadFromIpfs=false) {
+    let resp = {
+        code: 1,
+        message: "Unknown error"
+    };
+    try {
+        // Decode title
+        resp.title = decodeMsgTitle(msg.title);
+
+        // Decode body
+        let data = msg.data;
+        if (data) {
+            if (data.startsWith("#EXPIRED")) {
+                msg.content = "The message has been expired!";
+            } else if (data.startsWith("#NONE")) {
+                let bodyData = data.substring(6);
+                let bodyBuffer = Buffer.from(bodyData, "hex");
+                let bodyInfo = decodeMsgBody(bodyBuffer);
+                console.log("bodyInfo", bodyInfo);
+                resp.content = bodyInfo.content;
+                resp.attachmentFiles = bodyInfo.attachmentFiles;
+                resp.code = 0;
+                resp.message = "SUCCESS";
+            } else if (data.startsWith("#IPFS")) {
+                if (isLoadFromIpfs) {
+                    let cid = data.substring(6);
+                }
+                resp.code = 0;
+                resp.message = "SUCCESS";
+
+            } else {
+                resp.message = "Message is invalid format!!!";
+            }
+        } else {
+            resp.content = "";
+            resp.code = 0;
+            resp.message = "SUCCESS";
+        }
+    } catch(ex) {
+        console.error("Error to depack message", ex);
+        resp.message = ex.toString();
+    }
+    return resp;
+}
+exports.depackMessage = depackMessage;

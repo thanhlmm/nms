@@ -16,9 +16,8 @@ test('Send Message', async () => {
     console.log("fromAccount:", fromAccount);
     let ret = await window.contract.sendMessage({
         to: toAccount,
-        dataId: 'QmcT7Jwz5Ckt7dfnMdcNsvRiYEf3H5xn8No5JkqoKPP3uy',
-        sKey: "",
-        rKey: "",
+        title: "Test",
+        data: 'QmcT7Jwz5Ckt7dfnMdcNsvRiYEf3H5xn8No5JkqoKPP3uy',
         prevMsgId: 0,
         baseSite: 'https://nms.kiemtienonline360.com'
     });

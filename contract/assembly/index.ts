@@ -3,8 +3,6 @@ import { Message, StaticsInfo, messages, staticsInfos, sentInfos, inboxInfos } f
 
 const STATICS_KEY = "statics";
 const NEAR_SEND_MIN = u128.from("10000000000000000000000");
-const NEAR_SEND_USER_RATE =  u128.from("85");    // 85:15
-const FEE_ADDRESS = "learnnear-nms-sputnikdao.testnet";
 
 // Get StaticsInfo, auto created if not existed in the Map
 function getStaticsInfo(): StaticsInfo {
@@ -49,8 +47,14 @@ export function getSentMessages(accountId: string, fromIndex: i32, toIndex: i32)
     if (numMsg>0) itemNum = toIndex - fromIndex + 1;
     let results = new Array<Message>(itemNum);
     if (numMsg>0 && sentMsgIndexes!=null) {
+        let now = env.block_timestamp();
         for (let idx=fromIndex; idx<=toIndex; idx++) {
-            results[idx-fromIndex] = messages[sentMsgIndexes[idx]];
+            let item = messages[sentMsgIndexes[idx]];
+            if (item.expiredTime>0 && item.expiredTime<now) {
+                // Message exprired
+                item = new Message(item.id, item.from, item.to, item.title, "#EXPIRED", item.baseSite, item.prevMsgId, item.expiredTime);
+            }
+            results[idx-fromIndex] = item;
         }
     }
     return results;
@@ -90,8 +94,14 @@ export function getInboxMessages(accountId: string, fromIndex: i32, toIndex: i32
     if (numMsg>0) itemNum = toIndex - fromIndex + 1;
     let results = new Array<Message>(itemNum);
     if (numMsg>0 && inboxMsgIndexes!=null) {
+        let now = env.block_timestamp();
         for (let idx=fromIndex; idx<=toIndex; idx++) {
-            results[idx-fromIndex] = messages[inboxMsgIndexes[idx]];
+            let item = messages[inboxMsgIndexes[idx]];
+            if (item.expiredTime>0 && item.expiredTime<now) {
+                // Message exprired
+                item = new Message(item.id, item.from, item.to, item.title, "#EXPIRED", item.baseSite, item.prevMsgId, item.expiredTime);
+            }
+            results[idx-fromIndex] = item;
         }
     }
     return results;
@@ -121,7 +131,7 @@ export function getInboxMessages(accountId: string, fromIndex: i32, toIndex: i32
  * @param title Title of message
  * @param content Content of message
  */
-export function sendMessage(to: string, dataId: string, sKey: string, rKey: string, baseSite: string, prevMsgId: i32): boolean {
+export function sendMessage(to: string, title: string, data: string, baseSite: string, prevMsgId: i32, expiredTime: u64): boolean {
     // Checking input
     if (!env.isValidAccountID(to)) {
         logging.log("To account is invalid!");
@@ -139,7 +149,7 @@ export function sendMessage(to: string, dataId: string, sKey: string, rKey: stri
     // Store new message into blockchain
     let accountId = Context.sender;
     let msgId = messages.length + 1;
-    let msg = new Message(msgId, accountId, to, dataId, sKey, rKey, baseSite, prevMsgId);
+    let msg = new Message(msgId, accountId, to, title, data, baseSite, prevMsgId, expiredTime);
     let index = messages.push(msg);
     staticsInfo.messageNum = messages.length;
 
@@ -172,10 +182,10 @@ export function sendMessage(to: string, dataId: string, sKey: string, rKey: stri
 
     // Send NEAR to receiver
     if (!attachedDeposit.isZero()) {
-        let userAmount = attachedDeposit*NEAR_SEND_USER_RATE/u128.from(100);
+        let userAmount = attachedDeposit*staticsInfo.userRate/u128.from(1000);
         ContractPromiseBatch.create(to).transfer(userAmount);
         let feeAmount = attachedDeposit - userAmount;
-        ContractPromiseBatch.create(FEE_ADDRESS).transfer(feeAmount);
+        ContractPromiseBatch.create(staticsInfo.feeAddress).transfer(feeAmount);
     }
 
     return true;
