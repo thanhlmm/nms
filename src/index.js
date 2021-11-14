@@ -1,11 +1,12 @@
 import 'regenerator-runtime/runtime'
 
-import { initContract, login, logout, isAccountExist } from './utils';
-
+import { initContract, login, logout, isAccountExist, getTransaction, getAvatar } from './utils';
+import message from './message';
 import getConfig from './config';
 // const { networkId } = getConfig(process.env.NODE_ENV || 'development');
 const { networkId } = getConfig('development');
-let isSendNear = false;
+
+let APP_FEE = "1000000000000000000000";
 const ONE_YOCTO_NEAR = 1;
 const BOATLOAD_OF_GAS = (60*10**12).toFixed();
 
@@ -56,11 +57,14 @@ window.forwardMessage = function(type, msgIndex) {
     updateComposeUI("forward", type, msgIndex);
 }
 
+let initTransHash = findGetParameter("transactionHashes");
+
 document.querySelector('form').onsubmit = async (event) => {
     event.preventDefault()
 
     // get elements from the form using their id attribute
     const { toAccount, title, content } = event.target.elements
+    let attachedNear = document.querySelector('input[name="attachedNear"]:checked').value;
 
     // Check input
     if (title.value==null || title.value.length<=0) {
@@ -89,35 +93,15 @@ document.querySelector('form').onsubmit = async (event) => {
     // disable the save button, since it now matches the persisted value
     submitButton.disabled = true
 
+    let ret = false;
     try {
         // Send message
-        await sendMessage(toAccount.value, title.value, content.value, originMsgId);
-        
-        // Reset message box if sucess
-        resetNewMsgBox();
-        
-        // Show sucess notification
-        document.querySelector('[data-behavior=notification]').style.display = 'block';
-        
-        // Remove notification again after css animation completes
-        setTimeout(() => {
-            document.querySelector('[data-behavior=notification]').style.display = 'none';
-        }, 11000);
-
-        // Update the messages in the UI
-        await updateAppUI();
+        ret = await sendMessage(toAccount.value, title.value, content.value, attachedNear, originMsgId);
     } catch(ex) {
         console.log("ERROR", ex);
-        submitButton.disabled = false;
-        
-        // Show error notification
-        document.querySelector('[data-behavior=notification-error]').style.display = 'block';
-        
-        // Remove notification again after css animation completes
-        setTimeout(() => {
-            document.querySelector('[data-behavior=notification-error]').style.display = 'none';
-        }, 11000);
     }
+
+    await showNotificationByResult(ret);
 }
 
 // Listen for user input events
@@ -163,6 +147,59 @@ function updateWidthForDivColumn2() {
     obj.style.width = (width - 230 - 20) + "px";
 }
 
+function findGetParameter(parameterName) {
+    var result = null,
+        tmp = [];
+    location.search
+        .substr(1)
+        .split("&")
+        .forEach(function (item) {
+          tmp = item.split("=");
+          if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+        });
+    return result;
+}
+
+async function showNotificationByTransHash(transHash) {
+    let result = await getTransaction(transHash);
+    let ret = false;
+    if (result && result.status && result.status.SuccessValue) {
+        let returnValue = (new Buffer.from(result.status.SuccessValue, "base64")).toString();
+        if (returnValue=="true" || returnValue=="TRUE") {
+            ret = true;
+        }
+    }
+    await showNotificationByResult(ret);
+}
+
+async function showNotificationByResult(isSuccess) {
+    if (isSuccess) {
+        // Reset message box if sucess
+        resetNewMsgBox();
+                
+        // Show sucess notification
+        document.querySelector('[data-behavior=notification]').style.display = 'block';
+
+        // Remove notification again after css animation completes
+        setTimeout(() => {
+            document.querySelector('[data-behavior=notification]').style.display = 'none';
+        }, 11000);
+
+        // Update the messages in the UI
+        await updateAppUI();
+    } else {
+        submitButton.disabled = false;
+        
+        // Show error notification
+        document.querySelector('[data-behavior=notification-error]').style.display = 'block';
+        
+        // Remove notification again after css animation completes
+        setTimeout(() => {
+            document.querySelector('[data-behavior=notification-error]').style.display = 'none';
+        }, 11000);
+    }
+}
+
 // Display the signed-out-flow container
 function signedOutFlow() {
     document.querySelector('#signed-out-flow').style.display = 'block';
@@ -191,13 +228,28 @@ function signedInFlow() {
     accountLink.innerText = '@' + window.accountId
     contractLink = document.querySelector('[data-behavior=notification-error] a:nth-of-type(2)')
     contractLink.href = contractLink.href + window.contract.contractId
-    contractLink.innerText = '@' + window.contract.contractId
+    contractLink.innerText = '@' + window.contract.contractId;
+
+    // Update avatar
+    getAvatar(window.accountId, function(imageData) {
+        window.accountAvatar = imageData;
+        if (imageData) {
+            document.querySelector('#userAvatar').src = imageData;
+            
+        }
+    });
 
     // update with selected networkId
     accountLink.href = accountLink.href.replace('testnet', networkId)
-    contractLink.href = contractLink.href.replace('testnet', networkId)
+    contractLink.href = contractLink.href.replace('testnet', networkId);
 
     updateAppUI();
+
+    if (initTransHash) {
+        showNotificationByTransHash(initTransHash).then(function() {
+            initTransHash = null;
+        });
+    }
 }
 
 function getSiteLink() {
@@ -206,24 +258,45 @@ function getSiteLink() {
 }
 
 // Send new message
-async function sendMessage(toAccount, title, content, originMsgId=0) {
-    if (isSendNear) {
-        return await contract.sendMessage({
-            to: toAccount,
+async function sendMessage(toAccount, title, content, attachedNear, originMsgId=0, expiredTime=0) {
+    let ret = false;
+    try {
+        let msg = {
             title: title,
             content: content,
-            prevMsgId: originMsgId,
-            link: getSiteLink()
-        }, BOATLOAD_OF_GAS, ONE_YOCTO_NEAR);
-    } else {
-        return await contract.sendMessage({
-            to: toAccount,
-            title: title,
-            content: content,
-            prevMsgId: originMsgId,
-            link: getSiteLink()
-        });
+            attachmentFiles: {
+            }
+        };
+        let resp = await message.packMessage(msg);
+        let strExpiredTime = "" + expiredTime;
+        if (resp.code==0) {
+            if (attachedNear) {
+                ret = await contract.sendMessage({
+                    to: toAccount,
+                    title: resp.title,
+                    data: resp.data,
+                    baseSite: getSiteLink(),
+                    prevMsgId: originMsgId,
+                    expiredTime: strExpiredTime
+                }, BOATLOAD_OF_GAS, attachedNear);
+            } else {
+                ret = await contract.sendMessage({
+                    to: toAccount,
+                    title: resp.title,
+                    data: resp.data,
+                    baseSite: getSiteLink(),
+                    prevMsgId: originMsgId,
+                    expiredTime: strExpiredTime
+                });
+            }
+        } else {
+            console.error("Error when packing messsage", resp);
+        }
+    } catch(ex) {
+        console.error("Error to send message", ex);
     }
+    
+    return ret;
 }
 
 function getIndexInfo(messageNum, currentPage, itemPerPage) {
@@ -252,15 +325,41 @@ async function updateAppUI() {
     }
 }
 
-async function updatePreviousMessages(messages) {
-    for (let idx=0; idx<messages.length; idx++) {
-        if (messages[idx].prevMsgId>0) {
-            messages[idx].prevMsgItem = await contract.getMessage({
-                msgId: messages[idx].prevMsgId
+async function updateDataMessage(msg, isLoadPreItem=false) {
+    let msgInfo = await message.depackMessage({ title: msg.title, data: msg.data });
+    if (msgInfo && msgInfo.code==0) {
+        msg.msgData = {
+            title: msgInfo.title,
+            content: msgInfo.content,
+            attachmentFiles: msgInfo.attachmentFiles
+        };
+
+        if (msg.prevMsgId>0 && isLoadPreItem) {
+            let prevItem = await contract.getMessage({
+                msgId: msg.prevMsgId
             });
+            if (prevItem!=null) {
+                await updateDataMessage(prevItem, false);
+                msg.prevMsgItem = prevItem;
+            }
         }
-        console.log(messages[idx]);
+        console.log(msg);
+    } else {
+        msg.msgData = {
+            title: "Unable to get message",
+            content: "",
+            attachmentFiles: {}
+        };
     }
+}
+
+async function updateDataMessages(messages) {
+    // Get data of the messages
+    let promises = [];
+    for (let idx=0; idx<messages.length; idx++) {
+        promises.push(updateDataMessage(messages[idx], true));
+    }
+    await Promise.all(promises);
 }
 
 async function updateInboxUI() {
@@ -287,9 +386,11 @@ async function updateInboxUI() {
             toIndex: indexInfo.toIndex
         });
     }
-    await updatePreviousMessages(inboxMessages);
+    console.log("inboxMessages", inboxMessages);
+    await updateDataMessages(inboxMessages);
+    console.log("inboxMessages 1", inboxMessages);
     
-    //console.log("Inbox:", inboxMsgNum, inboxMessages);
+    console.log("Inbox:", inboxMsgNum, inboxMessages);
     appInfo.inbox.messages = inboxMessages;
     appInfo.inbox.msgNum = inboxMsgNum;
     showInboxMessages(inboxMsgNum, inboxMessages);
@@ -320,7 +421,8 @@ async function updateSentUI() {
             toIndex: indexInfo.toIndex
         });
     }
-    await updatePreviousMessages(sentMessages);
+    console.log("sentMessages", indexInfo, sentMessages);
+    await updateDataMessages(sentMessages);
     
     // console.log("Sent:", sentMsgNum, sentMessages);
     appInfo.sent.messages = sentMessages;
@@ -369,9 +471,9 @@ function messageItemToHtml(type, msg) {
         itemHtml += `<br /><b>To:</b> ${msg.to}`;
     }
     itemHtml += `<br /><b>Time:</b> ${(new Date(msg.timestamp/10**6)).toLocaleString()}`;
-    itemHtml += `<br /><b>Title:</b> ${msg.title}`;
+    itemHtml += `<br /><b>Title:</b> ${msg.msgData.title}`;
     itemHtml += `<br /><b>Content:</b>`;
-    itemHtml += `<div style="padding:5px">${standardHtmlData(msg.content)}</div>`;
+    itemHtml += `<div style="padding:5px">${standardHtmlData(msg.msgData.content)}</div>`;
     return itemHtml;
 }
 
@@ -467,13 +569,13 @@ async function updateComposeUI(action, msgType, msgIndex) {
     if (action=="reply") {
         document.querySelector('#bodyTitle').innerText = "Reply the message";
         document.querySelector('input#toAccount').value = (msgType=="inbox"?msgItem.from:msgItem.to);
-        document.querySelector('input#title').value = "Re: " + msgItem.title;
+        document.querySelector('input#title').value = "Re: " + msgItem.msgData.title;
         document.querySelector('#originMessage').style.display = "block";
         document.querySelector('#originMessageContent').innerHTML = messageItemToHtml(msgType, msgItem);
     } else if (action=="forward") {
         document.querySelector('#bodyTitle').innerText = "Forward the message";
         document.querySelector('input#toAccount').value =  "";
-        document.querySelector('input#title').value = "Fw: " + msgItem.title;
+        document.querySelector('input#title').value = "Fw: " + msgItem.msgData.title;
         document.querySelector('#originMessage').style.display = "block";
         document.querySelector('#originMessageContent').innerHTML = messageItemToHtml(msgType, msgItem);
     } else {

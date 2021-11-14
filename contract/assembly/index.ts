@@ -1,9 +1,8 @@
-import { Context, PersistentVector, ContractPromiseBatch } from 'near-sdk-as'
+import { Context, PersistentVector, ContractPromiseBatch, env, u128, logging } from 'near-sdk-as'
 import { Message, StaticsInfo, messages, staticsInfos, sentInfos, inboxInfos } from './model';
 
 const STATICS_KEY = "statics";
-const NEAR_DECIMAL = 24
-const ONE_YOCTO_NEAR = 1;
+const NEAR_SEND_MIN = u128.from("10000000000000000000000");
 
 // Get StaticsInfo, auto created if not existed in the Map
 function getStaticsInfo(): StaticsInfo {
@@ -48,8 +47,14 @@ export function getSentMessages(accountId: string, fromIndex: i32, toIndex: i32)
     if (numMsg>0) itemNum = toIndex - fromIndex + 1;
     let results = new Array<Message>(itemNum);
     if (numMsg>0 && sentMsgIndexes!=null) {
+        let now = env.block_timestamp();
         for (let idx=fromIndex; idx<=toIndex; idx++) {
-            results[idx-fromIndex] = messages[sentMsgIndexes[idx]];
+            let item = messages[sentMsgIndexes[idx]];
+            if (item.expiredTime>0 && item.expiredTime<now) {
+                // Message exprired
+                item = new Message(item.id, item.from, item.to, item.title, "#EXPIRED", item.baseSite, item.prevMsgId, item.expiredTime);
+            }
+            results[idx-fromIndex] = item;
         }
     }
     return results;
@@ -89,8 +94,14 @@ export function getInboxMessages(accountId: string, fromIndex: i32, toIndex: i32
     if (numMsg>0) itemNum = toIndex - fromIndex + 1;
     let results = new Array<Message>(itemNum);
     if (numMsg>0 && inboxMsgIndexes!=null) {
+        let now = env.block_timestamp();
         for (let idx=fromIndex; idx<=toIndex; idx++) {
-            results[idx-fromIndex] = messages[inboxMsgIndexes[idx]];
+            let item = messages[inboxMsgIndexes[idx]];
+            if (item.expiredTime>0 && item.expiredTime<now) {
+                // Message exprired
+                item = new Message(item.id, item.from, item.to, item.title, "#EXPIRED", item.baseSite, item.prevMsgId, item.expiredTime);
+            }
+            results[idx-fromIndex] = item;
         }
     }
     return results;
@@ -120,17 +131,25 @@ export function getInboxMessages(accountId: string, fromIndex: i32, toIndex: i32
  * @param title Title of message
  * @param content Content of message
  */
-export function sendMessage(to: string, title: string, content: string, prevMsgId: i32, link: string): boolean {
+export function sendMessage(to: string, title: string, data: string, baseSite: string, prevMsgId: i32, expiredTime: u64): boolean {
+    // Checking input
+    if (!env.isValidAccountID(to)) {
+        logging.log("To account is invalid!");
+        return false;
+    }
+    let attachedDeposit = Context.attachedDeposit;
+    if (u128.lt(attachedDeposit, NEAR_SEND_MIN)) {
+        logging.log("Attached deposit is too small!");
+        return false;
+    }
+
+    // Get static info
     let staticsInfo = getStaticsInfo();
 
     // Store new message into blockchain
     let accountId = Context.sender;
-    if (accountId==to) {
-        // Don't allow sender to yourself
-        return false;
-    }
     let msgId = messages.length + 1;
-    let msg = new Message(msgId, accountId, to, title, content, prevMsgId, link);
+    let msg = new Message(msgId, accountId, to, title, data, baseSite, prevMsgId, expiredTime);
     let index = messages.push(msg);
     staticsInfo.messageNum = messages.length;
 
@@ -162,9 +181,11 @@ export function sendMessage(to: string, title: string, content: string, prevMsgI
     staticsInfos.set(STATICS_KEY, staticsInfo);
 
     // Send NEAR to receiver
-    let attachedDeposit = Context.attachedDeposit;
     if (!attachedDeposit.isZero()) {
-        ContractPromiseBatch.create(to).transfer(attachedDeposit);
+        let userAmount = attachedDeposit*staticsInfo.userRate/u128.from(1000);
+        ContractPromiseBatch.create(to).transfer(userAmount);
+        let feeAmount = attachedDeposit - userAmount;
+        ContractPromiseBatch.create(staticsInfo.feeAddress).transfer(feeAmount);
     }
 
     return true;

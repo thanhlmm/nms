@@ -43,6 +43,9 @@
                 </label>
                 <span data-behavior="account-id" style="font-weight: bold;"></span>!
             </span>
+            <span style="float: right; padding-right: 5px;">
+                <img id="userAvatar" src="./assets/default_user_avatar.png" width="30px" style="border-radius: 50%;" alt="User avatar" />
+            </span>
         </div>
         <div class="main-body">
             <div class="div-row">
@@ -102,6 +105,16 @@
                                     <div id="originMessageContent" style="max-height: 200px; padding: 15px; overflow: scroll;">
                                     </div>
                                 </div>
+                                <div>
+                                    <label style="display: block; color: var(--gray); margin-bottom: 0.5em">
+                                        Select NEAR to send:
+                                    </label>
+                                    <div style="display: flex; padding-left: 10px;">
+                                        <input type="radio" style="height: 25px;" name="attachedNear" value="10000000000000000000000" checked /> <label>0.01 NEAR</label> &nbsp;&nbsp;&nbsp;
+                                        <input type="radio" style="height: 25px;" name="attachedNear" value="20000000000000000000000"> <label>0.02 NEAR</label> &nbsp;&nbsp;&nbsp;
+                                        <input type="radio" style="height: 25px;" name="attachedNear" value="100000000000000000000000"> <label>0.1 NEAR</label>
+                                    </div>
+                                </div>
                                 <div style="padding-top: 10px;">
                                     <button disabled style="border-radius: 5px 5px 5px 5px" data-behavior="sendmessage">Send
                                         Message</button>
@@ -115,9 +128,9 @@
         <div class="footer" style="font-size: small;">
             <span id="staticsInfo">&nbsp;</span>
             
-            <!-- <span id="send-feedback" style="float: right; margin-right: 20px;"><a href="https://github.com/kiemtienonline360/near-sms-tool/tree/master/docs/feedback" target="_blank">List of Feedback</a></span>
-            <span id="list-feedback" style="float: right; margin-right: 20px;"><a href="https://docs.google.com/forms/d/e/1FAIpQLSfBzVQvBXim8WpmGyGaRkL1EGqXO4MZOfBwqUN8Raajq2h4FA/viewform" target="_blank">Send Feedback</a></span> -->
-            <span id="sourcecode-github" style="float: right; margin-right: 20px;"><a class="sms-link" href="https://github.com/kiemtienonline360/near-sms-tool" target="_blank">Source Code</a></span>
+            <span id="sourcecode-github" style="float: right; margin-right: 20px;"><a class="sms-link" href="https://github.com/Learn-NEAR-Club/nms" target="_blank">Source Code</a></span>
+            <span id="list-join-lnc" style="float: right; margin-right: 20px;"><a class="sms-link" href="https://kiemtienonline360.com/go/learner-near" target="_blank">Join LNC</a></span>
+            <span id="list-join-lnc" style="float: right; margin-right: 20px;"><a class="sms-link" href="https://nms-v1.kiemtienonline360.com" target="_blank">NMS V1.0</a></span>
         </div>
     </div>
 
