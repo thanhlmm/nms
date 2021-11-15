@@ -193,8 +193,8 @@ async function packMessage(msg) {
                 resp.message = "Unable to store data on IPFS"
             }
         } else {
-            // Not support IPFS
-            resp.data = "#NONE:" + bodyBuffer.toString('hex');
+            // Support direct
+            resp.data = "#DIRECT:" + bodyBuffer.toString('hex');
             resp.code = 0;
             resp.message = "SUCCESS";
         }
@@ -222,8 +222,8 @@ async function depackMessage(msg, isLoadFromIpfs=false) {
         if (data) {
             if (data.startsWith("#EXPIRED")) {
                 msg.content = "The message has been expired!";
-            } else if (data.startsWith("#NONE")) {
-                let bodyData = data.substring(6);
+            } else if (data.startsWith("#DIRECT")) {
+                let bodyData = data.substring(8);
                 let bodyBuffer = Buffer.from(bodyData, "hex");
                 let bodyInfo = decodeMsgBody(bodyBuffer);
                 console.log("bodyInfo", bodyInfo);
