@@ -2,9 +2,8 @@ import { connect, Contract, keyStores, WalletConnection } from 'near-api-js'
 import getConfig from './config'
 import Big from 'big.js';
 
-const nearConfig = getConfig(process.env.NODE_ENV || 'development')
-
-console.log(nearConfig)
+//const nearConfig = getConfig(process.env.NODE_ENV || 'development')
+const nearConfig = getConfig('development')
 
 export const BOATLOAD_OF_GAS = (60 * 10 ** 12).toFixed();
 export const NEAR_UNIT = 10 ** 24;
