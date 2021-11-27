@@ -1,0 +1,137 @@
+<template>
+  <div class="mail-right__sent">
+    <header class="mail-right__item-header d-flex">
+      <Avatar :accountId="from" size="60" />
+      <div class="info pl-30 flex-grow-1 d-flex justify-between">
+        <div>
+          <div class="name title-20 mb-10 f-700">{{ from }}</div>
+          <div class="to f-500">To: {{ to }}</div>
+        </div>
+        <div class="text-right">
+          <button
+            class="btn-sent cursor-pointer d-flex align-center"
+            @click="handleReply"
+          >
+            <img src="../../public/assets/images/sent.svg" />
+            <span>Sent</span>
+          </button>
+        </div>
+      </div>
+    </header>
+    <section>
+      <div class="content">
+        <div class="title title-20 f-700 mb-10">Re: {{ title }}</div>
+        <div class="description f-500 mb-10">
+          <div class="textArea-ForwardAndReply">
+            <textarea
+              placeholder="Enter the content here"
+              v-model="data"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="f-500">Select NEAR to send:</div>
+        <div class="near__value-list d-flex">
+          <div
+            class="near__value-item cursor-pointer"
+            v-bind:class="{
+              active: amount === 0.1,
+            }"
+            @click="amount = 0.1"
+          >
+            0.1 NEAR
+          </div>
+          <div
+            class="near__value-item cursor-pointer"
+            v-bind:class="{
+              active: amount === 0.2,
+            }"
+            @click="amount = 0.2"
+          >
+            0.2 NEAR
+          </div>
+          <div
+            class="near__value-item cursor-pointer"
+            v-bind:class="{
+              active: amount === 1,
+            }"
+            @click="amount = 1"
+          >
+            1 NEAR
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script>
+import { BOATLOAD_OF_GAS, tranformUnit } from "../utils";
+import message from "../message";
+import Avatar from "./Avatar";
+
+export default {
+  components: {
+    Avatar,
+  },
+  props: ["id", "title", "to", "from"],
+  data() {
+    return {
+      data: "",
+      amount: 0.1,
+    };
+  },
+  methods: {
+    async handleReply() {
+      let msgReply = {
+        title: this.title,
+        content: this.data,
+        attachmentFiles: {},
+      };
+
+      try {
+        console.log("start send", msgReply, tranformUnit(this.amount));
+        const resp = await message.packMessage(msgReply);
+
+        if (resp.code !== 0) {
+          throw new Error("Error when packing messsage" + resp);
+        }
+
+        if (this.amount) {
+          window.contract
+            .sendMessage(
+              {
+                to: this.to,
+                title: resp.title,
+                data: resp.data,
+                baseSite: window.location.origin,
+                prevMsgId: this.id,
+                expiredTime: "0",
+              },
+              BOATLOAD_OF_GAS,
+              tranformUnit(this.amount)
+            )
+            .then(console.log);
+        } else {
+          window.contract
+            .sendMessage({
+              to: this.to,
+              title: resp.title,
+              data: resp.data,
+              baseSite: window.location.origin,
+              prevMsgId: 0,
+              expiredTime: "0",
+            })
+            .then(console.log);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped></style>
