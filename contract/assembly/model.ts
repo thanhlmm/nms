@@ -42,6 +42,7 @@ export class StaticsInfo {
     accountNum: i32;
     feeAddress: string;
     userRate: u128;
+    ownerAddress: string;
 
     constructor() {
         this.messageNum = 0;
@@ -50,6 +51,7 @@ export class StaticsInfo {
         this.accountNum = 0;
         this.feeAddress = DEFAULT_FEE_ADDRESS;
         this.userRate = DEFAULT_USER_RATE;
+        this.ownerAddress = "";
     }
 }
 

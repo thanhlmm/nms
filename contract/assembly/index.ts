@@ -13,6 +13,43 @@ function getStaticsInfo(): StaticsInfo {
     return staticsInfo;
 }
 
+// Set owner of the contract
+export function setOwnerAddress(address: string): boolean {
+    let staticsInfo = getStaticsInfo();
+    if (!staticsInfo.ownerAddress) {
+        staticsInfo.ownerAddress = address;
+        staticsInfos.set(STATICS_KEY, staticsInfo);
+        return true;
+    } else if (staticsInfo.ownerAddress==Context.sender) {
+        staticsInfo.ownerAddress = address;
+        staticsInfos.set(STATICS_KEY, staticsInfo);
+        return true;
+    }
+    return false;
+}
+
+// Set fee address
+export function setFeeAddress(address: string): boolean {
+    let staticsInfo = getStaticsInfo();
+    if (staticsInfo.ownerAddress==Context.sender) {
+        staticsInfo.feeAddress = address;
+        staticsInfos.set(STATICS_KEY, staticsInfo);
+        return true;
+    }
+    return false;
+}
+
+// Set user rate
+export function setUserRate(userRate: u128): boolean {
+    let staticsInfo = getStaticsInfo();
+    if (staticsInfo.ownerAddress==Context.sender) {
+        staticsInfo.userRate = userRate;
+        staticsInfos.set(STATICS_KEY, staticsInfo);
+        return true;
+    }
+    return false;
+}
+
 /**
  * Get number of sent messages corresponding to account id.\
  * NOTE: This is a view method. Which means it should NOT modify the state.
