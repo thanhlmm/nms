@@ -1,0 +1,106 @@
+<template>
+  <div
+    class="mail-content__col mail-right"
+    :class="{ 'd-block': windowWidth <= 1024 && msgInboxId }"
+  >
+    <header class="mail-right__header">
+      <div class="mail-right__header-title f-700 mb-4 d-flex align-center">
+        <img
+          src="../../public/assets/images/logo.svg"
+          style="max-width: 29px"
+          class="is-hidden block-sm mr-sm-10"
+        />
+        Message conversation
+      </div>
+      <div class="f-500">Message conversation history.</div>
+    </header>
+    <section :class="[{ 'is-hidden': !userLogin }, 'mail-right__body']">
+      <div :class="[{ 'is-hidden': msgInboxId }, 'mail-right__no-selected']">
+        No conversations selected.
+      </div>
+
+      <div
+        :class="[
+          { 'is-hidden': !msgInboxId },
+          'mail-right__selected scrollbar',
+        ]"
+      >
+        <MessageDetail
+          v-for="dataMsg in dataMsgConversation"
+          :from="dataMsg.from"
+          :key="dataMsg.id"
+          :dataMsg="dataMsg"
+        />
+      </div>
+    </section>
+  </div>
+</template>
+
+<script>
+import MessageDetail from "./MessageDetail.vue";
+import message from "../message";
+
+export default {
+  components: {
+    MessageDetail,
+  },
+  data() {
+    return {
+      windowWidth: window.innerWidth,
+      dataMsgConversation: [],
+    };
+  },
+  created() {
+    window.addEventListener("resize", this.myEventHandler);
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.myEventHandler);
+  },
+  computed: {
+    userLogin() {
+      return this.$store.state.auth.auth.isLogin;
+    },
+    msgInboxId() {
+      return this.$store.state.messageConversation.msgInboxId;
+    },
+  },
+  watch: {
+    msgInboxId: function () {
+      this.dataMsgConversation = [];
+      this.getMessages(this.msgInboxId);
+    },
+  },
+  methods: {
+    myEventHandler() {
+      this.windowWidth = window.innerWidth;
+    },
+    getMessages(id) {
+      if (id === null) return;
+
+      const cacheMsg = window.localStorage.getItem(`msg-${id}`);
+      if (cacheMsg) {
+        this.updateDataMessage(JSON.parse(cacheMsg));
+        return;
+      }
+      window.contract.getMessage({ msgId: id }).then((data) => {
+        window.localStorage.setItem(`msg-${id}`, JSON.stringify(data));
+        this.updateDataMessage(data);
+      });
+    },
+    async updateDataMessage(msg) {
+      let msgInbox = await message.depackMessage(msg);
+      if (msgInbox.prevMsgId === 0) {
+        this.dataMsgConversation.push(msgInbox);
+      } else {
+        this.getMessages(msgInbox.prevMsgId);
+
+        let newData = [...this.dataMsgConversation];
+        newData.push(msgInbox);
+        this.dataMsgConversation = newData;
+      }
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped></style>
