@@ -11,7 +11,6 @@
       v-for="message in dataMsgSent"
       :key="message.id"
       class="mail-content__item d-flex"
-      :class="!checkUnread(message.id) ? 'unread' : ''"
       @click="handleSelectedMail(message.id)"
     >
       <Avatar :accountId="message.from" size="40" />
@@ -25,9 +24,6 @@
             <div class="title f-500">Title: {{ message.title }}</div>
           </div>
           <div class="text-right f-500">
-            <div class="status-read">
-              <span v-if="!checkUnread(message.id)">Unread</span>
-            </div>
             <div class="date-time no-wrap">{{ message.timestamp }}</div>
           </div>
         </header>
@@ -77,42 +73,6 @@ export default {
   methods: {
     handleSelectedMail(id) {
       this.$store.commit("MESSAGE_CONVERSATION", id);
-
-      this.reRender = id;
-
-      const accountIdSentLocalStorage = JSON.parse(
-        localStorage.getItem(this.accountId + " " + "sent")
-      );
-
-      if (accountIdSentLocalStorage) {
-        const selectedMailReadID = [...accountIdSentLocalStorage];
-        selectedMailReadID.push(id);
-        const removeDuplicateItem = Array.from(new Set(selectedMailReadID));
-        this.readMailId = removeDuplicateItem;
-      }
-
-      const selectedMailReadID = [...this.readMailId];
-      selectedMailReadID.push(id);
-      const removeDuplicateItem = Array.from(new Set(selectedMailReadID));
-      this.readMailId = removeDuplicateItem;
-
-      if (accountIdSentLocalStorage && accountIdSentLocalStorage.includes(id))
-        return;
-
-      localStorage.setItem(
-        this.accountId + " " + "sent",
-        JSON.stringify(this.readMailId)
-      );
-    },
-
-    checkUnread(id) {
-      const localStorageId = JSON.parse(
-        localStorage.getItem(this.accountId + " " + "sent")
-      );
-      if (localStorageId) {
-        return localStorageId.includes(id);
-      }
-      return false;
     },
 
     handleSendMessageModal() {
@@ -155,7 +115,9 @@ export default {
           return Promise.all(structEachData);
         })
         .then((res) => {
-          this.dataMsgSent = res;
+          const dataSent = [...res];
+          dataSent.reverse();
+          this.dataMsgSent = dataSent;
         });
     },
     async updateDataMessage(msg) {

@@ -30,8 +30,8 @@ const storeData = {
 
     page: 1,
 
-    inboxSearchKeyword: '',
-    sentSearchKeyword: '',
+    inboxSearchKeyword: "",
+    sentSearchKeyword: "",
   },
   mutations: {
     TOGGLE_DARK_MODE(state) {
@@ -70,18 +70,11 @@ const storeData = {
     },
 
     SET_INBOX_SEARCH(state, payload) {
-      state.inboxSearchKeyword = payload
+      state.inboxSearchKeyword = payload;
     },
     SET_SENT_SEARCH(state, payload) {
-      state.sentSearchKeyword = payload
-    }
-
-    // GET_MAIL_INBOX_ID(state, payload) {
-    //   state.mailInboxId = payload;
-    // },
-    // GET_MAIL_SENT_ID(state, payload) {
-    //   state.mailSentId = payload;
-    // },
+      state.sentSearchKeyword = payload;
+    },
   },
 };
 

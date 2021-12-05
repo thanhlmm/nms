@@ -88,13 +88,14 @@ export default {
       });
     },
     async updateDataMessage(msg) {
-      let msgInbox = await message.depackMessage(msg);
+      const msgInbox = await message.depackMessage(msg);
+
       if (msgInbox.prevMsgId === 0) {
         this.dataMsgConversation.push(msgInbox);
+        this.dataMsgConversation.reverse();
       } else {
         this.getMessages(msgInbox.prevMsgId);
-
-        let newData = [...this.dataMsgConversation];
+        const newData = [...this.dataMsgConversation];
         newData.push(msgInbox);
         this.dataMsgConversation = newData;
       }

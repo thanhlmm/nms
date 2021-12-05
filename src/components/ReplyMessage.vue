@@ -7,28 +7,53 @@
           <div class="name title-20 mb-10 f-700">{{ from }}</div>
           <div class="to f-500">To: {{ to }}</div>
         </div>
-        <div class="text-right">
+        <div class="btnModalForwardReplayContainer">
+          <div class="text-right">
+            <button
+              class="btn-sent cursor-pointer d-flex align-center"
+              @click="handleReply"
+            >
+              <img src="../../public/assets/images/sent.svg" />
+              <span>Sent</span>
+            </button>
+          </div>
           <button
-            class="btn-sent cursor-pointer d-flex align-center"
-            @click="handleReply"
+            class="
+              btn-cancelForwardReply btn-sent
+              cursor-pointer
+              d-flex
+              align-center
+            "
+            @click="handleCancelReply"
           >
-            <img src="../../public/assets/images/sent.svg" />
-            <span>Sent</span>
+            Cancel
           </button>
         </div>
       </div>
     </header>
     <section>
       <div class="content">
-        <div class="title title-20 f-700 mb-10">Re: {{ title }}</div>
-        <div class="description f-500 mb-10">
+        <div class="title title-20 f-700 mb-10">
+          <div class="textInput-ForwardAndReply">
+            <div>Re:</div>
+            <input v-model="titleData" />
+          </div>
+        </div>
+        <div class="description mb-10">
+          <TipTap
+            :modelValue="data"
+            :isDetail="false"
+            @updateModelValue="updateModelValue"
+          />
+        </div>
+        <!-- <div class="description f-500 mb-10">
           <div class="textArea-ForwardAndReply">
             <textarea
               placeholder="Enter the content here"
               v-model="data"
             ></textarea>
           </div>
-        </div>
+        </div> -->
       </div>
 
       <div>
@@ -71,22 +96,29 @@
 import { BOATLOAD_OF_GAS, tranformUnit } from "../utils";
 import message from "../message";
 import Avatar from "./Avatar";
+import TipTap from "../components/TipTap.vue";
 
 export default {
   components: {
     Avatar,
+    TipTap,
   },
-  props: ["id", "title", "to", "from"],
+  props: ["id", "title", "to", "from", "showReply"],
   data() {
     return {
       data: "",
+      titleData: this.title,
       amount: 0.1,
     };
   },
   methods: {
+    updateModelValue(e) {
+      this.data = e;
+    },
+
     async handleReply() {
       let msgReply = {
-        title: this.title,
+        title: this.titleData,
         content: this.data,
         attachmentFiles: {},
       };
@@ -129,6 +161,10 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+
+    handleCancelReply() {
+      this.$emit("cancelReplay", !this.showReply);
     },
   },
 };

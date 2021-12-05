@@ -19,7 +19,7 @@
             <span>
               {{ routePathSent ? sentMsgNum : inboxMsgNum }}
             </span>
-            Messages, 0 Unread
+            Messages
           </div>
         </div>
         <div
@@ -42,10 +42,12 @@
             <div class="mail-content__button hidden-sm">
               <div>
                 <span
+                  v-show="page > 1"
                   class="mail-content__button-prev cursor-pointer mr-4 mr-sm-16"
-                  @click="page > 1 && prevPage()"
+                  @click="prevPage()"
                 ></span>
                 <span
+                  v-show="!reachMaxPage"
                   class="mail-content__button-next cursor-pointer"
                   @click="nextPage()"
                 ></span>
@@ -112,11 +114,14 @@ export default {
     inboxMsgNum() {
       return this.$store.state.inboxMsgNum;
     },
-    countPage() {
-      return 0;
+    totalMsg() {
+      return this.routeInboxSent ? this.sentMsgNum : this.inboxMsgNum;
     },
     page() {
       return this.$store.state.page;
+    },
+    reachMaxPage() {
+      return this.page * 20 > this.totalMsg;
     },
   },
   watch: {

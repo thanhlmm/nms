@@ -103,12 +103,20 @@
         <span>Subject: </span>
         <input placeholder="Enter the subject here" v-model="title" />
       </div>
-      <div class="form-textarea mb-20">
+      <!-- <div class="form-textarea mb-20">
         <textarea
           placeholder="Enter the content here"
           v-model="data"
         ></textarea>
+      </div> -->
+      <div class="mb-20">
+        <TipTap
+          :modelValue="data"
+          :isDetail="false"
+          @updateModelValue="updateModelValue"
+        />
       </div>
+
       <div class="f-500 mb-16">Select NEAR to send:</div>
 
       <div class="d-flex align-center justify-between">
@@ -171,8 +179,12 @@
 <script>
 import { BOATLOAD_OF_GAS, tranformUnit } from "../utils";
 import message from "../message";
+import TipTap from "../components/TipTap.vue";
 
 export default {
+  components: {
+    TipTap,
+  },
   data() {
     return {
       to: "",
@@ -193,6 +205,10 @@ export default {
     },
   },
   methods: {
+    updateModelValue(e) {
+      this.data = e;
+    },
+
     async handleSendMessageModal() {
       let msg = {
         title: this.title,
@@ -239,12 +255,15 @@ export default {
         console.log(error);
       }
     },
+
     handleCloseSendMessageModal() {
       this.$store.commit("TOGGLE_SEND_MESSAGE_MODAL");
     },
+
     handleExpandSendMessageModal() {
       this.$store.commit("TOGGLE_SEND_MESSAGE_MODAL_EXPAND");
     },
+
     handleMinimizeSendMessageModal() {
       this.$store.commit("TOGGLE_SEND_MESSAGE_MODAL_MINIMIZE");
     },
