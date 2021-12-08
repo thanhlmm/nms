@@ -82,3 +82,12 @@ export function getAvatar(accountId, callback) {
     callback(null);
   }
 }
+
+export async function isAccountExist(accountId) {
+  let ret = false;
+  try {
+      await near.connection.provider.query(`account/${accountId}`, "");
+      ret = true;
+  } catch (ex) { }
+  return ret;
+}
