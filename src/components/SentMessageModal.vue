@@ -177,7 +177,7 @@
 </template>
 
 <script>
-import { BOATLOAD_OF_GAS, tranformUnit } from "../utils";
+import { BOATLOAD_OF_GAS, tranformUnit, isAccountExist } from "../utils";
 import message from "../message";
 import TipTap from "../components/TipTap.vue";
 
@@ -215,6 +215,16 @@ export default {
         content: this.data,
         attachmentFiles: {},
       };
+
+      if (!this.title.length) {
+        alert("Please enter the field 'Title'!");
+        return;
+      }
+
+      if (!await isAccountExist(this.to)) {
+          alert(`The account '${this.to}' is not existed. Please enter the other account!`);
+          return;
+      }
 
       try {
         console.log("start send", msg, tranformUnit(this.amount));
