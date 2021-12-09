@@ -9,10 +9,13 @@ export const NEAR_UNIT = 10 ** 24;
 
 export const tranformUnit = (input) => Big(input || '0').times(10 ** 24).toFixed();
 
+let nearConnection = null;
+
 // Initialize contract & set global variables
 export async function initContract() {
   // Initialize connection to the NEAR testnet
   const near = await connect(Object.assign({ deps: { keyStore: new keyStores.BrowserLocalStorageKeyStore() } }, nearConfig))
+  nearConnection = near;
 
   // Initializing Wallet based Account. It can work with NEAR testnet wallet that
   // is hosted at https://wallet.testnet.near.org
@@ -83,10 +86,11 @@ export function getAvatar(accountId, callback) {
   }
 }
 
+// https://docs.near.org/docs/concepts/transaction
 export async function isAccountExist(accountId) {
   let ret = false;
   try {
-      await near.connection.provider.query(`account/${accountId}`, "");
+      await nearConnection.connection.provider.query(`account/${accountId}`, "");
       ret = true;
   } catch (ex) { }
   return ret;
