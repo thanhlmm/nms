@@ -21,6 +21,11 @@ const storeData = {
       isMinimize: false,
     },
 
+    alertModal: {
+      isShow: false,
+      name: "",
+    },
+
     messageConversation: {
       msgInboxId: null,
     },
@@ -51,6 +56,11 @@ const storeData = {
     },
     TOGGLE_SEND_MESSAGE_MODAL_MINIMIZE(state) {
       state.sendMessageModal.isMinimize = !state.sendMessageModal.isMinimize;
+    },
+
+    TOGGLE_ALERT_MODAL(state, payload) {
+      state.alertModal.isShow = !state.alertModal.isShow;
+      state.alertModal.name = payload;
     },
 
     MESSAGE_CONVERSATION(state, msgId) {
