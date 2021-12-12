@@ -31,6 +31,9 @@ export default {
     darkMode() {
       return this.$store.state.darkMode;
     },
+    showAlertModal() {
+      return this.$store.state.alertModal.isShow;
+    },
   },
 
   watch: {
@@ -41,6 +44,14 @@ export default {
           document.querySelector("html").setAttribute("data-theme", "light");
         } else
           document.querySelector("html").setAttribute("data-theme", "dark");
+      },
+    },
+    showAlertModal: {
+      immediate: true,
+      handler: function () {
+        if (this.$store.state.alertModal.isShow) {
+          document.querySelector("body").style.overflow = "hidden";
+        } else document.querySelector("body").style.overflow = "visible";
       },
     },
     isSignedIn: {
