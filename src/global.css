@@ -15,6 +15,19 @@ html {
   padding: 0;
 }
 
+::-webkit-scrollbar {
+	width: 6px;
+}
+::-webkit-scrollbar-track {
+	background: var(--color-white); 
+} 
+::-webkit-scrollbar-thumb {
+	background: var(--main-color); 
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-button);
+}
+
 [data-theme="dark"] {
   --color-logo: #fff;
   --main-color: #888a90;
@@ -1678,6 +1691,10 @@ p {
   background: var(--color-mail-item);
 }
 
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--border-button);
+}
+
 .btnModalForwardReplayContainer {
   display: flex;
   flex-direction: column;
@@ -2820,7 +2837,7 @@ p {
   position: relative;
 }
 
-.modal-sent .form-input:before {
+.modal-sent .form-input .line {
   content: " ";
   position: absolute;
   bottom: 0;
