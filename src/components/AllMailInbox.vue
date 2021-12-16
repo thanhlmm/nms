@@ -32,7 +32,7 @@
         </header>
       </div>
     </article>
-    <div class="is-hidden">{{ reRender }}</div>
+    <div class="is-hidden">{{ selectedId }}</div>
   </div>
 </template>
 
@@ -45,18 +45,21 @@ export default {
   components: {
     Avatar,
   },
+
   data() {
     return {
       dataMsgInbox: [],
       readMailId: [],
       accountId: null,
-      reRender: null,
+      selectedId: null,
     };
   },
+
   mounted() {
     this.getAccountId();
     this.getInboxMsg();
   },
+
   computed: {
     inboxMsgNum() {
       return this.$store.state.inboxMsgNum;
@@ -65,23 +68,34 @@ export default {
       return this.$store.state.page;
     },
   },
+
   watch: {
     page() {
       this.getInboxMsg();
     },
     inboxMsgNum() {
       this.getInboxMsg();
+      this.recallInboxMsgNumApi();
     },
   },
+
   methods: {
+    handleSendMessageModal() {
+      if (this.$store.state.sendMessageModal.isShow) return;
+      this.$store.commit("TOGGLE_SEND_MESSAGE_MODAL");
+    },
+
+    getAccountId() {
+      this.accountId = window.walletConnection.getAccountId();
+    },
+
     handleSelectedMail(id) {
       this.$store.commit("MESSAGE_CONVERSATION", id);
+      this.selectedId = id;
 
       const accountIdInboxLocalStorage = JSON.parse(
         localStorage.getItem(this.accountId + " " + "inbox")
       );
-
-      this.reRender = id;
 
       if (accountIdInboxLocalStorage) {
         const selectedMailReadID = [...accountIdInboxLocalStorage];
@@ -114,20 +128,12 @@ export default {
       return false;
     },
 
-    handleSendMessageModal() {
-      if (this.$store.state.sendMessageModal.isShow) return;
-      this.$store.commit("TOGGLE_SEND_MESSAGE_MODAL");
-    },
-
-    getAccountId() {
-      this.accountId = window.walletConnection.getAccountId();
-    },
-
     getInboxMsg() {
       if (this.inboxMsgNum === 0) {
         return;
       }
       const indexInfo = getIndexInfo(this.inboxMsgNum, this.page, 20);
+      console.log(this.inboxMsgNum, this.page, indexInfo);
       window.contract
         .getInboxMessages({
           accountId: this.accountId,
@@ -154,11 +160,20 @@ export default {
           return Promise.all(structEachData);
         })
         .then((res) => {
-          this.dataMsgInbox = res;
+          const dataInbox = [...res];
+          dataInbox.reverse();
+          this.dataMsgInbox = dataInbox;
         });
     },
+
     async updateDataMessage(msg) {
       return await message.depackMessage(msg);
+    },
+
+    recallInboxMsgNumApi() {
+      if (this.inboxMsgNum > this.dataMsgInbox.length) {
+        this.getInboxMsg();
+      }
     },
   },
 };

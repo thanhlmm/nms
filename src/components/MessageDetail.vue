@@ -73,12 +73,20 @@
       <div class="title cursor-pointer" @click="showDetail = !showDetail">
         Title: {{ dataMsg.title }}
       </div>
+      <div class="description f-500">
+        <div class="content">
+          <!-- <div>{{ dataMsg.content }}</div> -->
+          <TipTap :modelValue="dataMsg.content" :isDetail="true" />
+        </div>
+      </div>
       <ReplyMessage
         :class="{ 'is-hidden': !showReply }"
         :id="dataMsg.id"
         :title="dataMsg.title"
         :to="dataMsg.from"
         :from="dataMsg.to"
+        :showReply="showReply"
+        @cancelReplay="cancelReplay"
       />
       <ForwardMessage
         :class="{ 'is-hidden': !showForward }"
@@ -86,8 +94,10 @@
         :title="dataMsg.title"
         :to="dataMsg.to"
         :from="dataMsg.from"
+        :showForward="showForward"
+        @cancelForward="cancelForward"
       />
-      <div
+      <!-- <div
         :class="[
           { 'is-hidden': !showDetail || showReply || showForward },
           'description f-500',
@@ -96,7 +106,7 @@
         <div class="content">
           <div>{{ dataMsg.content }}</div>
         </div>
-      </div>
+      </div> -->
     </section>
   </article>
 </template>
@@ -105,6 +115,7 @@
 import ReplyMessage from "./ReplyMessage.vue";
 import ForwardMessage from "./ForwardMessage.vue";
 import Avatar from "./Avatar";
+import TipTap from "../components/TipTap.vue";
 
 export default {
   props: ["dataMsg", "from"],
@@ -112,6 +123,7 @@ export default {
     ReplyMessage,
     ForwardMessage,
     Avatar,
+    TipTap,
   },
   data() {
     return {
@@ -129,6 +141,12 @@ export default {
     handleShowForward() {
       if (this.showReply) return;
       this.showForward = !this.showForward;
+    },
+    cancelReplay(e) {
+      this.showReply = e;
+    },
+    cancelForward(e) {
+      this.showForward = e;
     },
   },
 };

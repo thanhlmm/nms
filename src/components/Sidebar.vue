@@ -230,24 +230,30 @@ export default {
     this.getInboxMessageNum();
     this.getStatics();
     this.getBalance();
+    this.checkInboxMsgNum();
   },
   methods: {
     handleAuth() {
       login();
     },
+
     handleLogOut() {
       logout();
     },
+
     handleToggleDarkMode() {
       this.$store.commit("TOGGLE_DARK_MODE");
     },
+
     handleSendMessageModal() {
       if (this.$store.state.sendMessageModal.isShow) return;
       this.$store.commit("TOGGLE_SEND_MESSAGE_MODAL");
     },
+
     handleResetSelectedMailId() {
       this.$store.commit("RESET_MESSAGE_CONVERSATION", null);
     },
+
     getSentMessageNum() {
       window.contract
         .getSentMsgNum({ accountId: this.username })
@@ -255,6 +261,7 @@ export default {
           this.$store.commit("SET_SENT_MSG_NUM", data);
         });
     },
+
     getInboxMessageNum() {
       window.contract
         .getInboxMsgNum({ accountId: this.username })
@@ -262,6 +269,7 @@ export default {
           this.$store.commit("SET_INBOX_MSG_NUM", data);
         });
     },
+
     getStatics() {
       window.contract.getStatics().then((data) => {
         this.statics.activeAccount = data.sentAccountNum;
@@ -282,6 +290,13 @@ export default {
       }
 
       return 0;
+    },
+
+    checkInboxMsgNum() {
+      const TIME_CHECK = process.env.VUE_APP_TIME_CHECK;
+      window.setInterval(() => {
+        this.getInboxMessageNum();
+      }, parseInt(TIME_CHECK));
     },
   },
 };

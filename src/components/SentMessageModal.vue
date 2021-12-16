@@ -96,19 +96,29 @@
     </div>
     <section class="modal-sent__body">
       <div class="form-input d-flex pb-10 mb-20">
-        <span>To: </span>
+        <span :class="[{ isEmptyText: checkToInput }]">To: </span>
         <input placeholder="Enter the email here" v-model="to" />
+        <div class="line" :class="[{ isEmpty: checkToInput }]"></div>
       </div>
       <div class="form-input d-flex pb-10 mb-20">
-        <span>Subject: </span>
+        <span :class="[{ isEmptyText: checkTitleInput }]">Subject: </span>
         <input placeholder="Enter the subject here" v-model="title" />
+        <div class="line" :class="[{ isEmpty: checkTitleInput }]"></div>
       </div>
-      <div class="form-textarea mb-20">
+      <!-- <div class="form-textarea mb-20">
         <textarea
           placeholder="Enter the content here"
           v-model="data"
         ></textarea>
+      </div> -->
+      <div class="mb-20">
+        <TipTap
+          :modelValue="data"
+          :isDetail="false"
+          @updateModelValue="updateModelValue"
+        />
       </div>
+
       <div class="f-500 mb-16">Select NEAR to send:</div>
 
       <div class="d-flex align-center justify-between">
@@ -169,16 +179,23 @@
 </template>
 
 <script>
-import { BOATLOAD_OF_GAS, tranformUnit } from "../utils";
+import { BOATLOAD_OF_GAS, tranformUnit, isAccountExist } from "../utils";
 import message from "../message";
+import TipTap from "../components/TipTap.vue";
 
 export default {
+  components: {
+    TipTap,
+  },
   data() {
     return {
       to: "",
       title: "",
       data: "",
       amount: 0.1,
+
+      checkToInput: false,
+      checkTitleInput: false,
     };
   },
   computed: {
@@ -193,12 +210,47 @@ export default {
     },
   },
   methods: {
+    updateModelValue(e) {
+      this.data = e;
+    },
+
     async handleSendMessageModal() {
       let msg = {
         title: this.title,
         content: this.data,
         attachmentFiles: {},
       };
+
+      if (!this.to.length && !this.title.length) {
+        this.checkTitleInput = true;
+        this.checkToInput = true;
+        return;
+      } else {
+        this.checkTitleInput = false;
+        this.checkToInput = false;
+      }
+
+      if (!this.to.length) {
+        // alert("Please enter the field 'To'!");
+        this.checkToInput = true;
+        return;
+      } else this.checkToInput = false;
+
+      if (!this.title.length) {
+        // alert("Please enter the field 'To'!");
+        this.checkTitleInput = true;
+        return;
+      } else this.checkTitleInput = false;
+
+      if (!(await isAccountExist(this.to))) {
+        // alert(
+        //   `The account '${this.to}' is not existed. Please enter the other account!`
+        // );
+        this.checkToInput = false;
+        this.checkTitleInput = false;
+        this.$store.commit("TOGGLE_ALERT_MODAL", this.to);
+        return;
+      }
 
       try {
         console.log("start send", msg, tranformUnit(this.amount));
@@ -239,12 +291,21 @@ export default {
         console.log(error);
       }
     },
+
     handleCloseSendMessageModal() {
+      this.checkToInput = false;
+      this.checkTitleInput = false;
+      this.to = "";
+      this.title = "";
+      this.data = "";
+      this.amount = 0.1;
       this.$store.commit("TOGGLE_SEND_MESSAGE_MODAL");
     },
+
     handleExpandSendMessageModal() {
       this.$store.commit("TOGGLE_SEND_MESSAGE_MODAL_EXPAND");
     },
+
     handleMinimizeSendMessageModal() {
       this.$store.commit("TOGGLE_SEND_MESSAGE_MODAL_MINIMIZE");
     },
@@ -252,4 +313,11 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.isEmpty {
+  background: red !important;
+}
+.isEmptyText {
+  color: red !important;
+}
+</style>
