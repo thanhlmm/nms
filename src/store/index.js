@@ -34,6 +34,7 @@ const storeData = {
     sentMsgNum: 0,
 
     page: 1,
+    preventPagination: false,
 
     inboxSearchKeyword: "",
     sentSearchKeyword: "",
@@ -77,6 +78,9 @@ const storeData = {
     },
     SET_PAGE(state, payload) {
       state.page = payload;
+    },
+    SET_PREVENT_PAGINATION(state, payload) {
+      state.preventPagination = payload;
     },
 
     SET_INBOX_SEARCH(state, payload) {

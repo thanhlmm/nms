@@ -133,7 +133,10 @@ export default {
         return;
       }
       const indexInfo = getIndexInfo(this.inboxMsgNum, this.page, 20);
-      console.log(this.inboxMsgNum, this.page, indexInfo);
+      if (indexInfo.fromIndex === 0) {
+        console.log("STOP");
+        this.$store.commit("SET_PREVENT_PAGINATION", true);
+      } else this.$store.commit("SET_PREVENT_PAGINATION", false);
       window.contract
         .getInboxMessages({
           accountId: this.accountId,
