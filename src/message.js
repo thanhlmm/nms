@@ -1,6 +1,7 @@
 const IpfsClient = require("ipfs-http-client");
 const aes256 = require("aes256");
 const axios = require("axios").default;
+const NodeRSA = require('node-rsa');
 axios.defaults.adapter = require("axios/lib/adapters/http");
 const stream = require("stream");
 
@@ -260,3 +261,27 @@ async function depackMessage(msg, isLoadFromIpfs = false) {
   return resp;
 }
 exports.depackMessage = depackMessage;
+
+// Generate AES Keypair
+function generateAESKey() {
+  let key = new NodeRSA({b: 1024});
+  let publicKey = key.exportKey('public');
+  let strPublicKey = Buffer.from(publicKey, "utf8").toString('hex');
+  let privateKey = key.exportKey('private');
+  let strPrivateKey = Buffer.from(privateKey, "utf8").toString('hex');
+  return {
+    publicKey: strPublicKey,
+    privateKey: strPrivateKey
+  };
+}
+exports.generateAESKey = generateAESKey;
+
+// Get public key from private key
+function privateKeyToPublicKey(strPrivateKey) {
+  let privateKey = Buffer.from(strPrivateKey, "hex").toString("utf8");
+  let key = new NodeRSA(privateKey, "private");
+  let publicKey = key.exportKey('public');
+  let strPublicKey = Buffer.from(publicKey, "utf8").toString('hex');
+  return strPublicKey;
+}
+exports.privateKeyToPublicKey = privateKeyToPublicKey;
