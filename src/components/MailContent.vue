@@ -47,7 +47,7 @@
                   @click="prevPage()"
                 ></span>
                 <span
-                  v-show="!reachMaxPage"
+                  v-show="reachMaxPage && !preventPagination"
                   class="mail-content__button-next cursor-pointer"
                   @click="nextPage()"
                 ></span>
@@ -122,6 +122,9 @@ export default {
     },
     reachMaxPage() {
       return this.page * 20 > this.totalMsg;
+    },
+    preventPagination() {
+      return this.$store.state.preventPagination;
     },
   },
   watch: {

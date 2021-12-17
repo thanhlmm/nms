@@ -89,6 +89,11 @@ export default {
         return;
       }
       const indexInfo = getIndexInfo(this.sentMsgNum, this.page, 20);
+      if (indexInfo.fromIndex === 0) {
+        this.$store.commit("SET_PREVENT_PAGINATION", true);
+      } else {
+        this.$store.commit("SET_PREVENT_PAGINATION", false);
+      }
       window.contract
         .getSentMessages({
           accountId: this.accountId,
