@@ -68,7 +68,6 @@ export function login() {
 }
 
 export function getIndexInfo(messageNum, currentPage, itemPerPage) {
-  console.log("currentPage: ", currentPage);
   let ret = {
     fromIndex: 0,
     toIndex: -1,
@@ -86,7 +85,6 @@ export function getIndexInfo(messageNum, currentPage, itemPerPage) {
       }
     }
   }
-  console.log("RET: ", ret);
   return ret;
 }
 
