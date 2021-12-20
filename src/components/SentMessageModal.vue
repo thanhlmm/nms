@@ -119,36 +119,61 @@
         />
       </div>
 
-      <div class="f-500 mb-16">Select NEAR to send:</div>
-
-      <div class="d-flex align-center justify-between">
+      <div class="mb-16">
+        <div class="f-500 mb-16">Select message type:</div>
         <div class="near__value-list d-flex">
           <div
             class="near__value-item cursor-pointer"
             v-bind:class="{
-              active: amount === 0.1,
+              active: type === 'public',
             }"
-            @click="amount = 0.1"
+            @click="type = 'public'"
           >
-            0.1 NEAR
+            Public
           </div>
           <div
             class="near__value-item cursor-pointer"
             v-bind:class="{
-              active: amount === 0.2,
+              active: type === 'private',
             }"
-            @click="amount = 0.2"
+            @click="type = 'private'"
           >
-            0.2 NEAR
+            Private
           </div>
-          <div
-            class="near__value-item cursor-pointer"
-            v-bind:class="{
-              active: amount === 1,
-            }"
-            @click="amount = 1"
-          >
-            1 NEAR
+        </div>
+      </div>
+
+      <div class="d-flex align-center justify-between">
+        <div>
+          <div class="f-500 mb-16">Select NEAR to send:</div>
+          <div class="near__value-list d-flex">
+            <div
+              class="near__value-item cursor-pointer"
+              v-bind:class="{
+                active: amount === 0.1,
+              }"
+              @click="amount = 0.1"
+            >
+              0.1 NEAR
+            </div>
+            <div
+              class="near__value-item cursor-pointer"
+              v-bind:class="{
+                active: amount === 0.2,
+              }"
+              @click="amount = 0.2"
+            >
+              0.2 NEAR
+            </div>
+            <div
+              class="near__value-item cursor-pointer"
+              v-bind:class="{
+                active: amount === 1,
+              }"
+              @click="amount = 1"
+            >
+              1 NEAR
+            </div>
           </div>
         </div>
 
@@ -193,6 +218,7 @@ export default {
       title: "",
       data: "",
       amount: 0.1,
+      type: "public",
 
       checkToInput: false,
       checkTitleInput: false,

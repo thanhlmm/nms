@@ -55,6 +55,22 @@ export default {
   flex-direction: column;
   align-items: center;
 
+  background: var(--background-modal);
+  border: 1px solid var(--border-modal);
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-box-shadow: var(--body-box-shadow);
+  -moz-box-shadow: var(--body-box-shadow);
+  box-shadow: var(--body-box-shadow);
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  border-radius: 8px;
+
+  @media (max-width: 767px) {
+    width: 350px;
+  }
+
   .content {
     margin-bottom: 15px;
     text-align: center;

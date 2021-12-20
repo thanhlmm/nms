@@ -86,16 +86,27 @@
     </div>
 
     <div class="mail-left__static d-flex justify-center flex-column pl-10">
-      <div class="theme-change mb-16">
-        <label class="switch-theme">
-          <input
-            type="checkbox"
-            :checked="darkMode"
-            class="input__switch-theme"
-            @click="handleToggleDarkMode"
+      <div class="mb-16 d-flex align-start">
+        <div class="theme-change">
+          <label class="switch-theme">
+            <input
+              type="checkbox"
+              :checked="darkMode"
+              class="input__switch-theme"
+              @click="handleToggleDarkMode"
+            />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div
+          @click="showKeyModal"
+          class="lock d-flex align-center justify-center ml-20 cursor-pointer"
+        >
+          <img
+            src="../../public/assets/images/lock.svg"
+            class="flex-shrink-0"
           />
-          <span class="slider"></span>
-        </label>
+        </div>
       </div>
       <div class="f-12 f-500 mb-30 mb-sm-0">
         <div><b>Statics:</b></div>
@@ -297,6 +308,10 @@ export default {
       window.setInterval(() => {
         this.getInboxMessageNum();
       }, parseInt(TIME_CHECK));
+    },
+
+    showKeyModal() {
+      this.$store.commit("TOGGLE_KEY_MODAL");
     },
   },
 };

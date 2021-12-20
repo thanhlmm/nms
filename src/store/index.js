@@ -26,6 +26,9 @@ const storeData = {
       name: "",
     },
 
+    keyModal: false,
+    confirmPasswordModal: false,
+
     messageConversation: {
       msgInboxId: null,
     },
@@ -62,6 +65,14 @@ const storeData = {
     TOGGLE_ALERT_MODAL(state, payload) {
       state.alertModal.isShow = !state.alertModal.isShow;
       state.alertModal.name = payload;
+    },
+
+    TOGGLE_KEY_MODAL(state) {
+      state.keyModal = !state.keyModal;
+    },
+
+    TOGGLE_CONFIRM_PASSWORD_MODAL(state) {
+      state.confirmPasswordModal = !state.confirmPasswordModal;
     },
 
     MESSAGE_CONVERSATION(state, msgId) {
