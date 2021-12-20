@@ -143,37 +143,35 @@
         </div>
       </div>
 
+      <div class="f-500 mb-16">Select NEAR to send:</div>
       <div class="d-flex align-center justify-between">
-        <div>
-          <div class="f-500 mb-16">Select NEAR to send:</div>
-          <div class="near__value-list d-flex">
-            <div
-              class="near__value-item cursor-pointer"
-              v-bind:class="{
-                active: amount === 0.1,
-              }"
-              @click="amount = 0.1"
-            >
-              0.1 NEAR
-            </div>
-            <div
-              class="near__value-item cursor-pointer"
-              v-bind:class="{
-                active: amount === 0.2,
-              }"
-              @click="amount = 0.2"
-            >
-              0.2 NEAR
-            </div>
-            <div
-              class="near__value-item cursor-pointer"
-              v-bind:class="{
-                active: amount === 1,
-              }"
-              @click="amount = 1"
-            >
-              1 NEAR
-            </div>
+        <div class="near__value-list d-flex">
+          <div
+            class="near__value-item cursor-pointer"
+            v-bind:class="{
+              active: amount === 0.1,
+            }"
+            @click="amount = 0.1"
+          >
+            0.1 NEAR
+          </div>
+          <div
+            class="near__value-item cursor-pointer"
+            v-bind:class="{
+              active: amount === 0.2,
+            }"
+            @click="amount = 0.2"
+          >
+            0.2 NEAR
+          </div>
+          <div
+            class="near__value-item cursor-pointer"
+            v-bind:class="{
+              active: amount === 1,
+            }"
+            @click="amount = 1"
+          >
+            1 NEAR
           </div>
         </div>
 
