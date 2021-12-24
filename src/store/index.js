@@ -10,6 +10,7 @@ const storeData = {
   modules: {
     auth,
   },
+
   state: {
     darkMode: JSON.parse(localStorage.getItem("darkMode")),
 
@@ -27,6 +28,10 @@ const storeData = {
     },
 
     keyModal: false,
+    confirmReGenKeyModal: false,
+    confirmReImportKeyModal: false,
+    confirmReGenKey: false,
+    confirmReImportKey: false,
     confirmPasswordModal: false,
 
     messageConversation: {
@@ -42,16 +47,20 @@ const storeData = {
     inboxSearchKeyword: "",
     sentSearchKeyword: "",
   },
+
   mutations: {
+    // ACTIVE DARK MODE MUTATION
     TOGGLE_DARK_MODE(state) {
       state.darkMode = !state.darkMode;
       localStorage.setItem("darkMode", JSON.stringify(state.darkMode));
     },
 
+    // ACTIVE MOBILE HAMBURGER MUTATION
     TOGGLE_ACTIVE_MOBILE_MENU(state) {
       state.activeMobileMenu = !state.activeMobileMenu;
     },
 
+    // SEND MESSAGE MODAL MUTATION
     TOGGLE_SEND_MESSAGE_MODAL(state) {
       state.sendMessageModal.isShow = !state.sendMessageModal.isShow;
     },
@@ -62,19 +71,33 @@ const storeData = {
       state.sendMessageModal.isMinimize = !state.sendMessageModal.isMinimize;
     },
 
+    // ALERT MODAL MUTATION
     TOGGLE_ALERT_MODAL(state, payload) {
       state.alertModal.isShow = !state.alertModal.isShow;
       state.alertModal.name = payload;
     },
 
+    // KEY PRIVATE MANAGEMENT MUTATION
     TOGGLE_KEY_MODAL(state) {
       state.keyModal = !state.keyModal;
     },
-
     TOGGLE_CONFIRM_PASSWORD_MODAL(state) {
       state.confirmPasswordModal = !state.confirmPasswordModal;
     },
+    TOGGLE_CONFIRM_RE_GEN_KEY_MODAL(state, payload) {
+      state.confirmReGenKeyModal = !state.confirmReGenKeyModal;
+      if (payload === true) {
+        state.confirmReGenKey = payload;
+      } else state.confirmReGenKey = false;
+    },
+    TOGGLE_CONFIRM_RE_IMPORT_KEY_MODAL(state, payload) {
+      state.confirmReImportKeyModal = !state.confirmReImportKeyModal;
+      if (payload === true) {
+        state.confirmReImportKey = payload;
+      } else state.confirmReImportKey = false;
+    },
 
+    // HANDLE MESSAGE MUTATION
     MESSAGE_CONVERSATION(state, msgId) {
       state.messageConversation.msgInboxId = msgId;
     },
@@ -94,6 +117,7 @@ const storeData = {
       state.preventPagination = payload;
     },
 
+    // SEARCH MUTATION
     SET_INBOX_SEARCH(state, payload) {
       state.inboxSearchKeyword = payload;
     },

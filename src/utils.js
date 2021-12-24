@@ -124,15 +124,3 @@ export async function isAccountExist(accountId) {
   }
   return ret;
 }
-
-const rsa = require("node-rsa");
-
-export function generatePair() {
-  const key = new rsa().generateKeyPair();
-  let genPair = {
-    publicKey: key.exportKey("public"),
-    privateKey: key.exportKey("private"),
-  };
-
-  return genPair;
-}

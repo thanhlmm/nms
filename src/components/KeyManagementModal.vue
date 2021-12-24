@@ -52,12 +52,12 @@
               justify-center
               flex-shrink-0
             "
-            @click="generateAESKey"
+            @click="genKeys"
           >
             <img src="../../public/assets/images/sent.svg" />
             <span>Generate</span>
           </button>
-          <button
+          <label
             class="
               btn-sent btn-sent-key
               cursor-pointer
@@ -66,11 +66,11 @@
               justify-center
               flex-shrink-0
             "
-            @click="handleConfirmPassword"
           >
             <img src="../../public/assets/images/sent.svg" />
             <span>Import</span>
-          </button>
+            <input type="file" ref="doc" @change="importKeys()" />
+          </label>
           <button
             class="
               btn-sent btn-sent-key
@@ -80,7 +80,7 @@
               justify-center
               flex-shrink-0
             "
-            @click="handleConfirmPassword"
+            @click="exportKeys"
           >
             <img src="../../public/assets/images/sent.svg" />
             <span>Export</span>
@@ -92,18 +92,86 @@
 </template>
 
 <script>
-import { generatePair } from "../utils";
+import { generateAESKey, privateKeyToPublicKey } from "../message";
 
 export default {
   data() {
     return {
-      publicKey: "",
-      privateKey: "",
+      publicKey: localStorage.getItem(`nms_publickey`),
+      privateKey: localStorage.getItem(`nms_privatekey`),
+      file: null,
     };
   },
   computed: {
     showModal() {
       return this.$store.state.keyModal;
+    },
+    confirmReGen() {
+      return this.$store.state.confirmReGenKey;
+    },
+    confirmReImport() {
+      return this.$store.state.confirmReImportKey;
+    },
+  },
+  watch: {
+    confirmReGen: {
+      immediate: true,
+      handler: function () {
+        if (this.$store.state.confirmReGenKey === true) {
+          const generateKeys = generateAESKey("binh2501.testnet");
+          localStorage.setItem(`nms_publickey`, generateKeys.publicKey);
+          localStorage.setItem(`nms_privatekey`, generateKeys.privateKey);
+          this.publicKey = generateKeys.publicKey;
+          this.privateKey = generateKeys.privateKey;
+
+          // this.updateKeysApi(generateKeys.publicKey);
+
+          this.$toast.success("Success Generate New Keys!", {
+            timeout: 2000,
+          });
+
+          // console.log("publicKey-RE-gen: ", generateKeys.publicKey);
+          // console.log("privateKey-RE-gen: ", generateKeys.privateKey);
+        }
+      },
+    },
+    confirmReImport: {
+      immediate: true,
+      handler: function () {
+        if (this.$store.state.confirmReImportKey === true) {
+          this.file = this.$refs.doc.files[0];
+          const reader = new FileReader();
+          if (this.file.name.includes(".pem")) {
+            reader.onload = (res) => {
+              const privateKeyImport = res.target.result;
+              this.privateKey = privateKeyImport;
+
+              const publicKey = privateKeyToPublicKey(privateKeyImport);
+              this.publicKey = publicKey;
+
+              localStorage.setItem(`nms_publickey`, publicKey);
+              localStorage.setItem(`nms_privatekey`, privateKeyImport);
+
+              // this.updateKeysApi(publicKey);
+
+              this.$toast.success("Success Import Keys!", {
+                timeout: 2000,
+              });
+
+              // console.log("publicKey-RE-import: ", publicKey);
+              // console.log("privateKey-RE-import: ", privateKeyImport);
+            };
+            reader.onerror = (err) => console.log(err);
+            reader.readAsText(this.file);
+          } else {
+            this.$toast.error("Invalid Private Key!", {
+              timeout: 2000,
+            });
+            reader.onerror = (err) => console.log(err);
+            reader.readAsText(this.file);
+          }
+        }
+      },
     },
   },
   methods: {
@@ -113,12 +181,102 @@ export default {
     handleConfirmPassword() {
       this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
     },
-    generateAESKey() {
-      const generateKeys = generatePair();
-      console.log("publicKey: ", generateKeys.publicKey);
-      console.log("privateKey: ", generateKeys.privateKey);
-      this.publicKey = generateKeys.publicKey;
-      this.privateKey = generateKeys.privateKey;
+
+    updateKeysApi(key) {
+      console.log(key);
+      window.contract
+        .updatePublicKey({ publicKey: key })
+        .then((data) => console.log("DATA: ", data));
+    },
+
+    genKeys() {
+      const publicKeyCache = localStorage.getItem(`nms_publickey`);
+      const privateKeyCache = localStorage.getItem(`nms_privatekey`);
+
+      if (publicKeyCache && privateKeyCache) {
+        this.$store.commit("TOGGLE_CONFIRM_RE_GEN_KEY_MODAL");
+      } else {
+        const generateKeys = generateAESKey("binh2501.testnet");
+        localStorage.setItem(`nms_publickey`, generateKeys.publicKey);
+        localStorage.setItem(`nms_privatekey`, generateKeys.privateKey);
+        this.publicKey = generateKeys.publicKey;
+        this.privateKey = generateKeys.privateKey;
+
+        // this.updateKeysApi(generateKeys.publicKey);
+
+        this.$toast.success("Success Generate New Keys!", {
+          timeout: 2000,
+        });
+
+        // console.log("publicKeyGen: ", generateKeys.publicKey);
+        // console.log("privateKeyGen: ", generateKeys.privateKey);
+      }
+    },
+
+    importKeys() {
+      const publicKeyCache = localStorage.getItem(`nms_publickey`);
+      const privateKeyCache = localStorage.getItem(`nms_privatekey`);
+
+      if (publicKeyCache && privateKeyCache) {
+        this.$store.commit("TOGGLE_CONFIRM_RE_IMPORT_KEY_MODAL");
+      } else {
+        this.file = this.$refs.doc.files[0];
+        const reader = new FileReader();
+        if (this.file.name.includes(".pem")) {
+          reader.onload = (res) => {
+            const privateKeyImport = res.target.result;
+            this.privateKey = privateKeyImport;
+
+            const publicKey = privateKeyToPublicKey(privateKeyImport);
+            this.publicKey = publicKey;
+
+            localStorage.setItem(`nms_publickey`, publicKey);
+            localStorage.setItem(`nms_privatekey`, privateKeyImport);
+
+            // this.updateKeysApi(publicKey);
+
+            this.$toast.success("Success Import Keys!", {
+              timeout: 2000,
+            });
+
+            // console.log("publicKeyImport: ", publicKey);
+            // console.log("privateKeyImport: ", privateKeyImport);
+          };
+          reader.onerror = (err) => console.log(err);
+          reader.readAsText(this.file);
+        } else {
+          this.$toast.error("Invalid Private Key!", {
+            timeout: 2000,
+          });
+          reader.onerror = (err) => console.log(err);
+          reader.readAsText(this.file);
+        }
+      }
+    },
+
+    exportKeys() {
+      if (this.privateKey) {
+        const file = new Blob([this.privateKey], { type: "text/plain" });
+        if (window.navigator.msSaveOrOpenBlob)
+          // IE10+
+          window.navigator.msSaveOrOpenBlob(file, "PrivateKeys.pem");
+        else {
+          // Others
+          var a = document.createElement("a"),
+            url = URL.createObjectURL(file);
+          a.href = url;
+          a.download = "PrivateKeys.pem";
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(function () {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+          }, 0);
+        }
+        this.$toast.success("Success Export Private Key!", {
+          timeout: 2000,
+        });
+      }
     },
   },
 };
@@ -159,7 +317,6 @@ export default {
   @media (max-width: 767px) {
     width: 350px;
   }
-
   .header {
     width: 100%;
     .title {
@@ -168,13 +325,19 @@ export default {
   }
   .container {
     width: 100%;
-
     .btn-sent-key {
       width: auto;
-
+      span {
+        width: auto;
+        font-size: 16px;
+        text-align: left;
+      }
+      input[type="file"] {
+        display: none;
+      }
       @media (max-width: 767px) {
         span {
-          width: 20%;
+          width: 30%;
         }
       }
     }
@@ -182,8 +345,8 @@ export default {
       font-size: 16px;
       line-height: 22px;
       position: relative;
+      display: flex;
     }
-
     .form-input .line {
       content: " ";
       position: absolute;
@@ -199,57 +362,51 @@ export default {
       -o-transform: scaleY(0.5);
       transform: scaleY(0.5);
     }
-
     .form-input span {
       color: var(--color-mail-item);
+      flex: 0.25;
+      @media (max-width: 767px) {
+        flex: 0.5;
+      }
     }
-
     .form-input input {
+      flex: 1;
       background: transparent;
-      width: 60%;
+      width: 100%;
       border: 0;
       color: var(--color-menu);
-      padding-left: 20px;
+      padding-left: 0px;
       font-size: 16px;
       line-height: 22px;
       font-weight: 700;
     }
-
     .form-input input::-webkit-input-placeholder {
       font-weight: 500;
     }
-
     .form-input input:-moz-placeholder {
       font-weight: 500;
     }
-
     .form-input input::-moz-placeholder {
       font-weight: 500;
     }
-
     .form-input input:-ms-input-placeholder {
       font-weight: 500;
     }
-
     .form-input input::-ms-input-placeholder {
       font-weight: 500;
     }
-
     .form-input input::placeholder {
       font-weight: 500;
     }
-
     .form-input input:focus {
       outline: none;
     }
   }
 }
-
 .slide-enter-active,
 .slide-leave-active {
   transition: transform 0.5s ease, opacity 0.2s ease-in-out;
 }
-
 .slide-enter {
   transform: translateX(-50%) translateY(-25px);
   opacity: 1;

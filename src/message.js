@@ -260,3 +260,26 @@ async function depackMessage(msg, isLoadFromIpfs = false) {
   return resp;
 }
 exports.depackMessage = depackMessage;
+
+const rsa = require("node-rsa");
+function generateAESKey() {
+  const key = new rsa().generateKeyPair();
+
+  let genPair = {
+    publicKey: key.exportKey("public"),
+    privateKey: key.exportKey("private"),
+  };
+
+  return genPair;
+}
+exports.generateAESKey = generateAESKey;
+
+function privateKeyToPublicKey(keyPrivate) {
+  const privateKey = new rsa();
+  privateKey.importKey(keyPrivate);
+
+  const publicDer = privateKey.exportKey("public");
+
+  return publicDer;
+}
+exports.privateKeyToPublicKey = privateKeyToPublicKey;
