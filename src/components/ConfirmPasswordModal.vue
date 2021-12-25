@@ -59,7 +59,7 @@
 export default {
   data() {
     return {
-      password: null,
+      password: "",
       checkPasswordInput: false,
     };
   },
@@ -73,12 +73,12 @@ export default {
       this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
     },
     handleConfirm() {
-      if (this.password === null) {
+      if (this.password === "") {
         this.checkPasswordInput = true;
-        return;
-      } else this.checkPasswordInput = false;
-
-      console.log("CONFIRM PASSWORD");
+      } else {
+        this.checkPasswordInput = false;
+        console.log("CONFIRM PASSWORD");
+      }
     },
   },
 };
@@ -131,6 +131,17 @@ export default {
 
     .btn-sent-key {
       width: auto;
+      span {
+        width: auto;
+        font-size: 16px;
+        text-align: left;
+      }
+      @media (max-width: 767px) {
+        width: 100%;
+        span {
+          width: 30%;
+        }
+      }
     }
     .form-input {
       font-size: 16px;

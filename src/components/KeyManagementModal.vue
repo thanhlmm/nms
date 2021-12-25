@@ -86,6 +86,7 @@
               <img src="../../public/assets/images/sent.svg" />
               <span>Export</span>
             </button>
+            <button @click="handleConfirmPassword">Confirm Password</button>
           </div>
         </div>
       </div>
@@ -97,16 +98,19 @@
       @toggleClickReImport="toggleClickReImport($event)"
       @confirmGen="confirmGen($event)"
     />
+    <ConfirmPasswordModal />
   </div>
 </template>
 
 <script>
 import { generateAESKey, privateKeyToPublicKey } from "../message";
 import ConfirmModal from "../components/ConfirmModal.vue";
+import ConfirmPasswordModal from "../components/ConfirmPasswordModal.vue";
 
 export default {
   components: {
     ConfirmModal,
+    ConfirmPasswordModal,
   },
   data() {
     return {

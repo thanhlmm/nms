@@ -6,9 +6,14 @@
         The account <span>{{ nameTo }}</span> is not existed.
         <div>Please enter the other account!</div>
       </div>
-
       <button
-        class="btn-sent cursor-pointer d-flex align-center flex-shrink-0"
+        class="
+          btn-sent btn-confirm-sent
+          cursor-pointer
+          d-flex
+          align-center
+          flex-shrink-0
+        "
         @click="handleCloseModal"
       >
         <span>Got it!</span>
@@ -70,7 +75,6 @@ export default {
   @media (max-width: 767px) {
     width: 350px;
   }
-
   .content {
     margin-bottom: 15px;
     text-align: center;
@@ -78,13 +82,23 @@ export default {
       color: var(--color-title-mail-detail);
     }
   }
+  .btn-confirm-sent {
+    width: auto;
+    span {
+      width: 100%;
+      font-size: 16px;
+      text-align: center;
+      margin-right: 20px;
+    }
+    @media (max-width: 767px) {
+      width: 100%;
+    }
+  }
 }
-
 .slide-enter-active,
 .slide-leave-active {
   transition: transform 0.5s ease, opacity 0.2s ease-in-out;
 }
-
 .slide-enter {
   transform: translateX(-50%) translateY(-25px);
   opacity: 1;

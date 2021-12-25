@@ -28,6 +28,7 @@ const storeData = {
     },
 
     keyModal: false,
+    confirmPasswordModal: false,
 
     messageConversation: {
       msgInboxId: null,
@@ -75,6 +76,9 @@ const storeData = {
     // KEY PRIVATE MANAGEMENT MUTATION
     TOGGLE_KEY_MODAL(state) {
       state.keyModal = !state.keyModal;
+    },
+    TOGGLE_CONFIRM_PASSWORD_MODAL(state) {
+      state.confirmPasswordModal = !state.confirmPasswordModal;
     },
 
     // HANDLE MESSAGE MUTATION

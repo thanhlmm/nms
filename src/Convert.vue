@@ -10,7 +10,6 @@
     <SentMessageModal />
     <AlertModal />
     <KeyManagementModal />
-    <ConfirmPasswordModal />
     <Overlay />
   </div>
 </template>
@@ -23,7 +22,6 @@ import SentMessageModal from "./components/SentMessageModal.vue";
 import AlertModal from "./components/AlertModal.vue";
 import KeyManagementModal from "./components/KeyManagementModal.vue";
 import Overlay from "./components/Overlay.vue";
-import ConfirmPasswordModal from "./components/ConfirmPasswordModal.vue";
 
 export default {
   components: {
@@ -34,7 +32,6 @@ export default {
     AlertModal,
     KeyManagementModal,
     Overlay,
-    ConfirmPasswordModal,
   },
 };
 </script>
