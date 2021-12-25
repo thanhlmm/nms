@@ -3,7 +3,9 @@
     <div class="modal" v-if="showModal">
       <div class="header d-flex align-center justify-between mb-20">
         <div class="title title-20 f-700 d-flex align-center">
-          Key Management for private message
+          <!-- Key Management for private message {{ confirmReGen }} -->
+          REGenBTN:{{ checkClickReGen }}; REImportBTN:{{ checkClickReImport }};
+          ConfirmReGen:{{ confirmReGen }}
         </div>
         <div class="action">
           <span class="btn-close cursor-pointer" @click="handleCloseModal">
@@ -109,36 +111,37 @@ export default {
     confirmReGen() {
       return this.$store.state.confirmReGenKey;
     },
-    confirmReImport() {
-      return this.$store.state.confirmReImportKey;
+    checkClickReGen() {
+      return this.$store.state.checkClickReGen;
+    },
+    checkClickReImport() {
+      return this.$store.state.checkClickReImport;
     },
   },
   watch: {
     confirmReGen: {
       immediate: true,
       handler: function () {
-        if (this.$store.state.confirmReGenKey === true) {
+        if (
+          this.$store.state.confirmReGenKey === true &&
+          this.$store.state.checkClickReGen === true
+        ) {
           const generateKeys = generateAESKey("binh2501.testnet");
           localStorage.setItem(`nms_publickey`, generateKeys.publicKey);
           localStorage.setItem(`nms_privatekey`, generateKeys.privateKey);
           this.publicKey = generateKeys.publicKey;
           this.privateKey = generateKeys.privateKey;
 
-          // this.updateKeysApi(generateKeys.publicKey);
+          this.updateKeysApi(generateKeys.publicKey);
 
           this.$toast.success("Success Generate New Keys!", {
             timeout: 2000,
           });
-
-          // console.log("publicKey-RE-gen: ", generateKeys.publicKey);
-          // console.log("privateKey-RE-gen: ", generateKeys.privateKey);
         }
-      },
-    },
-    confirmReImport: {
-      immediate: true,
-      handler: function () {
-        if (this.$store.state.confirmReImportKey === true) {
+        if (
+          this.$store.state.confirmReGenKey === true &&
+          this.$store.state.checkClickReImport === true
+        ) {
           this.file = this.$refs.doc.files[0];
           const reader = new FileReader();
           if (this.file.name.includes(".pem")) {
@@ -152,14 +155,11 @@ export default {
               localStorage.setItem(`nms_publickey`, publicKey);
               localStorage.setItem(`nms_privatekey`, privateKeyImport);
 
-              // this.updateKeysApi(publicKey);
+              this.updateKeysApi(publicKey);
 
               this.$toast.success("Success Import Keys!", {
                 timeout: 2000,
               });
-
-              // console.log("publicKey-RE-import: ", publicKey);
-              // console.log("privateKey-RE-import: ", privateKeyImport);
             };
             reader.onerror = (err) => console.log(err);
             reader.readAsText(this.file);
@@ -183,13 +183,19 @@ export default {
     },
 
     updateKeysApi(key) {
-      console.log(key);
-      window.contract
-        .updatePublicKey({ publicKey: key })
-        .then((data) => console.log("DATA: ", data));
+      window.contract.updatePublicKey({ publicKey: key }).then((data) => {
+        if (data) {
+          this.$toast.success("Success Save Keys!", {
+            timeout: 2000,
+          });
+        }
+      });
     },
 
     genKeys() {
+      this.$store.commit("TOGGLE_CHECK_CLICK_RE_IMPORT", false);
+      this.$store.commit("TOGGLE_CHECK_CLICK_RE_GEN", true);
+
       const publicKeyCache = localStorage.getItem(`nms_publickey`);
       const privateKeyCache = localStorage.getItem(`nms_privatekey`);
 
@@ -202,23 +208,23 @@ export default {
         this.publicKey = generateKeys.publicKey;
         this.privateKey = generateKeys.privateKey;
 
-        // this.updateKeysApi(generateKeys.publicKey);
+        this.updateKeysApi(generateKeys.publicKey);
 
         this.$toast.success("Success Generate New Keys!", {
           timeout: 2000,
         });
-
-        // console.log("publicKeyGen: ", generateKeys.publicKey);
-        // console.log("privateKeyGen: ", generateKeys.privateKey);
       }
     },
 
     importKeys() {
+      this.$store.commit("TOGGLE_CHECK_CLICK_RE_GEN", false);
+      this.$store.commit("TOGGLE_CHECK_CLICK_RE_IMPORT", true);
+
       const publicKeyCache = localStorage.getItem(`nms_publickey`);
       const privateKeyCache = localStorage.getItem(`nms_privatekey`);
 
       if (publicKeyCache && privateKeyCache) {
-        this.$store.commit("TOGGLE_CONFIRM_RE_IMPORT_KEY_MODAL");
+        this.$store.commit("TOGGLE_CONFIRM_RE_GEN_KEY_MODAL");
       } else {
         this.file = this.$refs.doc.files[0];
         const reader = new FileReader();
@@ -233,14 +239,11 @@ export default {
             localStorage.setItem(`nms_publickey`, publicKey);
             localStorage.setItem(`nms_privatekey`, privateKeyImport);
 
-            // this.updateKeysApi(publicKey);
+            this.updateKeysApi(publicKey);
 
             this.$toast.success("Success Import Keys!", {
               timeout: 2000,
             });
-
-            // console.log("publicKeyImport: ", publicKey);
-            // console.log("privateKeyImport: ", privateKeyImport);
           };
           reader.onerror = (err) => console.log(err);
           reader.readAsText(this.file);

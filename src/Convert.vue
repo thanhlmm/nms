@@ -11,8 +11,7 @@
     <AlertModal />
     <KeyManagementModal />
     <ConfirmPasswordModal />
-    <ConfirmGenModal />
-    <ConfirmImportModal />
+    <ConfirmModal />
     <Overlay />
   </div>
 </template>
@@ -26,8 +25,7 @@ import AlertModal from "./components/AlertModal.vue";
 import KeyManagementModal from "./components/KeyManagementModal.vue";
 import Overlay from "./components/Overlay.vue";
 import ConfirmPasswordModal from "./components/ConfirmPasswordModal.vue";
-import ConfirmGenModal from "./components/ConfirmGenModal.vue";
-import ConfirmImportModal from "./components/ConfirmImportModal.vue";
+import ConfirmModal from "./components/ConfirmModal.vue";
 
 export default {
   components: {
@@ -39,8 +37,7 @@ export default {
     KeyManagementModal,
     Overlay,
     ConfirmPasswordModal,
-    ConfirmGenModal,
-    ConfirmImportModal,
+    ConfirmModal,
   },
 };
 </script>

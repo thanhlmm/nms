@@ -29,10 +29,10 @@ const storeData = {
 
     keyModal: false,
     confirmReGenKeyModal: false,
-    confirmReImportKeyModal: false,
     confirmReGenKey: false,
-    confirmReImportKey: false,
     confirmPasswordModal: false,
+    checkClickReGen: false,
+    checkClickReImport: false,
 
     messageConversation: {
       msgInboxId: null,
@@ -90,11 +90,11 @@ const storeData = {
         state.confirmReGenKey = payload;
       } else state.confirmReGenKey = false;
     },
-    TOGGLE_CONFIRM_RE_IMPORT_KEY_MODAL(state, payload) {
-      state.confirmReImportKeyModal = !state.confirmReImportKeyModal;
-      if (payload === true) {
-        state.confirmReImportKey = payload;
-      } else state.confirmReImportKey = false;
+    TOGGLE_CHECK_CLICK_RE_GEN(state, payload) {
+      state.checkClickReGen = payload;
+    },
+    TOGGLE_CHECK_CLICK_RE_IMPORT(state, payload) {
+      state.checkClickReImport = payload;
     },
 
     // HANDLE MESSAGE MUTATION

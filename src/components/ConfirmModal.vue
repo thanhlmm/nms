@@ -1,10 +1,8 @@
 <template>
   <transition name="slide" appear>
-    <div class="modal" v-if="showModalReImport">
+    <div class="modal" v-if="showModalReGen">
       <div class="header d-flex align-center justify-between mb-20">
-        <div class="title title-20 f-700 d-flex align-center">
-          Confirmation Import
-        </div>
+        <div class="title title-20 f-700 d-flex align-center">Confirmation</div>
         <div class="action">
           <span class="btn-close cursor-pointer" @click="handleCloseModal">
             <svg
@@ -30,9 +28,8 @@
           </span>
         </div>
       </div>
-
       <div class="container">
-        <div class="content">Are you sure Re Import new Keys ?</div>
+        <div class="content">Are you sure to override the old key?</div>
         <div class="container-btn">
           <button
             class="
@@ -71,16 +68,18 @@
 <script>
 export default {
   computed: {
-    showModalReImport() {
-      return this.$store.state.confirmReImportKeyModal;
+    showModalReGen() {
+      return this.$store.state.confirmReGenKeyModal;
     },
   },
   methods: {
     handleCloseModal() {
-      this.$store.commit("TOGGLE_CONFIRM_RE_IMPORT_KEY_MODAL", false);
+      this.$store.commit("TOGGLE_CONFIRM_RE_GEN_KEY_MODAL", false);
+      this.$store.commit("TOGGLE_CHECK_CLICK_RE_GEN", false);
+      this.$store.commit("TOGGLE_CHECK_CLICK_RE_IMPORT", false);
     },
     handleConfirm() {
-      this.$store.commit("TOGGLE_CONFIRM_RE_IMPORT_KEY_MODAL", true);
+      this.$store.commit("TOGGLE_CONFIRM_RE_GEN_KEY_MODAL", true);
     },
   },
 };
