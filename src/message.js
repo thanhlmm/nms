@@ -265,7 +265,7 @@ const rsa = require("node-rsa");
 function generateAESKey() {
   const key = new rsa().generateKeyPair();
 
-  let genPair = {
+  const genPair = {
     publicKey: key.exportKey("public"),
     privateKey: key.exportKey("private"),
   };

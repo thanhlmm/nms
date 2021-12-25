@@ -88,7 +88,9 @@ const storeData = {
       state.confirmReGenKeyModal = !state.confirmReGenKeyModal;
       if (payload === true) {
         state.confirmReGenKey = payload;
-      } else state.confirmReGenKey = false;
+      } else {
+        state.confirmReGenKey = false;
+      }
     },
     TOGGLE_CHECK_CLICK_RE_GEN(state, payload) {
       state.checkClickReGen = payload;

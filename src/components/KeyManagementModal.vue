@@ -124,9 +124,9 @@ export default {
           this.$store.state.confirmReGenKey === true &&
           this.$store.state.checkClickReGen === true
         ) {
-          const generateKeys = generateAESKey("binh2501.testnet");
-          localStorage.setItem(`nms_publickey`, generateKeys.publicKey);
-          localStorage.setItem(`nms_privatekey`, generateKeys.privateKey);
+          const generateKeys = generateAESKey();
+          localStorage.setItem("nms_publickey", generateKeys.publicKey);
+          localStorage.setItem("nms_privatekey", generateKeys.privateKey);
           this.publicKey = generateKeys.publicKey;
           this.privateKey = generateKeys.privateKey;
 
@@ -150,8 +150,8 @@ export default {
               const publicKey = privateKeyToPublicKey(privateKeyImport);
               this.publicKey = publicKey;
 
-              localStorage.setItem(`nms_publickey`, publicKey);
-              localStorage.setItem(`nms_privatekey`, privateKeyImport);
+              localStorage.setItem("nms_publickey", publicKey);
+              localStorage.setItem("nms_privatekey", privateKeyImport);
 
               this.updateKeysApi(publicKey);
 
@@ -194,15 +194,15 @@ export default {
       this.$store.commit("TOGGLE_CHECK_CLICK_RE_IMPORT", false);
       this.$store.commit("TOGGLE_CHECK_CLICK_RE_GEN", true);
 
-      const publicKeyCache = localStorage.getItem(`nms_publickey`);
-      const privateKeyCache = localStorage.getItem(`nms_privatekey`);
+      const publicKeyCache = localStorage.getItem("nms_publickey");
+      const privateKeyCache = localStorage.getItem("nms_privatekey");
 
       if (publicKeyCache && privateKeyCache) {
         this.$store.commit("TOGGLE_CONFIRM_RE_GEN_KEY_MODAL");
       } else {
-        const generateKeys = generateAESKey("binh2501.testnet");
-        localStorage.setItem(`nms_publickey`, generateKeys.publicKey);
-        localStorage.setItem(`nms_privatekey`, generateKeys.privateKey);
+        const generateKeys = generateAESKey();
+        localStorage.setItem("nms_publickey", generateKeys.publicKey);
+        localStorage.setItem("nms_privatekey", generateKeys.privateKey);
         this.publicKey = generateKeys.publicKey;
         this.privateKey = generateKeys.privateKey;
 
@@ -218,8 +218,8 @@ export default {
       this.$store.commit("TOGGLE_CHECK_CLICK_RE_GEN", false);
       this.$store.commit("TOGGLE_CHECK_CLICK_RE_IMPORT", true);
 
-      const publicKeyCache = localStorage.getItem(`nms_publickey`);
-      const privateKeyCache = localStorage.getItem(`nms_privatekey`);
+      const publicKeyCache = localStorage.getItem("nms_publickey");
+      const privateKeyCache = localStorage.getItem("nms_privatekey");
 
       if (publicKeyCache && privateKeyCache) {
         this.$store.commit("TOGGLE_CONFIRM_RE_GEN_KEY_MODAL");
@@ -234,8 +234,8 @@ export default {
             const publicKey = privateKeyToPublicKey(privateKeyImport);
             this.publicKey = publicKey;
 
-            localStorage.setItem(`nms_publickey`, publicKey);
-            localStorage.setItem(`nms_privatekey`, privateKeyImport);
+            localStorage.setItem("nms_publickey", publicKey);
+            localStorage.setItem("nms_privatekey", privateKeyImport);
 
             this.updateKeysApi(publicKey);
 
