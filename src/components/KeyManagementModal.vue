@@ -86,7 +86,6 @@
               <img src="../../public/assets/images/sent.svg" />
               <span>Export</span>
             </button>
-            <button @click="handleConfirmPassword">Confirm Password</button>
           </div>
         </div>
       </div>
