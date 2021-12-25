@@ -28,11 +28,6 @@ const storeData = {
     },
 
     keyModal: false,
-    confirmReGenKeyModal: false,
-    confirmReGenKey: false,
-    confirmPasswordModal: false,
-    checkClickReGen: false,
-    checkClickReImport: false,
 
     messageConversation: {
       msgInboxId: null,
@@ -80,23 +75,6 @@ const storeData = {
     // KEY PRIVATE MANAGEMENT MUTATION
     TOGGLE_KEY_MODAL(state) {
       state.keyModal = !state.keyModal;
-    },
-    TOGGLE_CONFIRM_PASSWORD_MODAL(state) {
-      state.confirmPasswordModal = !state.confirmPasswordModal;
-    },
-    TOGGLE_CONFIRM_RE_GEN_KEY_MODAL(state, payload) {
-      state.confirmReGenKeyModal = !state.confirmReGenKeyModal;
-      if (payload === true) {
-        state.confirmReGenKey = payload;
-      } else {
-        state.confirmReGenKey = false;
-      }
-    },
-    TOGGLE_CHECK_CLICK_RE_GEN(state, payload) {
-      state.checkClickReGen = payload;
-    },
-    TOGGLE_CHECK_CLICK_RE_IMPORT(state, payload) {
-      state.checkClickReImport = payload;
     },
 
     // HANDLE MESSAGE MUTATION

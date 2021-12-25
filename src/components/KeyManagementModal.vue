@@ -1,129 +1,135 @@
 <template>
-  <transition name="slide" appear>
-    <div class="modal" v-if="showModal">
-      <div class="header d-flex align-center justify-between mb-20">
-        <div class="title title-20 f-700 d-flex align-center">
-          Key Management for private message
+  <div>
+    <transition name="slide" appear>
+      <div class="modal" v-if="showModal">
+        <div class="header d-flex align-center justify-between mb-20">
+          <div class="title title-20 f-700 d-flex align-center">
+            Key Management for private message
+          </div>
+          <div class="action">
+            <span class="btn-close cursor-pointer" @click="handleCloseModal">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M2.14209 16.1426L16.2842 2.00044"
+                  stroke="#888A90"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M2.14209 2L16.2842 16.1421"
+                  stroke="#888A90"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </span>
+          </div>
         </div>
-        <div class="action">
-          <span class="btn-close cursor-pointer" @click="handleCloseModal">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 18 18"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M2.14209 16.1426L16.2842 2.00044"
-                stroke="#888A90"
-                stroke-width="3"
-                stroke-linecap="round"
-              />
-              <path
-                d="M2.14209 2L16.2842 16.1421"
-                stroke="#888A90"
-                stroke-width="3"
-                stroke-linecap="round"
-              />
-            </svg>
-          </span>
-        </div>
-      </div>
 
-      <div class="container">
-        <div class="form-input d-flex pb-10 mb-20">
-          <span>Public Key: </span>
-          <input placeholder="*****" v-model="publicKey" disabled />
-          <div class="line"></div>
-        </div>
-        <div class="form-input d-flex pb-10 mb-20">
-          <span>Private Key: </span>
-          <input placeholder="*****" v-model="privateKey" disabled />
-          <div class="line"></div>
-        </div>
-        <div class="d-flex flex-col-sm" style="gap: 1rem">
-          <button
-            class="
-              btn-sent btn-sent-key
-              cursor-pointer
-              d-flex
-              align-center
-              justify-center
-              flex-shrink-0
-            "
-            @click="genKeys"
-          >
-            <img src="../../public/assets/images/sent.svg" />
-            <span>Generate</span>
-          </button>
-          <label
-            class="
-              btn-sent btn-sent-key
-              cursor-pointer
-              d-flex
-              align-center
-              justify-center
-              flex-shrink-0
-            "
-          >
-            <img src="../../public/assets/images/sent.svg" />
-            <span>Import</span>
-            <input type="file" ref="doc" @change="importKeys()" />
-          </label>
-          <button
-            class="
-              btn-sent btn-sent-key
-              cursor-pointer
-              d-flex
-              align-center
-              justify-center
-              flex-shrink-0
-            "
-            @click="exportKeys"
-          >
-            <img src="../../public/assets/images/sent.svg" />
-            <span>Export</span>
-          </button>
+        <div class="container">
+          <div class="form-input d-flex pb-10 mb-20">
+            <span>Public Key: </span>
+            <input placeholder="*****" v-model="publicKey" disabled />
+            <div class="line"></div>
+          </div>
+          <div class="form-input d-flex pb-10 mb-20">
+            <span>Private Key: </span>
+            <input placeholder="*****" v-model="privateKey" disabled />
+            <div class="line"></div>
+          </div>
+          <div class="d-flex flex-col-sm" style="gap: 1rem">
+            <button
+              class="
+                btn-sent btn-sent-key
+                cursor-pointer
+                d-flex
+                align-center
+                justify-center
+                flex-shrink-0
+              "
+              @click="genKeys"
+            >
+              <img src="../../public/assets/images/sent.svg" />
+              <span>Generate</span>
+            </button>
+            <label
+              class="
+                btn-sent btn-sent-key
+                cursor-pointer
+                d-flex
+                align-center
+                justify-center
+                flex-shrink-0
+              "
+            >
+              <img src="../../public/assets/images/sent.svg" />
+              <span>Import</span>
+              <input type="file" ref="doc" @change="importKeys()" />
+            </label>
+            <button
+              class="
+                btn-sent btn-sent-key
+                cursor-pointer
+                d-flex
+                align-center
+                justify-center
+                flex-shrink-0
+              "
+              @click="exportKeys"
+            >
+              <img src="../../public/assets/images/sent.svg" />
+              <span>Export</span>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  </transition>
+    </transition>
+    <ConfirmModal
+      :showModalReGen="showModalReGen"
+      @closeConfirmModal="closeConfirmModal($event)"
+      @toggleClickReGen="toggleClickReGen($event)"
+      @toggleClickReImport="toggleClickReImport($event)"
+      @confirmGen="confirmGen($event)"
+    />
+  </div>
 </template>
 
 <script>
 import { generateAESKey, privateKeyToPublicKey } from "../message";
+import ConfirmModal from "../components/ConfirmModal.vue";
 
 export default {
+  components: {
+    ConfirmModal,
+  },
   data() {
     return {
       publicKey: localStorage.getItem(`nms_publickey`),
       privateKey: localStorage.getItem(`nms_privatekey`),
       file: null,
+
+      checkClickReGenBtn: false,
+      checkClickReImportBtn: false,
+      showModalReGen: false,
+      confirm: false,
     };
   },
   computed: {
     showModal() {
       return this.$store.state.keyModal;
     },
-    confirmReGen() {
-      return this.$store.state.confirmReGenKey;
-    },
-    checkClickReGen() {
-      return this.$store.state.checkClickReGen;
-    },
-    checkClickReImport() {
-      return this.$store.state.checkClickReImport;
-    },
   },
   watch: {
-    confirmReGen: {
+    confirm: {
       immediate: true,
       handler: function () {
-        if (
-          this.$store.state.confirmReGenKey === true &&
-          this.$store.state.checkClickReGen === true
-        ) {
+        if (this.confirm === true && this.checkClickReGenBtn === true) {
           const generateKeys = generateAESKey();
           localStorage.setItem("nms_publickey", generateKeys.publicKey);
           localStorage.setItem("nms_privatekey", generateKeys.privateKey);
@@ -135,11 +141,11 @@ export default {
           this.$toast.success("Success Generate New Keys!", {
             timeout: 2000,
           });
+
+          this.checkClickReGenBtn = false;
+          this.confirm = false;
         }
-        if (
-          this.$store.state.confirmReGenKey === true &&
-          this.$store.state.checkClickReImport === true
-        ) {
+        if (this.confirm === true && this.checkClickReImportBtn === true) {
           this.file = this.$refs.doc.files[0];
           const reader = new FileReader();
           if (this.file.name.includes(".pem")) {
@@ -158,6 +164,9 @@ export default {
               this.$toast.success("Success Import Keys!", {
                 timeout: 2000,
               });
+
+              this.checkClickReImportBtn = false;
+              this.confirm = false;
             };
             reader.onerror = (err) => console.log(err);
             reader.readAsText(this.file);
@@ -180,6 +189,19 @@ export default {
       this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
     },
 
+    closeConfirmModal(e) {
+      this.showModalReGen = e;
+    },
+    toggleClickReGen(e) {
+      this.checkClickReGenBtn = e;
+    },
+    toggleClickReImport(e) {
+      this.checkClickReImportBtn = e;
+    },
+    confirmGen(e) {
+      this.confirm = e;
+    },
+
     updateKeysApi(key) {
       window.contract.updatePublicKey({ publicKey: key }).then((data) => {
         if (data) {
@@ -191,14 +213,13 @@ export default {
     },
 
     genKeys() {
-      this.$store.commit("TOGGLE_CHECK_CLICK_RE_IMPORT", false);
-      this.$store.commit("TOGGLE_CHECK_CLICK_RE_GEN", true);
+      this.checkClickReGenBtn = true;
 
       const publicKeyCache = localStorage.getItem("nms_publickey");
       const privateKeyCache = localStorage.getItem("nms_privatekey");
 
       if (publicKeyCache && privateKeyCache) {
-        this.$store.commit("TOGGLE_CONFIRM_RE_GEN_KEY_MODAL");
+        this.showModalReGen = true;
       } else {
         const generateKeys = generateAESKey();
         localStorage.setItem("nms_publickey", generateKeys.publicKey);
@@ -215,14 +236,13 @@ export default {
     },
 
     importKeys() {
-      this.$store.commit("TOGGLE_CHECK_CLICK_RE_GEN", false);
-      this.$store.commit("TOGGLE_CHECK_CLICK_RE_IMPORT", true);
+      this.checkClickReImportBtn = true;
 
       const publicKeyCache = localStorage.getItem("nms_publickey");
       const privateKeyCache = localStorage.getItem("nms_privatekey");
 
       if (publicKeyCache && privateKeyCache) {
-        this.$store.commit("TOGGLE_CONFIRM_RE_GEN_KEY_MODAL");
+        this.showModalReGen = true;
       } else {
         this.file = this.$refs.doc.files[0];
         const reader = new FileReader();

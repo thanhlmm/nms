@@ -67,19 +67,21 @@
 
 <script>
 export default {
-  computed: {
-    showModalReGen() {
-      return this.$store.state.confirmReGenKeyModal;
+  props: {
+    showModalReGen: {
+      type: Boolean,
     },
   },
   methods: {
     handleCloseModal() {
-      this.$store.commit("TOGGLE_CONFIRM_RE_GEN_KEY_MODAL", false);
-      this.$store.commit("TOGGLE_CHECK_CLICK_RE_GEN", false);
-      this.$store.commit("TOGGLE_CHECK_CLICK_RE_IMPORT", false);
+      this.$emit("closeConfirmModal", false);
+      this.$emit("confirmGen", false);
+      this.$emit("toggleClickReGen", false);
+      this.$emit("toggleClickReImport", false);
     },
     handleConfirm() {
-      this.$store.commit("TOGGLE_CONFIRM_RE_GEN_KEY_MODAL", true);
+      this.$emit("closeConfirmModal", false);
+      this.$emit("confirmGen", true);
     },
   },
 };
