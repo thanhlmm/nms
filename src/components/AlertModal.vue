@@ -86,12 +86,14 @@ export default {
     width: auto;
     span {
       width: 100%;
-      font-size: 16px;
       text-align: center;
       margin-right: 20px;
     }
     @media (max-width: 767px) {
       width: 100%;
+      span {
+        font-size: 16px;
+      }
     }
   }
 }

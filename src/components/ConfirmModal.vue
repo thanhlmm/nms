@@ -144,12 +144,12 @@ export default {
         width: auto;
         span {
           width: auto;
-          font-size: 16px;
           text-align: left;
         }
         @media (max-width: 767px) {
           span {
             width: 30%;
+            font-size: 16px;
           }
         }
       }

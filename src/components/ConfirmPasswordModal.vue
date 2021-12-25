@@ -119,7 +119,6 @@ export default {
   @media (max-width: 767px) {
     width: 350px;
   }
-
   .header {
     width: 100%;
     .title {
@@ -128,18 +127,17 @@ export default {
   }
   .container {
     width: 100%;
-
     .btn-sent-key {
       width: auto;
       span {
         width: auto;
-        font-size: 16px;
         text-align: left;
       }
       @media (max-width: 767px) {
         width: 100%;
         span {
           width: 30%;
+          font-size: 16px;
         }
       }
     }
@@ -148,7 +146,6 @@ export default {
       line-height: 22px;
       position: relative;
     }
-
     .form-input .line {
       content: " ";
       position: absolute;
@@ -164,11 +161,9 @@ export default {
       -o-transform: scaleY(0.5);
       transform: scaleY(0.5);
     }
-
     .form-input span {
       color: var(--color-mail-item);
     }
-
     .form-input input {
       background: transparent;
       width: 60%;
@@ -179,42 +174,33 @@ export default {
       line-height: 22px;
       font-weight: 700;
     }
-
     .form-input input::-webkit-input-placeholder {
       font-weight: 500;
     }
-
     .form-input input:-moz-placeholder {
       font-weight: 500;
     }
-
     .form-input input::-moz-placeholder {
       font-weight: 500;
     }
-
     .form-input input:-ms-input-placeholder {
       font-weight: 500;
     }
-
     .form-input input::-ms-input-placeholder {
       font-weight: 500;
     }
-
     .form-input input::placeholder {
       font-weight: 500;
     }
-
     .form-input input:focus {
       outline: none;
     }
   }
 }
-
 .slide-enter-active,
 .slide-leave-active {
   transition: transform 0.5s ease, opacity 0.2s ease-in-out;
 }
-
 .slide-enter {
   transform: translateX(-50%) translateY(-25px);
   opacity: 1;
@@ -223,7 +209,6 @@ export default {
   transform: translateX(-50%) translateY(0px);
   opacity: 0;
 }
-
 .isEmpty {
   background: red !important;
 }
