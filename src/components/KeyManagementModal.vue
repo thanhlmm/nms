@@ -3,9 +3,7 @@
     <div class="modal" v-if="showModal">
       <div class="header d-flex align-center justify-between mb-20">
         <div class="title title-20 f-700 d-flex align-center">
-          <!-- Key Management for private message {{ confirmReGen }} -->
-          REGenBTN:{{ checkClickReGen }}; REImportBTN:{{ checkClickReImport }};
-          ConfirmReGen:{{ confirmReGen }}
+          Key Management for private message
         </div>
         <div class="action">
           <span class="btn-close cursor-pointer" @click="handleCloseModal">
