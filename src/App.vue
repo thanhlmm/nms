@@ -34,6 +34,12 @@ export default {
     showAlertModal() {
       return this.$store.state.alertModal.isShow;
     },
+    showKeyModal() {
+      return this.$store.state.keyModal;
+    },
+    showConfirmPasswordModal() {
+      return this.$store.state.confirmPasswordModal;
+    },
   },
 
   watch: {
@@ -50,6 +56,22 @@ export default {
       immediate: true,
       handler: function () {
         if (this.$store.state.alertModal.isShow) {
+          document.querySelector("body").style.overflow = "hidden";
+        } else document.querySelector("body").style.overflow = "visible";
+      },
+    },
+    showKeyModal: {
+      immediate: true,
+      handler: function () {
+        if (this.$store.state.keyModal) {
+          document.querySelector("body").style.overflow = "hidden";
+        } else document.querySelector("body").style.overflow = "visible";
+      },
+    },
+    showConfirmPasswordModal: {
+      immediate: true,
+      handler: function () {
+        if (this.$store.state.confirmPasswordModal) {
           document.querySelector("body").style.overflow = "hidden";
         } else document.querySelector("body").style.overflow = "visible";
       },

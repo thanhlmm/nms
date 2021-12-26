@@ -41,10 +41,12 @@
     <div class="mail-content__button">
       <div>
         <span
+          v-show="page > 1"
           class="mail-content__button-prev cursor-pointer mr-4 mr-sm-16"
-          @click="page > 1 && prevPage()"
+          @click="prevPage()"
         ></span>
         <span
+          v-show="reachMaxPage && !preventPagination"
           class="mail-content__button-next cursor-pointer"
           @click="nextPage()"
         ></span>
@@ -98,8 +100,25 @@ export default {
     routePathInbox() {
       return this.$route.path === "/inbox" || this.$route.path === "/";
     },
+    totalMsg() {
+      return this.routePathInbox ? this.sentMsgNum : this.inboxMsgNum;
+    },
     page() {
       return this.$store.state.page;
+    },
+    reachMaxPage() {
+      return this.page * 20 > this.totalMsg;
+    },
+    preventPagination() {
+      return this.$store.state.preventPagination;
+    },
+  },
+  watch: {
+    $route: function (to, from) {
+      if (to.name !== from.name) {
+        // Reset page when route change
+        this.$store.commit("SET_PAGE", 1);
+      }
     },
   },
   methods: {

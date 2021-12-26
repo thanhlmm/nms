@@ -46,9 +46,10 @@ export async function initContract() {
         "getInboxMessages",
         "getMessage",
         "getStatics",
+        "getPublicKey",
       ],
       // Change methods can modify the state. But you don't receive the returned value when called.
-      changeMethods: ["sendMessage"],
+      changeMethods: ["sendMessage", "updatePublicKey"],
     }
   );
 }

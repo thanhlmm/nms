@@ -102,7 +102,7 @@ export default {
     msgInboxId() {
       return this.$store.state.messageConversation.msgInboxId;
     },
-    routeInboxSent() {
+    routePathInbox() {
       return this.$route.path === "/inbox" || this.$route.path === "/";
     },
     routePathSent() {
@@ -115,7 +115,7 @@ export default {
       return this.$store.state.inboxMsgNum;
     },
     totalMsg() {
-      return this.routeInboxSent ? this.sentMsgNum : this.inboxMsgNum;
+      return this.routePathInbox ? this.sentMsgNum : this.inboxMsgNum;
     },
     page() {
       return this.$store.state.page;

@@ -119,8 +119,31 @@
         />
       </div>
 
-      <div class="f-500 mb-16">Select NEAR to send:</div>
+      <div class="mb-16">
+        <div class="f-500 mb-16">Select message type:</div>
+        <div class="near__value-list d-flex">
+          <div
+            class="near__value-item cursor-pointer"
+            v-bind:class="{
+              active: type === 'public',
+            }"
+            @click="type = 'public'"
+          >
+            Public
+          </div>
+          <div
+            class="near__value-item cursor-pointer"
+            v-bind:class="{
+              active: type === 'private',
+            }"
+            @click="type = 'private'"
+          >
+            Private
+          </div>
+        </div>
+      </div>
 
+      <div class="f-500 mb-16">Select NEAR to send:</div>
       <div class="d-flex align-center justify-between">
         <div class="near__value-list d-flex">
           <div
@@ -193,6 +216,7 @@ export default {
       title: "",
       data: "",
       amount: 0.1,
+      type: "public",
 
       checkToInput: false,
       checkTitleInput: false,

@@ -1620,6 +1620,14 @@ p {
   align-items: center;
 }
 
+.align-start {
+  -webkit-box-align: start;
+  -webkit-align-items: start;
+  -moz-box-align: start;
+  -ms-flex-align: start;
+  align-items: start;
+}
+
 .align-stretch {
   -webkit-box-align: stretch;
   -webkit-align-items: stretch;
@@ -1779,6 +1787,9 @@ p {
     display: -moz-box !important;
     display: -ms-flexbox !important;
     display: flex !important;
+  }
+  .flex-col-sm {
+    flex-direction: column;
   }
 }
 
@@ -2049,6 +2060,15 @@ p {
 
 .mail-left__info .name {
   color: var(--color-menu);
+}
+
+.lock {
+  -webkit-border-radius: 512px;
+  -moz-border-radius: 512px;
+  border-radius: 512px;
+  width: 64px;
+  height: 26px;
+  background: var(--background-btn-sent)
 }
 
 .switch-theme {

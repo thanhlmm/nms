@@ -1,14 +1,17 @@
 <template>
   <transition name="fade" appear>
-    <div class="modalOverlay" v-if="showModal"></div>
+    <div class="modalOverlay" v-if="alertModal || keyModal"></div>
   </transition>
 </template>
 
 <script>
 export default {
   computed: {
-    showModal() {
+    alertModal() {
       return this.$store.state.alertModal.isShow;
+    },
+    keyModal() {
+      return this.$store.state.keyModal;
     },
   },
 };
