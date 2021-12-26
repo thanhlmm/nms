@@ -1,5 +1,5 @@
 import { Context, PersistentVector, ContractPromiseBatch, env, u128, logging } from 'near-sdk-as'
-import { Message, StaticsInfo, messages, staticsInfos, sentInfos, inboxInfos } from './model';
+import { Message, StaticsInfo, messages, staticsInfos, sentInfos, inboxInfos, publicKeys } from './model';
 
 const STATICS_KEY = "statics";
 const NEAR_SEND_MIN = u128.from("10000000000000000000000");
@@ -230,4 +230,20 @@ export function sendMessage(to: string, title: string, data: string, baseSite: s
 
 export function getStatics(): StaticsInfo | null {
     return staticsInfos.get(STATICS_KEY, null);
+}
+
+/**
+ * Update public key
+ * Use for private message
+ */
+export function updatePublicKey(publicKey: string): boolean {
+    publicKeys.set(Context.sender, publicKey);
+    return true;
+}
+
+/**
+ * Get public key
+ */
+export function getPublicKey(accountId: string): string | null {
+    return publicKeys.get(accountId, "");
 }

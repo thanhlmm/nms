@@ -45,42 +45,21 @@
           </div>
           <div class="d-flex flex-col-sm" style="gap: 1rem">
             <button
-              class="
-                btn-sent btn-sent-key
-                cursor-pointer
-                d-flex
-                align-center
-                justify-center
-                flex-shrink-0
-              "
+              class="btn-sent btn-sent-key cursor-pointer d-flex align-center justify-center flex-shrink-0"
               @click="genKeys"
             >
               <img src="../../public/assets/images/sent.svg" />
               <span>Generate</span>
             </button>
             <label
-              class="
-                btn-sent btn-sent-key
-                cursor-pointer
-                d-flex
-                align-center
-                justify-center
-                flex-shrink-0
-              "
+              class="btn-sent btn-sent-key cursor-pointer d-flex align-center justify-center flex-shrink-0"
             >
               <img src="../../public/assets/images/sent.svg" />
               <span>Import</span>
               <input type="file" ref="doc" @change="importKeys()" />
             </label>
             <button
-              class="
-                btn-sent btn-sent-key
-                cursor-pointer
-                d-flex
-                align-center
-                justify-center
-                flex-shrink-0
-              "
+              class="btn-sent btn-sent-key cursor-pointer d-flex align-center justify-center flex-shrink-0"
               @click="exportKeys"
             >
               <img src="../../public/assets/images/sent.svg" />
@@ -102,7 +81,7 @@
 </template>
 
 <script>
-import { generateAESKey, privateKeyToPublicKey } from "../message";
+import { generateRSAKey, privateKeyToPublicKey } from "../message";
 import ConfirmModal from "../components/ConfirmModal.vue";
 import ConfirmPasswordModal from "../components/ConfirmPasswordModal.vue";
 
@@ -133,7 +112,7 @@ export default {
       immediate: true,
       handler: function () {
         if (this.confirm === true && this.checkClickReGenBtn === true) {
-          const generateKeys = generateAESKey();
+          const generateKeys = generateRSAKey();
           localStorage.setItem("nms_publickey", generateKeys.publicKey);
           localStorage.setItem("nms_privatekey", generateKeys.privateKey);
           this.publicKey = generateKeys.publicKey;
@@ -224,7 +203,7 @@ export default {
       if (publicKeyCache && privateKeyCache) {
         this.showModalReGen = true;
       } else {
-        const generateKeys = generateAESKey();
+        const generateKeys = generateRSAKey();
         localStorage.setItem("nms_publickey", generateKeys.publicKey);
         localStorage.setItem("nms_privatekey", generateKeys.privateKey);
         this.publicKey = generateKeys.publicKey;

@@ -68,3 +68,6 @@ export const sentInfos = new PersistentMap<string, PersistentVector<i32>>("psent
 // Store list of message indexes for each sender's account.\
 // Note: This avoids using a for loop to search for data, and also reduces duplication of message data
 export const inboxInfos = new PersistentMap<string, PersistentVector<i32>>("pinbox");
+
+// Store list of public keys by account
+export const publicKeys = new PersistentMap<string, string>("ppublickey");
