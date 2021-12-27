@@ -125,18 +125,18 @@
           <div
             class="near__value-item cursor-pointer"
             v-bind:class="{
-              active: type === 'public',
+              active: type === 'PUBLIC',
             }"
-            @click="type = 'public'"
+            @click="type = 'PUBLIC'"
           >
             Public
           </div>
           <div
             class="near__value-item cursor-pointer"
             v-bind:class="{
-              active: type === 'private',
+              active: type === 'PRIVATE',
             }"
-            @click="type = 'private'"
+            @click="type = 'PRIVATE'"
           >
             Private
           </div>
@@ -216,10 +216,12 @@ export default {
       title: "",
       data: "",
       amount: 0.1,
-      type: "public",
+      type: "PUBLIC",
 
       checkToInput: false,
       checkTitleInput: false,
+      senderKey: null,
+      receiverKey: null,
     };
   },
   computed: {
@@ -232,6 +234,27 @@ export default {
     minimizeModal() {
       return this.$store.state.sendMessageModal.isMinimize;
     },
+    username() {
+      return window.walletConnection.getAccountId();
+    },
+  },
+  watch: {
+    type: {
+      immediate: true,
+      handler: function () {
+        if (this.type === "PRIVATE") {
+          window.contract
+            .getPublicKey({ accountId: this.username })
+            .then((data) => {
+              if (data) {
+                this.senderKey = data;
+              } else {
+                this.$store.commit("TOGGLE_KEY_MODAL");
+              }
+            });
+        }
+      },
+    },
   },
   methods: {
     updateModelValue(e) {
@@ -239,13 +262,21 @@ export default {
     },
 
     async handleSendMessageModal() {
-      let msg = {
+      const msg = {
         title: this.title,
         content: this.data,
         attachmentFiles: {},
+        type: this.type,
+        keys: {
+          sender: this.senderKey,
+          receiver: this.receiverKey,
+        },
       };
 
       if (!this.to.length && !this.title.length) {
+        this.$toast.error("Please enter the field 'To' and 'Subject'!", {
+          timeout: 2000,
+        });
         this.checkTitleInput = true;
         this.checkToInput = true;
         return;
@@ -255,26 +286,41 @@ export default {
       }
 
       if (!this.to.length) {
-        // alert("Please enter the field 'To'!");
+        this.$toast.error("Please enter the field 'To'!", {
+          timeout: 2000,
+        });
         this.checkToInput = true;
         return;
-      } else this.checkToInput = false;
+      } else {
+        this.checkToInput = false;
+      }
 
       if (!this.title.length) {
-        // alert("Please enter the field 'To'!");
+        this.$toast.error("Please enter the field 'Subject'!", {
+          timeout: 2000,
+        });
         this.checkTitleInput = true;
         return;
       } else this.checkTitleInput = false;
 
       if (!(await isAccountExist(this.to))) {
-        // alert(
-        //   `The account '${this.to}' is not existed. Please enter the other account!`
-        // );
         this.checkToInput = false;
         this.checkTitleInput = false;
         this.$store.commit("TOGGLE_ALERT_MODAL", this.to);
         return;
+      } else {
+        window.contract.getPublicKey({ accountId: this.to }).then((data) => {
+          if (data) {
+            msg.keys.receiver = data;
+          } else {
+            this.$toast.error("Receiver don't have public key!", {
+              timeout: 2000,
+            });
+            return;
+          }
+        });
       }
+      console.log("MSG: ", msg);
 
       try {
         console.log("start send", msg, tranformUnit(this.amount));
@@ -309,7 +355,11 @@ export default {
               prevMsgId: 0,
               expiredTime: "0",
             })
-            .then(console.log);
+            .then(() => {
+              this.$toast.success("Your message have been send!", {
+                timeout: 2000,
+              });
+            });
         }
       } catch (error) {
         console.log(error);
