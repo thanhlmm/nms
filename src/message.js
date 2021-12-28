@@ -167,8 +167,6 @@ async function getMesageData(cid, aesKey) {
 exports.getMesageData = getMesageData;
 
 function encryptWithPublicKey(keys, data) {
-  console.log("keys: ", keys);
-  // console.log("data: ", data);
   let pubKey = Buffer.from(keys, "hex").toString("utf8");
   let key = new NodeRSA(pubKey, "public");
   const encrypted = key.encrypt(data, "hex");
@@ -210,13 +208,6 @@ async function packMessage(msg) {
       attachmentFiles: msg.attachmentFiles,
     };
     let bodyBuffer = await encodeMsgBody(msgBody, aesKey);
-
-    console.log("msg: ", msg);
-
-    const keySender = msg.keys.sender;
-    const keyReceiver = msg.keys.receiver;
-    console.log("keySender: ", keySender);
-    console.log("keyReceiver: ", keyReceiver);
 
     // Check is support IPFS or not?
     if (clientConfig.isSupportIpfs) {
@@ -263,6 +254,7 @@ exports.packMessage = packMessage;
 // opts: { isLoadFromIpfs, isInboxMsg, privateKey }
 // return: { code, message, title, content, attachmentFiles}
 async function depackMessage(msg, opts) {
+  console.log("opts: ", opts);
   let resp = {
     baseSite: msg.baseSite,
     expiredTime: msg.expiredTime,

@@ -261,68 +261,7 @@ export default {
       this.data = e;
     },
 
-    async handleSendMessageModal() {
-      const msg = {
-        title: this.title,
-        content: this.data,
-        attachmentFiles: {},
-        type: this.type,
-        keys: {
-          sender: this.senderKey,
-          receiver: this.receiverKey,
-        },
-      };
-
-      if (!this.to.length && !this.title.length) {
-        this.$toast.error("Please enter the field 'To' and 'Subject'!", {
-          timeout: 2000,
-        });
-        this.checkTitleInput = true;
-        this.checkToInput = true;
-        return;
-      } else {
-        this.checkTitleInput = false;
-        this.checkToInput = false;
-      }
-
-      if (!this.to.length) {
-        this.$toast.error("Please enter the field 'To'!", {
-          timeout: 2000,
-        });
-        this.checkToInput = true;
-        return;
-      } else {
-        this.checkToInput = false;
-      }
-
-      if (!this.title.length) {
-        this.$toast.error("Please enter the field 'Subject'!", {
-          timeout: 2000,
-        });
-        this.checkTitleInput = true;
-        return;
-      } else this.checkTitleInput = false;
-
-      if (!(await isAccountExist(this.to))) {
-        this.checkToInput = false;
-        this.checkTitleInput = false;
-        this.$store.commit("TOGGLE_ALERT_MODAL", this.to);
-        return;
-      } else {
-        if (this.type === "PRIVATE") {
-          window.contract.getPublicKey({ accountId: this.to }).then((data) => {
-            if (data) {
-              msg.keys.receiver = data;
-            } else {
-              this.$toast.error("Receiver don't have public key!", {
-                timeout: 2000,
-              });
-              return;
-            }
-          });
-        }
-      }
-      console.log("msg: ", msg);
+    async packMassage(msg) {
       try {
         console.log("start send", msg, tranformUnit(this.amount));
         const resp = await message.packMessage(msg);
@@ -364,6 +303,79 @@ export default {
         }
       } catch (error) {
         console.log(error);
+      }
+    },
+
+    async handleSendMessageModal() {
+      if (!this.to.length && !this.title.length) {
+        this.$toast.error("Please enter the field 'To' and 'Subject'!", {
+          timeout: 2000,
+        });
+        this.checkTitleInput = true;
+        this.checkToInput = true;
+        return;
+      } else {
+        this.checkTitleInput = false;
+        this.checkToInput = false;
+      }
+
+      if (!this.to.length) {
+        this.$toast.error("Please enter the field 'To'!", {
+          timeout: 2000,
+        });
+        this.checkToInput = true;
+        return;
+      } else {
+        this.checkToInput = false;
+      }
+
+      if (!this.title.length) {
+        this.$toast.error("Please enter the field 'Subject'!", {
+          timeout: 2000,
+        });
+        this.checkTitleInput = true;
+        return;
+      } else this.checkTitleInput = false;
+
+      if (!(await isAccountExist(this.to))) {
+        this.checkToInput = false;
+        this.checkTitleInput = false;
+        this.$store.commit("TOGGLE_ALERT_MODAL", this.to);
+        return;
+      } else {
+        if (this.type === "PRIVATE") {
+          window.contract.getPublicKey({ accountId: this.to }).then((data) => {
+            if (data) {
+              this.packMassage({
+                title: this.title,
+                content: this.data,
+                attachmentFiles: {},
+                type: this.type,
+                keys: {
+                  sender: this.senderKey,
+                  receiver: data,
+                },
+              });
+            } else {
+              this.$toast.error("Receiver don't have public key!", {
+                timeout: 2000,
+              });
+              return;
+            }
+          });
+        }
+        if (this.type === "PUBLIC") {
+          this.packMassage({
+            title: this.title,
+            content: this.data,
+            attachmentFiles: {},
+            type: this.type,
+            keys: {
+              sender: null,
+              receiver: null,
+            },
+          });
+        }
       }
     },
 
