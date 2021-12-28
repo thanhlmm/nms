@@ -166,6 +166,26 @@ async function getMesageData(cid, aesKey) {
 }
 exports.getMesageData = getMesageData;
 
+function encryptWithPublicKey(keys, data) {
+  console.log("keys: ", keys);
+  // console.log("data: ", data);
+  let pubKey = Buffer.from(keys, "hex").toString("utf8");
+  let key = new NodeRSA(pubKey, "public");
+  const encrypted = key.encrypt(data, "hex");
+  return encrypted;
+}
+
+function decryptWithPrivateKey(privateKey, data) {}
+
+function generateAESKey256() {
+  let key = "";
+  let hex = "0123456789abcdef";
+  for (i = 0; i < 64; i++) {
+    key += hex.charAt(Math.floor(Math.random() * 16));
+  }
+  return key;
+}
+
 // msg: { title, content, attachmentFiles, type, keys: { sender, receiver } }
 // return: { code, message, title, data}
 async function packMessage(msg) {
@@ -190,6 +210,13 @@ async function packMessage(msg) {
       attachmentFiles: msg.attachmentFiles,
     };
     let bodyBuffer = await encodeMsgBody(msgBody, aesKey);
+
+    console.log("msg: ", msg);
+
+    const keySender = msg.keys.sender;
+    const keyReceiver = msg.keys.receiver;
+    console.log("keySender: ", keySender);
+    console.log("keyReceiver: ", keyReceiver);
 
     // Check is support IPFS or not?
     if (clientConfig.isSupportIpfs) {
@@ -338,21 +365,3 @@ function privateKeyToPublicKey(strPrivateKey) {
   return strPublicKey;
 }
 exports.privateKeyToPublicKey = privateKeyToPublicKey;
-
-function generateAESKey256() {
-  let key = "";
-  let hex = "0123456789abcdef";
-  for (i = 0; i < 64; i++) {
-    key += hex.charAt(Math.floor(Math.random() * 16));
-  }
-  return key;
-}
-
-function encryptWithPublicKey(publicKey, data) {
-  let pubKey = Buffer.from(publicKey, "hex").toString("utf8");
-  let key = new NodeRSA(pubKey, "public");
-  const encrypted = key.encrypt(data, "hex");
-  return encrypted;
-}
-
-function decryptWithPrivateKey(privateKey, data) {}

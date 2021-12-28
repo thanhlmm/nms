@@ -322,7 +322,7 @@ export default {
           });
         }
       }
-
+      console.log("msg: ", msg);
       try {
         console.log("start send", msg, tranformUnit(this.amount));
         const resp = await message.packMessage(msg);
