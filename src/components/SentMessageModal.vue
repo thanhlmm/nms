@@ -309,18 +309,19 @@ export default {
         this.$store.commit("TOGGLE_ALERT_MODAL", this.to);
         return;
       } else {
-        window.contract.getPublicKey({ accountId: this.to }).then((data) => {
-          if (data) {
-            msg.keys.receiver = data;
-          } else {
-            this.$toast.error("Receiver don't have public key!", {
-              timeout: 2000,
-            });
-            return;
-          }
-        });
+        if (this.type === "PRIVATE") {
+          window.contract.getPublicKey({ accountId: this.to }).then((data) => {
+            if (data) {
+              msg.keys.receiver = data;
+            } else {
+              this.$toast.error("Receiver don't have public key!", {
+                timeout: 2000,
+              });
+              return;
+            }
+          });
+        }
       }
-      console.log("MSG: ", msg);
 
       try {
         console.log("start send", msg, tranformUnit(this.amount));
