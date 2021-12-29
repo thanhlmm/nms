@@ -63,6 +63,9 @@ export default {
     msgInboxId() {
       return this.$store.state.messageConversation.msgInboxId;
     },
+    routePathSent() {
+      return this.$route.path === "/sent";
+    },
   },
   watch: {
     msgInboxId: function () {
@@ -77,18 +80,24 @@ export default {
     getMessages(id) {
       if (id === null) return;
 
+      const opts = {
+        isLoadFromIpfs: message.clientConfig.isSupportIpfs,
+        isInboxMsg: !this.routePathSent,
+        privateKey: localStorage.getItem(`nms_privatekey`),
+      };
+
       const cacheMsg = window.localStorage.getItem(`msg-${id}`);
       if (cacheMsg) {
-        this.updateDataMessage(JSON.parse(cacheMsg));
+        this.updateDataMessage(JSON.parse(cacheMsg), opts);
         return;
       }
       window.contract.getMessage({ msgId: id }).then((data) => {
         window.localStorage.setItem(`msg-${id}`, JSON.stringify(data));
-        this.updateDataMessage(data);
+        this.updateDataMessage(data, opts);
       });
     },
-    async updateDataMessage(msg) {
-      const msgInbox = await message.depackMessage(msg);
+    async updateDataMessage(msg, opts) {
+      const msgInbox = await message.depackMessage(msg, opts);
 
       if (msgInbox.prevMsgId === 0) {
         this.dataMsgConversation.push(msgInbox);

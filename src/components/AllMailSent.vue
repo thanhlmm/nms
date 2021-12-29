@@ -61,6 +61,9 @@ export default {
     page() {
       return this.$store.state.page;
     },
+    routePathSent() {
+      return this.$route.path === "/sent";
+    },
   },
   watch: {
     page() {
@@ -88,6 +91,13 @@ export default {
       if (this.sentMsgNum === 0) {
         return;
       }
+
+      const opts = {
+        isLoadFromIpfs: message.clientConfig.isSupportIpfs,
+        isInboxMsg: !this.routePathSent,
+        privateKey: localStorage.getItem(`nms_privatekey`),
+      };
+
       const indexInfo = getIndexInfo(this.sentMsgNum, this.page, 20);
       if (indexInfo.fromIndex === 0) {
         this.$store.commit("SET_PREVENT_PAGINATION", true);
@@ -115,7 +125,7 @@ export default {
             };
           });
           const structEachData = eachData.map((item) => {
-            return this.updateDataMessage(item);
+            return this.updateDataMessage(item, opts);
           });
           return Promise.all(structEachData);
         })
@@ -125,8 +135,8 @@ export default {
           this.dataMsgSent = dataSent;
         });
     },
-    async updateDataMessage(msg) {
-      return await message.depackMessage(msg);
+    async updateDataMessage(msg, opts) {
+      return await message.depackMessage(msg, opts);
     },
   },
 };

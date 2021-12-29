@@ -254,7 +254,6 @@ exports.packMessage = packMessage;
 // opts: { isLoadFromIpfs, isInboxMsg, privateKey }
 // return: { code, message, title, content, attachmentFiles}
 async function depackMessage(msg, opts) {
-  console.log("opts: ", opts);
   let resp = {
     baseSite: msg.baseSite,
     expiredTime: msg.expiredTime,
