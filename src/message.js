@@ -166,24 +166,6 @@ async function getMesageData(cid, aesKey) {
 }
 exports.getMesageData = getMesageData;
 
-function encryptWithPublicKey(keys, data) {
-  let pubKey = Buffer.from(keys, "hex").toString("utf8");
-  let key = new NodeRSA(pubKey, "public");
-  const encrypted = key.encrypt(data, "hex");
-  return encrypted;
-}
-
-function decryptWithPrivateKey(privateKey, data) {}
-
-function generateAESKey256() {
-  let key = "";
-  let hex = "0123456789abcdef";
-  for (i = 0; i < 64; i++) {
-    key += hex.charAt(Math.floor(Math.random() * 16));
-  }
-  return key;
-}
-
 // msg: { title, content, attachmentFiles, type, keys: { sender, receiver } }
 // return: { code, message, title, data}
 async function packMessage(msg) {
@@ -274,15 +256,6 @@ async function depackMessage(msg, opts) {
     if (data) {
       if (data.startsWith("#EXPIRED")) {
         msg.content = "The message has been expired!";
-      } else if (data.startsWith("#DIRECT")) {
-        let bodyData = data.substring(8);
-        let bodyBuffer = Buffer.from(bodyData, "hex");
-        let bodyInfo = decodeMsgBody(bodyBuffer, clientConfig.aesKey);
-        // console.log("bodyInfo", bodyInfo);
-        resp.content = bodyInfo.content;
-        resp.attachmentFiles = bodyInfo.attachmentFiles;
-        resp.code = 0;
-        resp.message = "SUCCESS";
       } else if (data.startsWith("#DIRECT-PRI")) {
         if (!opts || opts.privateKey) {
           resp.message = "Missing parameters!!!";
@@ -300,19 +273,28 @@ async function depackMessage(msg, opts) {
         }
         let bodyBuffer = Buffer.from(bodyData, "hex");
         let bodyInfo = decodeMsgBody(bodyBuffer, aesKey);
-        // console.log("bodyInfo", bodyInfo);
+        console.log("bodyInfo #DIRECT-PRI", bodyInfo);
         resp.content = bodyInfo.content;
         resp.attachmentFiles = bodyInfo.attachmentFiles;
         resp.code = 0;
         resp.message = "SUCCESS";
-      } else if (data.startsWith("#IPFS")) {
-        if (opts && opts.isLoadFromIpfs) {
-          let cid = data.substring(6);
-        }
+      } else if (data.startsWith("#DIRECT")) {
+        let bodyData = data.substring(8);
+        let bodyBuffer = Buffer.from(bodyData, "hex");
+        let bodyInfo = decodeMsgBody(bodyBuffer, clientConfig.aesKey);
+        console.log("bodyInfo #DIRECT", bodyInfo);
+        resp.content = bodyInfo.content;
+        resp.attachmentFiles = bodyInfo.attachmentFiles;
         resp.code = 0;
         resp.message = "SUCCESS";
       } else if (data.startsWith("#IPFS-PRI")) {
         if (isLoadFromIpfs) {
+          let cid = data.substring(6);
+        }
+        resp.code = 0;
+        resp.message = "SUCCESS";
+      } else if (data.startsWith("#IPFS")) {
+        if (opts && opts.isLoadFromIpfs) {
           let cid = data.substring(6);
         }
         resp.code = 0;
@@ -356,3 +338,27 @@ function privateKeyToPublicKey(strPrivateKey) {
   return strPublicKey;
 }
 exports.privateKeyToPublicKey = privateKeyToPublicKey;
+
+function generateAESKey256() {
+  let key = "";
+  let hex = "0123456789abcdef";
+  for (i = 0; i < 64; i++) {
+    key += hex.charAt(Math.floor(Math.random() * 16));
+  }
+  return key;
+}
+
+function encryptWithPublicKey(publicKey, data) {
+  let pubKey = Buffer.from(publicKey, "hex").toString("utf8");
+  let key = new NodeRSA(pubKey, "public");
+  const encrypted = key.encrypt(data, "hex");
+  return encrypted;
+}
+
+function decryptWithPrivateKey(privateKey, data) {
+  let priKey = Buffer.from(privateKey, "hex").toString("utf8");
+  let key = new NodeRSA(priKey, "private");
+  let buffer = Buffer.from(data, "hex");
+  const decrypted = key.decrypt(buffer, "utf8");
+  return decrypted;
+}
