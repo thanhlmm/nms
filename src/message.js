@@ -351,5 +351,9 @@ function encryptWithPublicKey(publicKey, data) {
 }
 
 function decryptWithPrivateKey(privateKey, data) {
-
+	let priKey = Buffer.from(privateKey, "hex").toString("utf8");
+    let key = new NodeRSA(priKey, "private");
+    let buffer = Buffer.from(data, "hex");
+    const decrypted = key.decrypt(buffer, 'utf8');
+    return decrypted;
 }
