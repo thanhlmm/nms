@@ -44,18 +44,27 @@ export default {
   components: {
     MessageDetail,
   },
+
   data() {
     return {
       windowWidth: window.innerWidth,
       dataMsgConversation: [],
+      localPrivateKey: null,
     };
   },
+
+  mounted() {
+    this.getLocalPrivateKey();
+  },
+
   created() {
     window.addEventListener("resize", this.myEventHandler);
   },
+
   destroyed() {
     window.removeEventListener("resize", this.myEventHandler);
   },
+
   computed: {
     userLogin() {
       return this.$store.state.auth.auth.isLogin;
@@ -66,24 +75,47 @@ export default {
     routePathSent() {
       return this.$route.path === "/sent";
     },
+    checkPrivateKeyLocal() {
+      return this.$store.state.checkPrivateKeyLocal;
+    },
   },
+
   watch: {
     msgInboxId: function () {
       this.dataMsgConversation = [];
       this.getMessages(this.msgInboxId);
     },
+    checkPrivateKeyLocal() {
+      this.getLocalPrivateKey();
+      this.getMessages(this.msgInboxId);
+    },
   },
+
   methods: {
     myEventHandler() {
       this.windowWidth = window.innerWidth;
     },
+
+    getLocalPrivateKey() {
+      const privateKey = localStorage.getItem(`nms_privatekey`);
+      if (privateKey === null) {
+        this.$toast.error(
+          "Empty private key. Please import or generate new key",
+          {
+            timeout: 2000,
+          }
+        );
+      }
+      this.localPrivateKey = privateKey;
+    },
+
     getMessages(id) {
       if (id === null) return;
 
       const opts = {
         isLoadFromIpfs: message.clientConfig.isSupportIpfs,
         isInboxMsg: !this.routePathSent,
-        privateKey: localStorage.getItem(`nms_privatekey`),
+        privateKey: this.localPrivateKey,
       };
 
       const cacheMsg = window.localStorage.getItem(`msg-${id}`);
@@ -96,6 +128,7 @@ export default {
         this.updateDataMessage(data, opts);
       });
     },
+
     async updateDataMessage(msg, opts) {
       const msgInbox = await message.depackMessage(msg, opts);
 

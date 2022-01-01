@@ -42,18 +42,23 @@ export default {
   components: {
     Avatar,
   },
+
   data() {
     return {
       dataMsgSent: [],
       readMailId: [],
       accountId: null,
       reRender: null,
+      localPrivateKey: null,
     };
   },
+
   mounted() {
     this.getAccountId();
     this.getSentMsg();
+    this.getLocalPrivateKey();
   },
+
   computed: {
     sentMsgNum() {
       return this.$store.state.sentMsgNum;
@@ -64,7 +69,11 @@ export default {
     routePathSent() {
       return this.$route.path === "/sent";
     },
+    checkPrivateKeyLocal() {
+      return this.$store.state.checkPrivateKeyLocal;
+    },
   },
+
   watch: {
     page() {
       this.getSentMsg();
@@ -72,7 +81,12 @@ export default {
     sentMsgNum() {
       this.getSentMsg();
     },
+    checkPrivateKeyLocal() {
+      this.getLocalPrivateKey();
+      this.getSentMsg();
+    },
   },
+
   methods: {
     handleSelectedMail(id) {
       this.$store.commit("MESSAGE_CONVERSATION", id);
@@ -87,6 +101,19 @@ export default {
       this.accountId = window.walletConnection.getAccountId();
     },
 
+    getLocalPrivateKey() {
+      const privateKey = localStorage.getItem(`nms_privatekey`);
+      if (privateKey === null) {
+        this.$toast.error(
+          "Empty private key. Please import or generate new key",
+          {
+            timeout: 2000,
+          }
+        );
+      }
+      this.localPrivateKey = privateKey;
+    },
+
     getSentMsg() {
       if (this.sentMsgNum === 0) {
         return;
@@ -95,7 +122,7 @@ export default {
       const opts = {
         isLoadFromIpfs: message.clientConfig.isSupportIpfs,
         isInboxMsg: !this.routePathSent,
-        privateKey: localStorage.getItem(`nms_privatekey`),
+        privateKey: this.localPrivateKey,
       };
 
       const indexInfo = getIndexInfo(this.sentMsgNum, this.page, 20);
@@ -135,6 +162,7 @@ export default {
           this.dataMsgSent = dataSent;
         });
     },
+
     async updateDataMessage(msg, opts) {
       return await message.depackMessage(msg, opts);
     },

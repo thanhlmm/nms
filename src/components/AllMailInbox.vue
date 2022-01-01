@@ -53,7 +53,6 @@ export default {
       accountId: null,
       selectedId: null,
       localPrivateKey: null,
-      privateKey: localStorage.getItem(`nms_privatekey`),
     };
   },
 
@@ -152,7 +151,6 @@ export default {
         );
       }
       this.localPrivateKey = privateKey;
-      console.log("getLocalPrivateKey");
     },
 
     getInboxMsg() {
@@ -193,8 +191,6 @@ export default {
             };
           });
           const structEachData = eachData.map((item) => {
-            console.log("item: ", item);
-            console.log("opts: ", opts);
             return this.updateDataMessage(item, opts);
           });
           return Promise.all(structEachData);
