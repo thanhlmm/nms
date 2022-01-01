@@ -251,15 +251,6 @@ async function depackMessage(msg, opts) {
     if (data) {
       if (data.startsWith("#EXPIRED")) {
         msg.content = "The message has been expired!";
-      } else if (data.startsWith("#DIRECT")) {
-        let bodyData = data.substring(8);
-        let bodyBuffer = Buffer.from(bodyData, "hex");
-        let bodyInfo = decodeMsgBody(bodyBuffer, clientConfig.aesKey);
-        // console.log("bodyInfo", bodyInfo);
-        resp.content = bodyInfo.content;
-        resp.attachmentFiles = bodyInfo.attachmentFiles;
-        resp.code = 0;
-        resp.message = "SUCCESS";
       } else if (data.startsWith("#DIRECT-PRI")) {
         if (!opts || opts.privateKey) {
           resp.message = "Missing parameters!!!";
@@ -282,14 +273,23 @@ async function depackMessage(msg, opts) {
         resp.attachmentFiles = bodyInfo.attachmentFiles;
         resp.code = 0;
         resp.message = "SUCCESS";
-      } else if (data.startsWith("#IPFS")) {
-        if (opts && opts.isLoadFromIpfs) {
-          let cid = data.substring(6);
-        }
+      } else if (data.startsWith("#DIRECT")) {
+        let bodyData = data.substring(8);
+        let bodyBuffer = Buffer.from(bodyData, "hex");
+        let bodyInfo = decodeMsgBody(bodyBuffer, clientConfig.aesKey);
+        // console.log("bodyInfo", bodyInfo);
+        resp.content = bodyInfo.content;
+        resp.attachmentFiles = bodyInfo.attachmentFiles;
         resp.code = 0;
         resp.message = "SUCCESS";
       } else if (data.startsWith("#IPFS-PRI")) {
         if (isLoadFromIpfs) {
+          let cid = data.substring(6);
+        }
+        resp.code = 0;
+        resp.message = "SUCCESS";
+      } else if (data.startsWith("#IPFS")) {
+        if (opts && opts.isLoadFromIpfs) {
           let cid = data.substring(6);
         }
         resp.code = 0;
