@@ -210,6 +210,7 @@ export default {
           this.$toast.success("Success Save Keys!", {
             timeout: 2000,
           });
+          this.$store.commit("TOGGLE_CHECK_PRIVATEKEY_LOCAL");
         }
       });
     },

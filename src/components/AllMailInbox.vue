@@ -52,12 +52,15 @@ export default {
       readMailId: [],
       accountId: null,
       selectedId: null,
+      localPrivateKey: null,
+      privateKey: localStorage.getItem(`nms_privatekey`),
     };
   },
 
   mounted() {
     this.getAccountId();
     this.getInboxMsg();
+    this.getLocalPrivateKey();
   },
 
   computed: {
@@ -70,6 +73,9 @@ export default {
     routePathSent() {
       return this.$route.path === "/sent";
     },
+    checkPrivateKeyLocal() {
+      return this.$store.state.checkPrivateKeyLocal;
+    },
   },
 
   watch: {
@@ -79,6 +85,10 @@ export default {
     inboxMsgNum() {
       this.getInboxMsg();
       this.recallInboxMsgNumApi();
+    },
+    checkPrivateKeyLocal() {
+      this.getLocalPrivateKey();
+      this.getInboxMsg();
     },
   },
 
@@ -131,6 +141,20 @@ export default {
       return false;
     },
 
+    getLocalPrivateKey() {
+      const privateKey = localStorage.getItem(`nms_privatekey`);
+      if (privateKey === null) {
+        this.$toast.error(
+          "Empty private key. Please import or generate new key",
+          {
+            timeout: 2000,
+          }
+        );
+      }
+      this.localPrivateKey = privateKey;
+      console.log("getLocalPrivateKey");
+    },
+
     getInboxMsg() {
       if (this.inboxMsgNum === 0) {
         return;
@@ -139,7 +163,7 @@ export default {
       const opts = {
         isLoadFromIpfs: message.clientConfig.isSupportIpfs,
         isInboxMsg: !this.routePathSent,
-        privateKey: localStorage.getItem(`nms_privatekey`),
+        privateKey: this.localPrivateKey,
       };
 
       const indexInfo = getIndexInfo(this.inboxMsgNum, this.page, 20);
@@ -169,6 +193,8 @@ export default {
             };
           });
           const structEachData = eachData.map((item) => {
+            console.log("item: ", item);
+            console.log("opts: ", opts);
             return this.updateDataMessage(item, opts);
           });
           return Promise.all(structEachData);
@@ -176,7 +202,6 @@ export default {
         .then((res) => {
           const dataInbox = [...res];
           dataInbox.reverse();
-          console.log("dataInbox: ", dataInbox);
           this.dataMsgInbox = dataInbox;
         });
     },

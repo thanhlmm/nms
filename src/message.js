@@ -246,6 +246,8 @@ async function depackMessage(msg, opts) {
     prevMsgId: msg.prevMsgId,
     code: 1,
     message: "Unknown error",
+    title: null,
+    content: null,
   };
   try {
     // Decode title
@@ -257,8 +259,9 @@ async function depackMessage(msg, opts) {
       if (data.startsWith("#EXPIRED")) {
         msg.content = "The message has been expired!";
       } else if (data.startsWith("#DIRECT-PRI")) {
-        if (!opts || opts.privateKey) {
+        if (!opts || !opts.privateKey) {
           resp.message = "Missing parameters!!!";
+          resp.title = "Missing private key";
           return resp;
         }
         let items = data.substring(8).split("-");
