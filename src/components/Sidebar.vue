@@ -243,6 +243,22 @@ export default {
     this.getBalance();
     this.checkInboxMsgNum();
   },
+  watch: {
+    isLoggedIn: {
+      immediate: true,
+      handler: function () {
+        const privateKey = localStorage.getItem(`nms_privatekey`);
+        if (this.$store.state.auth.auth.isLogin && privateKey === null) {
+          this.$toast.error(
+            "Empty private key. Please import or generate new key",
+            {
+              timeout: 2000,
+            }
+          );
+        }
+      },
+    },
+  },
   methods: {
     handleAuth() {
       login();

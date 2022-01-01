@@ -261,7 +261,7 @@ async function depackMessage(msg, opts) {
       } else if (data.startsWith("#DIRECT-PRI")) {
         if (!opts || !opts.privateKey) {
           resp.message = "Missing parameters!!!";
-          resp.title = "Missing private key";
+          resp.title = "Missing Private Key";
           return resp;
         }
         let items = data.substring(8).split("-");

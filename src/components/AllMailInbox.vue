@@ -146,14 +146,7 @@ export default {
 
     getLocalPrivateKey() {
       const privateKey = localStorage.getItem(`nms_privatekey`);
-      if (privateKey === null) {
-        this.$toast.error(
-          "Empty private key. Please import or generate new key",
-          {
-            timeout: 2000,
-          }
-        );
-      } else {
+      if (privateKey) {
         this.localPrivateKey = privateKey;
       }
     },
