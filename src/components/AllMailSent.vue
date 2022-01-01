@@ -55,8 +55,8 @@ export default {
 
   mounted() {
     this.getAccountId();
-    this.getSentMsg();
     this.getLocalPrivateKey();
+    this.getSentMsg();
   },
 
   computed: {
@@ -85,6 +85,10 @@ export default {
       this.getLocalPrivateKey();
       this.getSentMsg();
     },
+    routePathSent() {
+      this.getLocalPrivateKey();
+      this.getInboxMsg();
+    },
   },
 
   methods: {
@@ -110,8 +114,9 @@ export default {
             timeout: 2000,
           }
         );
+      } else {
+        this.localPrivateKey = privateKey;
       }
-      this.localPrivateKey = privateKey;
     },
 
     getSentMsg() {

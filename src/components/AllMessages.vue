@@ -89,6 +89,10 @@ export default {
       this.getLocalPrivateKey();
       this.getMessages(this.msgInboxId);
     },
+    routePathSent() {
+      this.getLocalPrivateKey();
+      this.getMessages(this.msgInboxId);
+    },
   },
 
   methods: {
@@ -105,8 +109,9 @@ export default {
             timeout: 2000,
           }
         );
+      } else {
+        this.localPrivateKey = privateKey;
       }
-      this.localPrivateKey = privateKey;
     },
 
     getMessages(id) {

@@ -276,7 +276,7 @@ async function depackMessage(msg, opts) {
         }
         let bodyBuffer = Buffer.from(bodyData, "hex");
         let bodyInfo = decodeMsgBody(bodyBuffer, aesKey);
-        console.log("bodyInfo #DIRECT-PRI", bodyInfo);
+        // console.log("bodyInfo #DIRECT-PRI", bodyInfo);
         resp.content = bodyInfo.content;
         resp.attachmentFiles = bodyInfo.attachmentFiles;
         resp.code = 0;
@@ -285,7 +285,7 @@ async function depackMessage(msg, opts) {
         let bodyData = data.substring(8);
         let bodyBuffer = Buffer.from(bodyData, "hex");
         let bodyInfo = decodeMsgBody(bodyBuffer, clientConfig.aesKey);
-        console.log("bodyInfo #DIRECT", bodyInfo);
+        // console.log("bodyInfo #DIRECT", bodyInfo);
         resp.content = bodyInfo.content;
         resp.attachmentFiles = bodyInfo.attachmentFiles;
         resp.code = 0;

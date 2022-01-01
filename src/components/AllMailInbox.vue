@@ -58,8 +58,8 @@ export default {
 
   mounted() {
     this.getAccountId();
-    this.getInboxMsg();
     this.getLocalPrivateKey();
+    this.getInboxMsg();
   },
 
   computed: {
@@ -86,6 +86,10 @@ export default {
       this.recallInboxMsgNumApi();
     },
     checkPrivateKeyLocal() {
+      this.getLocalPrivateKey();
+      this.getInboxMsg();
+    },
+    routePathSent() {
       this.getLocalPrivateKey();
       this.getInboxMsg();
     },
@@ -149,8 +153,9 @@ export default {
             timeout: 2000,
           }
         );
+      } else {
+        this.localPrivateKey = privateKey;
       }
-      this.localPrivateKey = privateKey;
     },
 
     getInboxMsg() {
