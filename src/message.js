@@ -262,6 +262,7 @@ async function depackMessage(msg, opts) {
         if (!opts || !opts.privateKey) {
           resp.message = "Missing parameters!!!";
           resp.title = "Missing Private Key";
+          resp.content = "Can not decrypt this message";
           return resp;
         }
         let items = data.substring(12).split("-");
@@ -313,6 +314,7 @@ async function depackMessage(msg, opts) {
   } catch (ex) {
     console.error("Error to depack message", ex);
     resp.message = ex.toString();
+    resp.content = "Can not decrypt this message";
   }
   return resp;
 }
