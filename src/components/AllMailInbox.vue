@@ -52,13 +52,11 @@ export default {
       readMailId: [],
       accountId: null,
       selectedId: null,
-      localPrivateKey: null,
     };
   },
 
   mounted() {
     this.getAccountId();
-    this.getLocalPrivateKey();
     this.getInboxMsg();
   },
 
@@ -72,8 +70,8 @@ export default {
     routePathSent() {
       return this.$route.path === "/sent";
     },
-    checkPrivateKeyLocal() {
-      return this.$store.state.checkPrivateKeyLocal;
+    localPrivateKey() {
+      return this.$store.state.localPrivateKey;
     },
   },
 
@@ -85,12 +83,10 @@ export default {
       this.getInboxMsg();
       this.recallInboxMsgNumApi();
     },
-    checkPrivateKeyLocal() {
-      this.getLocalPrivateKey();
+    localPrivateKey() {
       this.getInboxMsg();
     },
     routePathSent() {
-      this.getLocalPrivateKey();
       this.getInboxMsg();
     },
   },
@@ -142,13 +138,6 @@ export default {
         return localStorageId.includes(id);
       }
       return false;
-    },
-
-    getLocalPrivateKey() {
-      const privateKey = localStorage.getItem(`nms_privatekey`);
-      if (privateKey) {
-        this.localPrivateKey = privateKey;
-      }
     },
 
     getInboxMsg() {

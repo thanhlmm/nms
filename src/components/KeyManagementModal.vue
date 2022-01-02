@@ -112,8 +112,8 @@ export default {
   },
   data() {
     return {
-      publicKey: localStorage.getItem(`nms_publickey`),
-      privateKey: localStorage.getItem(`nms_privatekey`),
+      publicKey: localStorage.getItem("nms_publickey"),
+      privateKey: localStorage.getItem("nms_privatekey"),
       file: null,
 
       checkClickReGenBtn: false,
@@ -138,6 +138,10 @@ export default {
           this.publicKey = generateKeys.publicKey;
           this.privateKey = generateKeys.privateKey;
 
+          this.$store.commit(
+            "TOGGLE_PRIVATEKEY_LOCAL",
+            generateKeys.privateKey
+          );
           this.updateKeysApi(generateKeys.publicKey);
 
           this.$toast.success("Success Generate New Keys!", {
@@ -161,6 +165,7 @@ export default {
               localStorage.setItem("nms_publickey", publicKey);
               localStorage.setItem("nms_privatekey", privateKeyImport);
 
+              this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", privateKeyImport);
               this.updateKeysApi(publicKey);
 
               this.$toast.success("Success Import Keys!", {
@@ -210,7 +215,6 @@ export default {
           this.$toast.success("Success Save Keys!", {
             timeout: 2000,
           });
-          this.$store.commit("TOGGLE_CHECK_PRIVATEKEY_LOCAL");
         }
       });
     },
@@ -230,6 +234,7 @@ export default {
         this.publicKey = generateKeys.publicKey;
         this.privateKey = generateKeys.privateKey;
 
+        this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", generateKeys.privateKey);
         this.updateKeysApi(generateKeys.publicKey);
 
         this.$toast.success("Success Generate New Keys!", {
@@ -260,6 +265,7 @@ export default {
             localStorage.setItem("nms_publickey", publicKey);
             localStorage.setItem("nms_privatekey", privateKeyImport);
 
+            this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", privateKeyImport);
             this.updateKeysApi(publicKey);
 
             this.$toast.success("Success Import Keys!", {

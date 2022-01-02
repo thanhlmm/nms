@@ -49,13 +49,11 @@ export default {
       readMailId: [],
       accountId: null,
       reRender: null,
-      localPrivateKey: null,
     };
   },
 
   mounted() {
     this.getAccountId();
-    this.getLocalPrivateKey();
     this.getSentMsg();
   },
 
@@ -69,8 +67,8 @@ export default {
     routePathSent() {
       return this.$route.path === "/sent";
     },
-    checkPrivateKeyLocal() {
-      return this.$store.state.checkPrivateKeyLocal;
+    localPrivateKey() {
+      return this.$store.state.localPrivateKey;
     },
   },
 
@@ -81,12 +79,10 @@ export default {
     sentMsgNum() {
       this.getSentMsg();
     },
-    checkPrivateKeyLocal() {
-      this.getLocalPrivateKey();
+    localPrivateKey() {
       this.getSentMsg();
     },
     routePathSent() {
-      this.getLocalPrivateKey();
       this.getInboxMsg();
     },
   },
@@ -103,13 +99,6 @@ export default {
 
     getAccountId() {
       this.accountId = window.walletConnection.getAccountId();
-    },
-
-    getLocalPrivateKey() {
-      const privateKey = localStorage.getItem(`nms_privatekey`);
-      if (privateKey) {
-        this.localPrivateKey = privateKey;
-      }
     },
 
     getSentMsg() {

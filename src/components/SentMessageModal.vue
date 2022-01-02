@@ -335,7 +335,9 @@ export default {
         });
         this.checkTitleInput = true;
         return;
-      } else this.checkTitleInput = false;
+      } else {
+        this.checkTitleInput = false;
+      }
 
       if (!(await isAccountExist(this.to))) {
         this.checkToInput = false;
