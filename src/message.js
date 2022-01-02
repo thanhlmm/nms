@@ -264,7 +264,7 @@ async function depackMessage(msg, opts) {
           resp.title = "Missing Private Key";
           return resp;
         }
-        let items = data.substring(8).split("-");
+        let items = data.substring(12).split("-");
         let bodyData = items[2];
         let senderKey = items[0];
         let receiverKey = items[1];
@@ -292,7 +292,7 @@ async function depackMessage(msg, opts) {
         resp.message = "SUCCESS";
       } else if (data.startsWith("#IPFS-PRI")) {
         if (isLoadFromIpfs) {
-          let cid = data.substring(6);
+          let cid = data.substring(10);
         }
         resp.code = 0;
         resp.message = "SUCCESS";
