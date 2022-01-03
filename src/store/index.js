@@ -29,9 +29,7 @@ const storeData = {
 
     keyModal: false,
     confirmPasswordModal: false,
-    localPrivateKey: JSON.parse(
-      JSON.stringify(localStorage.getItem("nms_privatekey"))
-    ),
+    localPrivateKey: localStorage.getItem("nms_privatekey") || null,
 
     messageConversation: {
       msgInboxId: null,
@@ -85,7 +83,7 @@ const storeData = {
     },
     TOGGLE_PRIVATEKEY_LOCAL(state, payload) {
       state.localPrivateKey = payload;
-      localStorage.setItem("nms_privatekey", JSON.stringify(payload));
+      localStorage.setItem("nms_privatekey", payload);
     },
 
     // HANDLE MESSAGE MUTATION

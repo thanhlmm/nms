@@ -294,18 +294,15 @@ async function depackMessage(msg, opts) {
         let bodyData = items[2];
         let senderKey = items[0];
         let receiverKey = items[1];
-        console.log("receiverKey: ", receiverKey);
-        console.log("senderKey: ", senderKey);
         let aesKey = null;
         if (opts && opts.isInboxMsg) {
           aesKey = decryptWithPrivateKey(opts.privateKey, receiverKey);
         } else {
           aesKey = decryptWithPrivateKey(opts.privateKey, senderKey);
         }
-        console.log("aesKey: ", aesKey);
         let bodyBuffer = Buffer.from(bodyData, "hex");
         let bodyInfo = decodeMsgBody(bodyBuffer, aesKey);
-        console.log("bodyInfo #DIRECT-PRI", bodyInfo);
+        // console.log("bodyInfo #DIRECT-PRI", bodyInfo);
         resp.content = bodyInfo.content;
         resp.attachmentFiles = bodyInfo.attachmentFiles;
         resp.code = 0;
@@ -314,7 +311,7 @@ async function depackMessage(msg, opts) {
         let bodyData = data.substring(8);
         let bodyBuffer = Buffer.from(bodyData, "hex");
         let bodyInfo = decodeMsgBody(bodyBuffer, clientConfig.aesKey);
-        console.log("bodyInfo #DIRECT", bodyInfo);
+        // console.log("bodyInfo #DIRECT", bodyInfo);
         resp.content = bodyInfo.content;
         resp.attachmentFiles = bodyInfo.attachmentFiles;
         resp.code = 0;
