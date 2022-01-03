@@ -308,7 +308,7 @@ export default {
         }
       } catch (error) {
         console.error(error);
-        this.$toast.error("Your message can not sent!", {
+        this.$toast.error("Your message can not be send!", {
           timeout: 2000,
         });
       }
@@ -367,7 +367,7 @@ export default {
                 },
               });
             } else {
-              this.$toast.error("Receiver don't have public key!", {
+              this.$toast.error("Receiver doesn't have public key!", {
                 timeout: 2000,
               });
               return;

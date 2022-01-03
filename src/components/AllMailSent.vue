@@ -2,7 +2,7 @@
   <div class="mail-content__list scrollbar">
     <div v-if="sentMsgNum === 0">
       You haven't sent any message.<br />
-      Do you want to sent a message to someone? Please click
+      Do you want to send a message to someone? Please click
       <span class="link f-700" @click="handleSendMessageModal">here</span> to
       start!!!
     </div>
