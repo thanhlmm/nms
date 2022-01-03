@@ -2804,6 +2804,9 @@ p {
     bottom: auto;
     background: var(--background-body);
   }
+  .mail-right__sent {
+    padding: 20px;
+  }
 }
 
 .modal-sent.modal-expand {

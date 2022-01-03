@@ -105,12 +105,6 @@
         <input placeholder="Enter the subject here" v-model="title" />
         <div class="line" :class="[{ isEmpty: checkTitleInput }]"></div>
       </div>
-      <!-- <div class="form-textarea mb-20">
-        <textarea
-          placeholder="Enter the content here"
-          v-model="data"
-        ></textarea>
-      </div> -->
       <div class="mb-20">
         <TipTap
           :modelValue="data"
@@ -118,7 +112,6 @@
           @updateModelValue="updateModelValue"
         />
       </div>
-
       <div class="mb-16">
         <div class="f-500 mb-16">Select message type:</div>
         <div class="near__value-list d-flex">
@@ -210,6 +203,7 @@ export default {
   components: {
     TipTap,
   },
+
   data() {
     return {
       to: "",
@@ -221,9 +215,9 @@ export default {
       checkToInput: false,
       checkTitleInput: false,
       senderKey: null,
-      receiverKey: null,
     };
   },
+
   computed: {
     showModal() {
       return this.$store.state.sendMessageModal.isShow;
@@ -238,6 +232,7 @@ export default {
       return window.walletConnection.getAccountId();
     },
   },
+
   watch: {
     type: {
       immediate: true,
@@ -256,6 +251,7 @@ export default {
       },
     },
   },
+
   methods: {
     updateModelValue(e) {
       this.data = e;
@@ -284,7 +280,16 @@ export default {
               BOATLOAD_OF_GAS,
               tranformUnit(this.amount)
             )
-            .then(console.log);
+            .then(() => {
+              this.$toast.success(
+                "Your message have been sent with" +
+                  tranformUnit(this.amount) +
+                  " !",
+                {
+                  timeout: 2000,
+                }
+              );
+            });
         } else {
           window.contract
             .sendMessage({
@@ -296,13 +301,16 @@ export default {
               expiredTime: "0",
             })
             .then(() => {
-              this.$toast.success("Your message have been send!", {
+              this.$toast.success("Your message have been sent!", {
                 timeout: 2000,
               });
             });
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
+        this.$toast.error("Your message can not sent!", {
+          timeout: 2000,
+        });
       }
     },
 
@@ -388,6 +396,7 @@ export default {
       this.title = "";
       this.data = "";
       this.amount = 0.1;
+      this.type = "PUBLIC";
       this.$store.commit("TOGGLE_SEND_MESSAGE_MODAL");
     },
 

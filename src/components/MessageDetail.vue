@@ -75,7 +75,6 @@
       </div>
       <div class="description f-500">
         <div class="content">
-          <!-- <div>{{ dataMsg.content }}</div> -->
           <TipTap :modelValue="dataMsg.content" :isDetail="true" />
         </div>
       </div>
@@ -97,16 +96,6 @@
         :showForward="showForward"
         @cancelForward="cancelForward"
       />
-      <!-- <div
-        :class="[
-          { 'is-hidden': !showDetail || showReply || showForward },
-          'description f-500',
-        ]"
-      >
-        <div class="content">
-          <div>{{ dataMsg.content }}</div>
-        </div>
-      </div> -->
     </section>
   </article>
 </template>
@@ -119,12 +108,14 @@ import TipTap from "../components/TipTap.vue";
 
 export default {
   props: ["dataMsg", "from"],
+
   components: {
     ReplyMessage,
     ForwardMessage,
     Avatar,
     TipTap,
   },
+
   data() {
     return {
       showDetail:
@@ -133,6 +124,7 @@ export default {
       showForward: false,
     };
   },
+
   methods: {
     handleShowReply() {
       if (this.showForward) return;
