@@ -31,7 +31,6 @@
             </span>
           </div>
         </div>
-
         <div class="container">
           <div class="form-input d-flex pb-10 mb-20">
             <span>Public Key: </span>
@@ -45,21 +44,42 @@
           </div>
           <div class="d-flex flex-col-sm" style="gap: 1rem">
             <button
-              class="btn-sent btn-sent-key cursor-pointer d-flex align-center justify-center flex-shrink-0"
+              class="
+                btn-sent btn-sent-key
+                cursor-pointer
+                d-flex
+                align-center
+                justify-center
+                flex-shrink-0
+              "
               @click="genKeys"
             >
               <img src="../../public/assets/images/sent.svg" />
               <span>Generate</span>
             </button>
             <label
-              class="btn-sent btn-sent-key cursor-pointer d-flex align-center justify-center flex-shrink-0"
+              class="
+                btn-sent btn-sent-key
+                cursor-pointer
+                d-flex
+                align-center
+                justify-center
+                flex-shrink-0
+              "
             >
               <img src="../../public/assets/images/sent.svg" />
               <span>Import</span>
               <input type="file" ref="doc" @change="importKeys()" />
             </label>
             <button
-              class="btn-sent btn-sent-key cursor-pointer d-flex align-center justify-center flex-shrink-0"
+              class="
+                btn-sent btn-sent-key
+                cursor-pointer
+                d-flex
+                align-center
+                justify-center
+                flex-shrink-0
+              "
               @click="exportKeys"
             >
               <img src="../../public/assets/images/sent.svg" />
@@ -92,8 +112,8 @@ export default {
   },
   data() {
     return {
-      publicKey: localStorage.getItem(`nms_publickey`),
-      privateKey: localStorage.getItem(`nms_privatekey`),
+      publicKey: localStorage.getItem("nms_publickey"),
+      privateKey: localStorage.getItem("nms_privatekey"),
       file: null,
 
       checkClickReGenBtn: false,
@@ -118,6 +138,10 @@ export default {
           this.publicKey = generateKeys.publicKey;
           this.privateKey = generateKeys.privateKey;
 
+          this.$store.commit(
+            "TOGGLE_PRIVATEKEY_LOCAL",
+            generateKeys.privateKey
+          );
           this.updateKeysApi(generateKeys.publicKey);
 
           this.$toast.success("Success Generate New Keys!", {
@@ -141,6 +165,7 @@ export default {
               localStorage.setItem("nms_publickey", publicKey);
               localStorage.setItem("nms_privatekey", privateKeyImport);
 
+              this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", privateKeyImport);
               this.updateKeysApi(publicKey);
 
               this.$toast.success("Success Import Keys!", {
@@ -209,6 +234,7 @@ export default {
         this.publicKey = generateKeys.publicKey;
         this.privateKey = generateKeys.privateKey;
 
+        this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", generateKeys.privateKey);
         this.updateKeysApi(generateKeys.publicKey);
 
         this.$toast.success("Success Generate New Keys!", {
@@ -239,6 +265,7 @@ export default {
             localStorage.setItem("nms_publickey", publicKey);
             localStorage.setItem("nms_privatekey", privateKeyImport);
 
+            this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", privateKeyImport);
             this.updateKeysApi(publicKey);
 
             this.$toast.success("Success Import Keys!", {

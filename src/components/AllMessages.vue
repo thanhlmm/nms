@@ -44,18 +44,22 @@ export default {
   components: {
     MessageDetail,
   },
+
   data() {
     return {
       windowWidth: window.innerWidth,
       dataMsgConversation: [],
     };
   },
+
   created() {
     window.addEventListener("resize", this.myEventHandler);
   },
+
   destroyed() {
     window.removeEventListener("resize", this.myEventHandler);
   },
+
   computed: {
     userLogin() {
       return this.$store.state.auth.auth.isLogin;
@@ -63,32 +67,54 @@ export default {
     msgInboxId() {
       return this.$store.state.messageConversation.msgInboxId;
     },
+    routePathSent() {
+      return this.$route.path === "/sent";
+    },
+    localPrivateKey() {
+      return this.$store.state.localPrivateKey;
+    },
   },
+
   watch: {
     msgInboxId: function () {
       this.dataMsgConversation = [];
       this.getMessages(this.msgInboxId);
     },
+    localPrivateKey() {
+      this.getMessages(this.msgInboxId);
+    },
+    routePathSent() {
+      this.getMessages(this.msgInboxId);
+    },
   },
+
   methods: {
     myEventHandler() {
       this.windowWidth = window.innerWidth;
     },
+
     getMessages(id) {
       if (id === null) return;
 
+      const opts = {
+        isLoadFromIpfs: message.clientConfig.isSupportIpfs,
+        isInboxMsg: !this.routePathSent,
+        privateKey: this.localPrivateKey,
+      };
+
       const cacheMsg = window.localStorage.getItem(`msg-${id}`);
       if (cacheMsg) {
-        this.updateDataMessage(JSON.parse(cacheMsg));
+        this.updateDataMessage(JSON.parse(cacheMsg), opts);
         return;
       }
       window.contract.getMessage({ msgId: id }).then((data) => {
         window.localStorage.setItem(`msg-${id}`, JSON.stringify(data));
-        this.updateDataMessage(data);
+        this.updateDataMessage(data, opts);
       });
     },
-    async updateDataMessage(msg) {
-      const msgInbox = await message.depackMessage(msg);
+
+    async updateDataMessage(msg, opts) {
+      const msgInbox = await message.depackMessage(msg, opts);
 
       if (msgInbox.prevMsgId === 0) {
         this.dataMsgConversation.push(msgInbox);

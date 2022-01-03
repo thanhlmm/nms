@@ -67,6 +67,12 @@ export default {
     page() {
       return this.$store.state.page;
     },
+    routePathSent() {
+      return this.$route.path === "/sent";
+    },
+    localPrivateKey() {
+      return this.$store.state.localPrivateKey;
+    },
   },
 
   watch: {
@@ -76,6 +82,12 @@ export default {
     inboxMsgNum() {
       this.getInboxMsg();
       this.recallInboxMsgNumApi();
+    },
+    localPrivateKey() {
+      this.getInboxMsg();
+    },
+    routePathSent() {
+      this.getInboxMsg();
     },
   },
 
@@ -132,6 +144,13 @@ export default {
       if (this.inboxMsgNum === 0) {
         return;
       }
+
+      const opts = {
+        isLoadFromIpfs: message.clientConfig.isSupportIpfs,
+        isInboxMsg: !this.routePathSent,
+        privateKey: this.localPrivateKey,
+      };
+
       const indexInfo = getIndexInfo(this.inboxMsgNum, this.page, 20);
       if (indexInfo.fromIndex === 0) {
         this.$store.commit("SET_PREVENT_PAGINATION", true);
@@ -159,7 +178,7 @@ export default {
             };
           });
           const structEachData = eachData.map((item) => {
-            return this.updateDataMessage(item);
+            return this.updateDataMessage(item, opts);
           });
           return Promise.all(structEachData);
         })
@@ -170,8 +189,8 @@ export default {
         });
     },
 
-    async updateDataMessage(msg) {
-      return await message.depackMessage(msg);
+    async updateDataMessage(msg, opts) {
+      return await message.depackMessage(msg, opts);
     },
 
     recallInboxMsgNumApi() {
