@@ -289,7 +289,6 @@ async function depackMessage(msg, opts) {
           resp.content = "Can not decrypt this message";
           return resp;
         }
-        console.log("opts.privateKey: ", opts.privateKey);
         let items = data.substring(12).split("-");
         let bodyData = items[2];
         let senderKey = items[0];
