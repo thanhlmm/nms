@@ -30,9 +30,6 @@
       </div>
       <div class="container">
         <div class="content">Are you sure to override the old key?</div>
-        <div class="content">
-          Override new key will make existed privated messages unable to decrypt
-        </div>
         <div class="container-btn">
           <button
             class="
