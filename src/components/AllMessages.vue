@@ -81,9 +81,11 @@ export default {
       this.getMessages(this.msgInboxId);
     },
     localPrivateKey() {
+      this.dataMsgConversation = [];
       this.getMessages(this.msgInboxId);
     },
     routePathSent() {
+      this.dataMsgConversation = [];
       this.getMessages(this.msgInboxId);
     },
   },

@@ -4,7 +4,7 @@
       <div class="modal" v-if="showModal">
         <div class="header d-flex align-center justify-between mb-20">
           <div class="title title-20 f-700 d-flex align-center">
-            Key Management for private message
+            Key Management
           </div>
           <div class="action">
             <span class="btn-close cursor-pointer" @click="handleCloseModal">
@@ -112,8 +112,8 @@ export default {
   },
   data() {
     return {
-      publicKey: localStorage.getItem("nms_publickey"),
-      privateKey: localStorage.getItem("nms_privatekey"),
+      publicKey: null,
+      privateKey: null,
       file: null,
 
       checkClickReGenBtn: false,
@@ -127,6 +127,10 @@ export default {
       return this.$store.state.keyModal;
     },
   },
+  mounted() {
+    this.hiddenPublicKey(localStorage.getItem("nms_publickey"));
+    this.hiddenPrivateKey(localStorage.getItem("nms_privatekey"));
+  },
   watch: {
     confirm: {
       immediate: true,
@@ -135,8 +139,8 @@ export default {
           const generateKeys = generateRSAKey();
           localStorage.setItem("nms_publickey", generateKeys.publicKey);
           localStorage.setItem("nms_privatekey", generateKeys.privateKey);
-          this.publicKey = generateKeys.publicKey;
-          this.privateKey = generateKeys.privateKey;
+          this.hiddenPublicKey(generateKeys.publicKey);
+          this.hiddenPrivateKey(generateKeys.privateKey);
 
           this.$store.commit(
             "TOGGLE_PRIVATEKEY_LOCAL",
@@ -157,10 +161,10 @@ export default {
           if (this.file.name.includes(".pem")) {
             reader.onload = (res) => {
               const privateKeyImport = res.target.result;
-              this.privateKey = privateKeyImport;
+              this.hiddenPrivateKey(privateKeyImport);
 
               const publicKey = privateKeyToPublicKey(privateKeyImport);
-              this.publicKey = publicKey;
+              this.hiddenPublicKey(publicKey);
 
               localStorage.setItem("nms_publickey", publicKey);
               localStorage.setItem("nms_privatekey", privateKeyImport);
@@ -209,6 +213,15 @@ export default {
       this.confirm = e;
     },
 
+    hiddenPublicKey(key) {
+      this.publicKey =
+        key.slice(0, 10) + "********************" + key.substr(-10);
+    },
+    hiddenPrivateKey(key) {
+      this.privateKey =
+        key.slice(0, 10) + "********************" + key.substr(-10);
+    },
+
     updateKeysApi(key) {
       window.contract.updatePublicKey({ publicKey: key }).then((data) => {
         if (data) {
@@ -231,8 +244,8 @@ export default {
         const generateKeys = generateRSAKey();
         localStorage.setItem("nms_publickey", generateKeys.publicKey);
         localStorage.setItem("nms_privatekey", generateKeys.privateKey);
-        this.publicKey = generateKeys.publicKey;
-        this.privateKey = generateKeys.privateKey;
+        this.hiddenPublicKey(generateKeys.publicKey);
+        this.hiddenPrivateKey(generateKeys.privateKey);
 
         this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", generateKeys.privateKey);
         this.updateKeysApi(generateKeys.publicKey);
@@ -257,10 +270,10 @@ export default {
         if (this.file.name.includes(".pem")) {
           reader.onload = (res) => {
             const privateKeyImport = res.target.result;
-            this.privateKey = privateKeyImport;
+            this.hiddenPrivateKey(privateKeyImport);
 
             const publicKey = privateKeyToPublicKey(privateKeyImport);
-            this.publicKey = publicKey;
+            this.hiddenPublicKey(publicKey);
 
             localStorage.setItem("nms_publickey", publicKey);
             localStorage.setItem("nms_privatekey", privateKeyImport);

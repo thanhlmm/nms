@@ -101,6 +101,7 @@
         <div
           @click="showKeyModal"
           class="lock d-flex align-center justify-center ml-20 cursor-pointer"
+          :class="[{ 'is-hidden': !isLoggedIn }]"
         >
           <img
             src="../../public/assets/images/lock.svg"

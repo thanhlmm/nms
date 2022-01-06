@@ -97,7 +97,7 @@
     <section class="modal-sent__body">
       <div class="form-input d-flex pb-10 mb-20">
         <span :class="[{ isEmptyText: checkToInput }]">To: </span>
-        <input placeholder="Enter the email here" v-model="to" />
+        <input placeholder="Enter the NEAR account here" v-model="to" />
         <div class="line" :class="[{ isEmpty: checkToInput }]"></div>
       </div>
       <div class="form-input d-flex pb-10 mb-20">
