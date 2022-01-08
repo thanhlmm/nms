@@ -39,6 +39,7 @@
 <script>
 import MessageDetail from "./MessageDetail.vue";
 import message from "../message";
+import { decryptPrivateKeyWithPasswordConfirm } from "../message";
 
 export default {
   components: {
@@ -73,9 +74,16 @@ export default {
     localPrivateKey() {
       return this.$store.state.localPrivateKey;
     },
+    passwordConfirm() {
+      return this.$store.state.passwordConfirm;
+    },
   },
 
   watch: {
+    passwordConfirm: function () {
+      this.dataMsgConversation = [];
+      this.getMessages(this.msgInboxId);
+    },
     msgInboxId: function () {
       this.dataMsgConversation = [];
       this.getMessages(this.msgInboxId);
@@ -98,10 +106,15 @@ export default {
     getMessages(id) {
       if (id === null) return;
 
+      const privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
+        this.passwordConfirm,
+        this.localPrivateKey
+      );
+
       const opts = {
         isLoadFromIpfs: message.clientConfig.isSupportIpfs,
         isInboxMsg: !this.routePathSent,
-        privateKey: this.localPrivateKey,
+        privateKey: privateKeyDecrypt,
       };
 
       const cacheMsg = window.localStorage.getItem(`msg-${id}`);

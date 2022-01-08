@@ -37,6 +37,7 @@
 import { getIndexInfo } from "../utils";
 import message from "../message";
 import Avatar from "./Avatar";
+import { decryptPrivateKeyWithPasswordConfirm } from "../message";
 
 export default {
   components: {
@@ -70,9 +71,15 @@ export default {
     localPrivateKey() {
       return this.$store.state.localPrivateKey;
     },
+    passwordConfirm() {
+      return this.$store.state.passwordConfirm;
+    },
   },
 
   watch: {
+    passwordConfirm() {
+      this.getSentMsg();
+    },
     page() {
       this.getSentMsg();
     },
@@ -106,10 +113,15 @@ export default {
         return;
       }
 
+      const privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
+        this.passwordConfirm,
+        this.localPrivateKey
+      );
+
       const opts = {
         isLoadFromIpfs: message.clientConfig.isSupportIpfs,
         isInboxMsg: !this.routePathSent,
-        privateKey: this.localPrivateKey,
+        privateKey: privateKeyDecrypt,
       };
 
       const indexInfo = getIndexInfo(this.sentMsgNum, this.page, 20);

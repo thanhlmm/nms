@@ -67,17 +67,26 @@ export default {
     showModal() {
       return this.$store.state.confirmPasswordModal;
     },
+    localPrivateKey() {
+      return this.$store.state.localPrivateKey;
+    },
   },
   methods: {
     handleCloseModal() {
       this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
+      this.password = "";
     },
     handleConfirm() {
       if (this.password === "") {
         this.checkPasswordInput = true;
       } else {
         this.checkPasswordInput = false;
-        console.log("CONFIRM PASSWORD");
+        this.$store.commit("PASSWORD_CONFIRM", this.password);
+        this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
+        this.password = "";
+        if (this.localPrivateKey === null) {
+          this.$store.commit("TOGGLE_KEY_MODAL");
+        }
       }
     },
   },

@@ -217,6 +217,7 @@ export default {
       balance: 0,
     };
   },
+
   computed: {
     isLoggedIn() {
       return this.$store.state.auth.auth.isLogin;
@@ -236,7 +237,14 @@ export default {
     darkMode() {
       return this.$store.state.darkMode;
     },
+    localPrivateKey() {
+      return this.$store.state.localPrivateKey;
+    },
+    passwordConfirm() {
+      return this.$store.state.passwordConfirm;
+    },
   },
+
   mounted() {
     this.getSentMessageNum();
     this.getInboxMessageNum();
@@ -244,6 +252,7 @@ export default {
     this.getBalance();
     this.checkInboxMsgNum();
   },
+
   watch: {
     isLoggedIn: {
       immediate: true,
@@ -260,6 +269,7 @@ export default {
       },
     },
   },
+
   methods: {
     handleAuth() {
       login();
@@ -328,7 +338,12 @@ export default {
     },
 
     showKeyModal() {
-      this.$store.commit("TOGGLE_KEY_MODAL");
+      if (this.localPrivateKey === null) {
+        this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
+      }
+      if (this.localPrivateKey && this.passwordConfirm) {
+        this.$store.commit("TOGGLE_KEY_MODAL");
+      }
     },
   },
 };
