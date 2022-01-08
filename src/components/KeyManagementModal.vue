@@ -119,6 +119,7 @@ export default {
     return {
       publicKey: null,
       privateKey: null,
+      privateKeyExport: null,
       file: null,
 
       checkClickReGenBtn: false,
@@ -156,6 +157,7 @@ export default {
             this.passwordConfirm,
             generateKeys.privateKey
           );
+          this.privateKeyExport = generateKeys.privateKey;
           localStorage.setItem("nms_publickey", generateKeys.publicKey);
           localStorage.setItem("nms_privatekey", encryptPrivateKey);
           this.hiddenPublicKey(generateKeys.publicKey);
@@ -182,6 +184,7 @@ export default {
                 privateKeyImport
               );
               this.hiddenPrivateKey(encryptPrivateKey);
+              this.privateKeyExport = privateKeyImport;
 
               const publicKey = privateKeyToPublicKey(privateKeyImport);
               this.hiddenPublicKey(publicKey);
@@ -267,6 +270,7 @@ export default {
           this.passwordConfirm,
           generateKeys.privateKey
         );
+        this.privateKeyExport = generateKeys.privateKey;
         localStorage.setItem("nms_publickey", generateKeys.publicKey);
         localStorage.setItem("nms_privatekey", encryptPrivateKey);
         this.hiddenPublicKey(generateKeys.publicKey);
@@ -300,6 +304,7 @@ export default {
               privateKeyImport
             );
             this.hiddenPrivateKey(encryptPrivateKey);
+            this.privateKeyExport = privateKeyImport;
 
             const publicKey = privateKeyToPublicKey(privateKeyImport);
             this.hiddenPublicKey(publicKey);
@@ -327,8 +332,8 @@ export default {
     },
 
     exportKeys() {
-      if (this.privateKey) {
-        const file = new Blob([this.privateKey], { type: "text/plain" });
+      if (this.privateKeyExport) {
+        const file = new Blob([this.privateKeyExport], { type: "text/plain" });
         if (window.navigator.msSaveOrOpenBlob)
           // IE10+
           window.navigator.msSaveOrOpenBlob(file, "PrivateKeys.pem");
