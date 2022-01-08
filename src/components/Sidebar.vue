@@ -340,9 +340,10 @@ export default {
     showKeyModal() {
       if (this.localPrivateKey === null) {
         this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
-      }
-      if (this.localPrivateKey && this.passwordConfirm) {
+      } else if (this.localPrivateKey && this.passwordConfirm) {
         this.$store.commit("TOGGLE_KEY_MODAL");
+      } else {
+        this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
       }
     },
   },

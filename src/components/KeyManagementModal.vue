@@ -85,7 +85,6 @@
               <img src="../../public/assets/images/sent.svg" />
               <span>Export</span>
             </button>
-            <!-- <div @click="handleConfirmPassword">Confirm Pass</div> -->
           </div>
         </div>
       </div>
@@ -97,7 +96,6 @@
       @toggleClickReImport="toggleClickReImport($event)"
       @confirmGen="confirmGen($event)"
     />
-    <ConfirmPasswordModal />
   </div>
 </template>
 
@@ -108,12 +106,10 @@ import {
   encryptPrivateKeyWithPasswordConfirm,
 } from "../message";
 import ConfirmModal from "../components/ConfirmModal.vue";
-// import ConfirmPasswordModal from "../components/ConfirmPasswordModal.vue";
 
 export default {
   components: {
     ConfirmModal,
-    // ConfirmPasswordModal,
   },
   data() {
     return {
@@ -142,8 +138,13 @@ export default {
   },
 
   mounted() {
-    this.hiddenPublicKey(localStorage.getItem("nms_publickey"));
-    this.hiddenPrivateKey(localStorage.getItem("nms_privatekey"));
+    if (
+      localStorage.getItem("nms_publickey") &&
+      localStorage.getItem("nms_publickey")
+    ) {
+      this.hiddenPublicKey(localStorage.getItem("nms_publickey"));
+      this.hiddenPrivateKey(localStorage.getItem("nms_privatekey"));
+    }
   },
 
   watch: {
@@ -220,9 +221,6 @@ export default {
     handleCloseModal() {
       this.$store.commit("TOGGLE_KEY_MODAL");
     },
-    // handleConfirmPassword() {
-    //   this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
-    // },
 
     closeConfirmModal(e) {
       this.showModalReGen = e;

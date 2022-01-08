@@ -152,15 +152,18 @@ export default {
         return;
       }
 
-      const privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
-        this.passwordConfirm,
-        this.localPrivateKey
-      );
+      let privateKeyDecrypt;
+      if (this.passwordConfirm && this.localPrivateKey) {
+        privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
+          this.passwordConfirm,
+          this.localPrivateKey
+        );
+      }
 
       const opts = {
         isLoadFromIpfs: message.clientConfig.isSupportIpfs,
         isInboxMsg: !this.routePathSent,
-        privateKey: privateKeyDecrypt,
+        privateKey: privateKeyDecrypt ? privateKeyDecrypt.slice(5) : null,
       };
 
       const indexInfo = getIndexInfo(this.inboxMsgNum, this.page, 20);
@@ -169,6 +172,7 @@ export default {
       } else {
         this.$store.commit("SET_PREVENT_PAGINATION", false);
       }
+
       window.contract
         .getInboxMessages({
           accountId: this.accountId,

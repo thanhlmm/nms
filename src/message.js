@@ -372,7 +372,7 @@ function encryptPrivateKeyWithPasswordConfirm(password, privateKey) {
   console.log("password: ", password);
   console.log("privateKey: ", privateKey);
 
-  let encrypt = aes256.encrypt(password, privateKey);
+  let encrypt = aes256.encrypt(password, `TEST-${privateKey}`);
   console.log("encrypt: ", encrypt);
 
   return encrypt;

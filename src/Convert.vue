@@ -36,18 +36,6 @@ export default {
     ConfirmPasswordModal,
     Overlay,
   },
-
-  computed: {
-    localPrivateKey() {
-      return this.$store.state.localPrivateKey;
-    },
-  },
-
-  mounted() {
-    if (this.localPrivateKey) {
-      this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
-    }
-  },
 };
 </script>
 

@@ -31,6 +31,7 @@ const storeData = {
     confirmPasswordModal: false,
     localPrivateKey: localStorage.getItem("nms_privatekey") || null,
     passwordConfirm: null,
+    checkPasswordConfirm: false,
 
     messageConversation: {
       msgInboxId: null,
@@ -84,6 +85,9 @@ const storeData = {
     },
     PASSWORD_CONFIRM(state, payload) {
       state.passwordConfirm = payload;
+    },
+    TOGGLE_PASSWORD_CONFIRM(state, payload) {
+      state.checkPasswordConfirm = payload;
     },
     TOGGLE_PRIVATEKEY_LOCAL(state, payload) {
       state.localPrivateKey = payload;

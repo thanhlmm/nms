@@ -106,15 +106,18 @@ export default {
     getMessages(id) {
       if (id === null) return;
 
-      const privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
-        this.passwordConfirm,
-        this.localPrivateKey
-      );
+      let privateKeyDecrypt;
+      if (this.passwordConfirm && this.localPrivateKey) {
+        privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
+          this.passwordConfirm,
+          this.localPrivateKey
+        );
+      }
 
       const opts = {
         isLoadFromIpfs: message.clientConfig.isSupportIpfs,
         isInboxMsg: !this.routePathSent,
-        privateKey: privateKeyDecrypt,
+        privateKey: privateKeyDecrypt ? privateKeyDecrypt.slice(5) : null,
       };
 
       const cacheMsg = window.localStorage.getItem(`msg-${id}`);
@@ -122,6 +125,7 @@ export default {
         this.updateDataMessage(JSON.parse(cacheMsg), opts);
         return;
       }
+
       window.contract.getMessage({ msgId: id }).then((data) => {
         window.localStorage.setItem(`msg-${id}`, JSON.stringify(data));
         this.updateDataMessage(data, opts);
