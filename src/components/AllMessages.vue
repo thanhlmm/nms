@@ -106,7 +106,7 @@ export default {
     getMessages(id) {
       if (id === null) return;
 
-      let privateKeyDecrypt;
+      let privateKeyDecrypt = null;
       if (this.passwordConfirm && this.localPrivateKey) {
         privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
           this.passwordConfirm,
@@ -117,7 +117,8 @@ export default {
       const opts = {
         isLoadFromIpfs: message.clientConfig.isSupportIpfs,
         isInboxMsg: !this.routePathSent,
-        privateKey: privateKeyDecrypt ? privateKeyDecrypt.slice(5) : null,
+        privateKey:
+          privateKeyDecrypt !== null ? privateKeyDecrypt.slice(5) : null,
       };
 
       const cacheMsg = window.localStorage.getItem(`msg-${id}`);

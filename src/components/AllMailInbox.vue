@@ -152,7 +152,7 @@ export default {
         return;
       }
 
-      let privateKeyDecrypt;
+      let privateKeyDecrypt = null;
       if (this.passwordConfirm && this.localPrivateKey) {
         privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
           this.passwordConfirm,
@@ -163,7 +163,8 @@ export default {
       const opts = {
         isLoadFromIpfs: message.clientConfig.isSupportIpfs,
         isInboxMsg: !this.routePathSent,
-        privateKey: privateKeyDecrypt ? privateKeyDecrypt.slice(5) : null,
+        privateKey:
+          privateKeyDecrypt !== null ? privateKeyDecrypt.slice(5) : null,
       };
 
       const indexInfo = getIndexInfo(this.inboxMsgNum, this.page, 20);

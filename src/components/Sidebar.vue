@@ -205,6 +205,7 @@
 <script>
 import { login, logout, NEAR_UNIT } from "../utils";
 import { utils } from "near-api-js";
+import { decryptPrivateKeyWithPasswordConfirm } from "../message";
 
 export default {
   data() {
@@ -339,10 +340,19 @@ export default {
     showKeyModal() {
       if (this.localPrivateKey === null) {
         this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
-      } else if (this.localPrivateKey && this.passwordConfirm) {
-        this.$store.commit("TOGGLE_KEY_MODAL");
-      } else {
-        this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
+      }
+      if (this.localPrivateKey && this.passwordConfirm) {
+        const privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
+          this.passwordConfirm,
+          this.localPrivateKey
+        );
+        if (privateKeyDecrypt.includes("TEST")) {
+          this.$store.commit("TOGGLE_KEY_MODAL");
+          this.$store.commit("TOGGLE_PASSWORD_CONFIRM", true);
+        } else {
+          this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
+          this.$store.commit("TOGGLE_PASSWORD_CONFIRM", false);
+        }
       }
     },
   },

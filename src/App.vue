@@ -89,15 +89,16 @@ export default {
     checkPasswordConfirm: {
       immediate: true,
       handler: function () {
-        if (this.passwordConfirm && this.localPrivateKey) {
+        if (
+          this.passwordConfirm &&
+          this.localPrivateKey &&
+          this.checkPasswordConfirm
+        ) {
           const privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
             this.passwordConfirm,
             this.localPrivateKey
           );
-          if (
-            this.$store.state.checkPasswordConfirm &&
-            privateKeyDecrypt.includes("TEST")
-          ) {
+          if (privateKeyDecrypt.includes("TEST")) {
             this.$toast.success("Your Confirmation Password is correct", {
               timeout: 2000,
             });
