@@ -133,17 +133,19 @@ export default {
       return this.$store.state.passwordConfirm;
     },
     username() {
-      return this.$store.state.username;
+      return window.walletConnection.getAccountId();
     },
   },
 
   mounted() {
     if (
-      localStorage.getItem("nms_publickey") &&
-      localStorage.getItem("nms_publickey")
+      localStorage.getItem(`${this.username}_publickey`) &&
+      localStorage.getItem(`${this.username}_privatekey`)
     ) {
-      this.hiddenPublicKey(localStorage.getItem("nms_publickey"));
-      this.hiddenPrivateKey(localStorage.getItem("nms_privatekey"));
+      this.hiddenPublicKey(localStorage.getItem(`${this.username}_publickey`));
+      this.hiddenPrivateKey(
+        localStorage.getItem(`${this.username}_privatekey`)
+      );
     }
   },
 
@@ -159,12 +161,22 @@ export default {
             generateKeys.privateKey
           );
           this.privateKeyExport = generateKeys.privateKey;
-          localStorage.setItem("nms_publickey", generateKeys.publicKey);
-          localStorage.setItem("nms_privatekey", encryptPrivateKey);
+          localStorage.setItem(
+            `${this.username}_publickey`,
+            generateKeys.publicKey
+          );
+          localStorage.setItem(
+            `${this.username}_privatekey`,
+            encryptPrivateKey
+          );
           this.hiddenPublicKey(generateKeys.publicKey);
           this.hiddenPrivateKey(encryptPrivateKey);
 
-          this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", encryptPrivateKey);
+          const userName = this.username;
+          this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
+            key: encryptPrivateKey,
+            userName,
+          });
           this.updateKeysApi(generateKeys.publicKey);
 
           this.$toast.success("Success Generate New Keys!", {
@@ -190,10 +202,17 @@ export default {
               const publicKey = privateKeyToPublicKey(privateKeyImport);
               this.hiddenPublicKey(publicKey);
 
-              localStorage.setItem("nms_publickey", publicKey);
-              localStorage.setItem("nms_privatekey", encryptPrivateKey);
+              localStorage.setItem(`${this.username}_publickey`, publicKey);
+              localStorage.setItem(
+                `${this.username}_privatekey`,
+                encryptPrivateKey
+              );
 
-              this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", encryptPrivateKey);
+              const userName = this.username;
+              this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
+                key: encryptPrivateKey,
+                userName,
+              });
               this.updateKeysApi(publicKey);
 
               this.$toast.success("Success Import Keys!", {
@@ -258,7 +277,9 @@ export default {
       this.checkClickReGenBtn = true;
 
       const publicKeyCache = localStorage.getItem("nms_publickey");
-      const privateKeyCache = localStorage.getItem("nms_privatekey");
+      const privateKeyCache = localStorage.getItem(
+        `${this.username}_privatekey`
+      );
 
       if (publicKeyCache && privateKeyCache) {
         this.showModalReGen = true;
@@ -269,12 +290,19 @@ export default {
           generateKeys.privateKey
         );
         this.privateKeyExport = generateKeys.privateKey;
-        localStorage.setItem("nms_publickey", generateKeys.publicKey);
-        localStorage.setItem("nms_privatekey", encryptPrivateKey);
+        localStorage.setItem(
+          `${this.username}_publickey`,
+          generateKeys.publicKey
+        );
+        localStorage.setItem(`${this.username}_privatekey`, encryptPrivateKey);
         this.hiddenPublicKey(generateKeys.publicKey);
         this.hiddenPrivateKey(encryptPrivateKey);
 
-        this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", encryptPrivateKey);
+        const userName = this.username;
+        this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
+          key: encryptPrivateKey,
+          userName,
+        });
         this.updateKeysApi(generateKeys.publicKey);
 
         this.$toast.success("Success Generate New Keys!", {
@@ -286,8 +314,10 @@ export default {
     importKeys() {
       this.checkClickReImportBtn = true;
 
-      const publicKeyCache = localStorage.getItem("nms_publickey");
-      const privateKeyCache = localStorage.getItem("nms_privatekey");
+      const publicKeyCache = localStorage.getItem(`${this.username}_publickey`);
+      const privateKeyCache = localStorage.getItem(
+        `${this.username}_privatekey`
+      );
 
       if (publicKeyCache && privateKeyCache) {
         this.showModalReGen = true;
@@ -307,10 +337,17 @@ export default {
             const publicKey = privateKeyToPublicKey(privateKeyImport);
             this.hiddenPublicKey(publicKey);
 
-            localStorage.setItem("nms_publickey", publicKey);
-            localStorage.setItem("nms_privatekey", encryptPrivateKey);
+            localStorage.setItem(`${this.username}_publickey`, publicKey);
+            localStorage.setItem(
+              `${this.username}_privatekey`,
+              encryptPrivateKey
+            );
 
-            this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", encryptPrivateKey);
+            const userName = this.username;
+            this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
+              key: encryptPrivateKey,
+              userName,
+            });
             this.updateKeysApi(publicKey);
 
             this.$toast.success("Success Import Keys!", {

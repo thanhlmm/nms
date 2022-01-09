@@ -98,11 +98,11 @@ export default {
             this.$store.state.checkPasswordConfirm &&
             privateKeyDecrypt.includes("TEST")
           ) {
-            this.$toast.success("Your Confirm Password is correct", {
+            this.$toast.success("Your Confirmation Password is correct", {
               timeout: 2000,
             });
           } else {
-            this.$toast.error("Your Confirm Password is incorrect", {
+            this.$toast.error("Your Confirmation Password is incorrect", {
               timeout: 2000,
             });
           }
@@ -120,6 +120,14 @@ export default {
   mounted() {
     if (this.localPrivateKey) {
       this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
+    }
+    if (this.localPrivateKey === null && this.$store.state.auth.auth.isLogin) {
+      this.$toast.warning(
+        "Empty Private Key. Please import or generate new key",
+        {
+          timeout: 3000,
+        }
+      );
     }
   },
 };

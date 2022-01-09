@@ -368,24 +368,17 @@ function privateKeyToPublicKey(strPrivateKey) {
 }
 exports.privateKeyToPublicKey = privateKeyToPublicKey;
 
+// Encrypt PrivateKey with Password Confirm
 function encryptPrivateKeyWithPasswordConfirm(password, privateKey) {
-  console.log("password: ", password);
-  console.log("privateKey: ", privateKey);
-
-  let encrypt = aes256.encrypt(password, `TEST-${privateKey}`);
-  console.log("encrypt: ", encrypt);
-
+  const encrypt = aes256.encrypt(password, `TEST-${privateKey}`);
   return encrypt;
-
-  // decryptPrivateKeyWithPasswordConfirm(password, encrypt);
 }
 exports.encryptPrivateKeyWithPasswordConfirm =
   encryptPrivateKeyWithPasswordConfirm;
 
+// Decrypt PrivateKey with Password Confirm
 function decryptPrivateKeyWithPasswordConfirm(password, buffer) {
-  let decrypt = aes256.decrypt(password, buffer);
-  console.log("decrypt: ", decrypt);
-
+  const decrypt = aes256.decrypt(password, buffer);
   return decrypt;
 }
 exports.decryptPrivateKeyWithPasswordConfirm =

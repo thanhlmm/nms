@@ -257,14 +257,13 @@ export default {
     isLoggedIn: {
       immediate: true,
       handler: function () {
-        const privateKey = localStorage.getItem(`nms_privatekey`);
-        if (this.$store.state.auth.auth.isLogin && privateKey === null) {
-          this.$toast.error(
-            "Empty private key. Please import or generate new key",
-            {
-              timeout: 2000,
-            }
-          );
+        const privateKey = localStorage.getItem(`${this.username}_privatekey`);
+        const userName = this.username;
+        if (privateKey) {
+          this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
+            key: privateKey,
+            userName,
+          });
         }
       },
     },
