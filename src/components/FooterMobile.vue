@@ -46,7 +46,7 @@
           @click="prevPage()"
         ></span>
         <span
-          v-show="reachMaxPage && !preventPagination"
+          v-show="!reachMaxPage && !preventPagination"
           class="mail-content__button-next cursor-pointer"
           @click="nextPage()"
         ></span>
@@ -101,7 +101,7 @@ export default {
       return this.$route.path === "/inbox" || this.$route.path === "/";
     },
     totalMsg() {
-      return this.routePathInbox ? this.sentMsgNum : this.inboxMsgNum;
+      return this.routePathInbox ? this.inboxMsgNum : this.sentMsgNum;
     },
     page() {
       return this.$store.state.page;

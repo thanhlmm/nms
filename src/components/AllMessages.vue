@@ -39,6 +39,7 @@
 <script>
 import MessageDetail from "./MessageDetail.vue";
 import message from "../message";
+import { decryptPrivateKeyWithPasswordConfirm } from "../message";
 
 export default {
   components: {
@@ -73,17 +74,26 @@ export default {
     localPrivateKey() {
       return this.$store.state.localPrivateKey;
     },
+    passwordConfirm() {
+      return this.$store.state.passwordConfirm;
+    },
   },
 
   watch: {
+    passwordConfirm: function () {
+      this.dataMsgConversation = [];
+      this.getMessages(this.msgInboxId);
+    },
     msgInboxId: function () {
       this.dataMsgConversation = [];
       this.getMessages(this.msgInboxId);
     },
     localPrivateKey() {
+      this.dataMsgConversation = [];
       this.getMessages(this.msgInboxId);
     },
     routePathSent() {
+      this.dataMsgConversation = [];
       this.getMessages(this.msgInboxId);
     },
   },
@@ -96,10 +106,19 @@ export default {
     getMessages(id) {
       if (id === null) return;
 
+      let privateKeyDecrypt = null;
+      if (this.passwordConfirm && this.localPrivateKey) {
+        privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
+          this.passwordConfirm,
+          this.localPrivateKey
+        );
+      }
+
       const opts = {
         isLoadFromIpfs: message.clientConfig.isSupportIpfs,
         isInboxMsg: !this.routePathSent,
-        privateKey: this.localPrivateKey,
+        privateKey:
+          privateKeyDecrypt !== null ? privateKeyDecrypt.slice(5) : null,
       };
 
       const cacheMsg = window.localStorage.getItem(`msg-${id}`);
@@ -107,6 +126,7 @@ export default {
         this.updateDataMessage(JSON.parse(cacheMsg), opts);
         return;
       }
+
       window.contract.getMessage({ msgId: id }).then((data) => {
         window.localStorage.setItem(`msg-${id}`, JSON.stringify(data));
         this.updateDataMessage(data, opts);

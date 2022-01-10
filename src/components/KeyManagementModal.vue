@@ -4,7 +4,7 @@
       <div class="modal" v-if="showModal">
         <div class="header d-flex align-center justify-between mb-20">
           <div class="title title-20 f-700 d-flex align-center">
-            Key Management for private message
+            Key Management
           </div>
           <div class="action">
             <span class="btn-close cursor-pointer" @click="handleCloseModal">
@@ -96,24 +96,26 @@
       @toggleClickReImport="toggleClickReImport($event)"
       @confirmGen="confirmGen($event)"
     />
-    <ConfirmPasswordModal />
   </div>
 </template>
 
 <script>
-import { generateRSAKey, privateKeyToPublicKey } from "../message";
+import {
+  generateRSAKey,
+  privateKeyToPublicKey,
+  encryptPrivateKeyWithPasswordConfirm,
+} from "../message";
 import ConfirmModal from "../components/ConfirmModal.vue";
-import ConfirmPasswordModal from "../components/ConfirmPasswordModal.vue";
 
 export default {
   components: {
     ConfirmModal,
-    ConfirmPasswordModal,
   },
   data() {
     return {
-      publicKey: localStorage.getItem("nms_publickey"),
-      privateKey: localStorage.getItem("nms_privatekey"),
+      publicKey: null,
+      privateKey: null,
+      privateKeyExport: null,
       file: null,
 
       checkClickReGenBtn: false,
@@ -122,26 +124,59 @@ export default {
       confirm: false,
     };
   },
+
   computed: {
     showModal() {
       return this.$store.state.keyModal;
     },
+    passwordConfirm() {
+      return this.$store.state.passwordConfirm;
+    },
+    username() {
+      return window.walletConnection.getAccountId();
+    },
   },
+
+  mounted() {
+    if (
+      localStorage.getItem(`${this.username}_publickey`) &&
+      localStorage.getItem(`${this.username}_privatekey`)
+    ) {
+      this.hiddenPublicKey(localStorage.getItem(`${this.username}_publickey`));
+      this.hiddenPrivateKey(
+        localStorage.getItem(`${this.username}_privatekey`)
+      );
+    }
+  },
+
   watch: {
     confirm: {
       immediate: true,
       handler: function () {
         if (this.confirm === true && this.checkClickReGenBtn === true) {
           const generateKeys = generateRSAKey();
-          localStorage.setItem("nms_publickey", generateKeys.publicKey);
-          localStorage.setItem("nms_privatekey", generateKeys.privateKey);
-          this.publicKey = generateKeys.publicKey;
-          this.privateKey = generateKeys.privateKey;
 
-          this.$store.commit(
-            "TOGGLE_PRIVATEKEY_LOCAL",
+          const encryptPrivateKey = encryptPrivateKeyWithPasswordConfirm(
+            this.passwordConfirm,
             generateKeys.privateKey
           );
+          this.privateKeyExport = generateKeys.privateKey;
+          localStorage.setItem(
+            `${this.username}_publickey`,
+            generateKeys.publicKey
+          );
+          localStorage.setItem(
+            `${this.username}_privatekey`,
+            encryptPrivateKey
+          );
+          this.hiddenPublicKey(generateKeys.publicKey);
+          this.hiddenPrivateKey(encryptPrivateKey);
+
+          const userName = this.username;
+          this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
+            key: encryptPrivateKey,
+            userName,
+          });
           this.updateKeysApi(generateKeys.publicKey);
 
           this.$toast.success("Success Generate New Keys!", {
@@ -157,15 +192,27 @@ export default {
           if (this.file.name.includes(".pem")) {
             reader.onload = (res) => {
               const privateKeyImport = res.target.result;
-              this.privateKey = privateKeyImport;
+              const encryptPrivateKey = encryptPrivateKeyWithPasswordConfirm(
+                this.passwordConfirm,
+                privateKeyImport
+              );
+              this.hiddenPrivateKey(encryptPrivateKey);
+              this.privateKeyExport = privateKeyImport;
 
               const publicKey = privateKeyToPublicKey(privateKeyImport);
-              this.publicKey = publicKey;
+              this.hiddenPublicKey(publicKey);
 
-              localStorage.setItem("nms_publickey", publicKey);
-              localStorage.setItem("nms_privatekey", privateKeyImport);
+              localStorage.setItem(`${this.username}_publickey`, publicKey);
+              localStorage.setItem(
+                `${this.username}_privatekey`,
+                encryptPrivateKey
+              );
 
-              this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", privateKeyImport);
+              const userName = this.username;
+              this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
+                key: encryptPrivateKey,
+                userName,
+              });
               this.updateKeysApi(publicKey);
 
               this.$toast.success("Success Import Keys!", {
@@ -188,12 +235,10 @@ export default {
       },
     },
   },
+
   methods: {
     handleCloseModal() {
       this.$store.commit("TOGGLE_KEY_MODAL");
-    },
-    handleConfirmPassword() {
-      this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
     },
 
     closeConfirmModal(e) {
@@ -207,6 +252,15 @@ export default {
     },
     confirmGen(e) {
       this.confirm = e;
+    },
+
+    hiddenPublicKey(key) {
+      this.publicKey =
+        key.slice(0, 10) + "********************" + key.substr(-10);
+    },
+    hiddenPrivateKey(key) {
+      this.privateKey =
+        key.slice(0, 10) + "********************" + key.substr(-10);
     },
 
     updateKeysApi(key) {
@@ -223,18 +277,32 @@ export default {
       this.checkClickReGenBtn = true;
 
       const publicKeyCache = localStorage.getItem("nms_publickey");
-      const privateKeyCache = localStorage.getItem("nms_privatekey");
+      const privateKeyCache = localStorage.getItem(
+        `${this.username}_privatekey`
+      );
 
       if (publicKeyCache && privateKeyCache) {
         this.showModalReGen = true;
       } else {
         const generateKeys = generateRSAKey();
-        localStorage.setItem("nms_publickey", generateKeys.publicKey);
-        localStorage.setItem("nms_privatekey", generateKeys.privateKey);
-        this.publicKey = generateKeys.publicKey;
-        this.privateKey = generateKeys.privateKey;
+        const encryptPrivateKey = encryptPrivateKeyWithPasswordConfirm(
+          this.passwordConfirm,
+          generateKeys.privateKey
+        );
+        this.privateKeyExport = generateKeys.privateKey;
+        localStorage.setItem(
+          `${this.username}_publickey`,
+          generateKeys.publicKey
+        );
+        localStorage.setItem(`${this.username}_privatekey`, encryptPrivateKey);
+        this.hiddenPublicKey(generateKeys.publicKey);
+        this.hiddenPrivateKey(encryptPrivateKey);
 
-        this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", generateKeys.privateKey);
+        const userName = this.username;
+        this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
+          key: encryptPrivateKey,
+          userName,
+        });
         this.updateKeysApi(generateKeys.publicKey);
 
         this.$toast.success("Success Generate New Keys!", {
@@ -246,8 +314,10 @@ export default {
     importKeys() {
       this.checkClickReImportBtn = true;
 
-      const publicKeyCache = localStorage.getItem("nms_publickey");
-      const privateKeyCache = localStorage.getItem("nms_privatekey");
+      const publicKeyCache = localStorage.getItem(`${this.username}_publickey`);
+      const privateKeyCache = localStorage.getItem(
+        `${this.username}_privatekey`
+      );
 
       if (publicKeyCache && privateKeyCache) {
         this.showModalReGen = true;
@@ -257,15 +327,27 @@ export default {
         if (this.file.name.includes(".pem")) {
           reader.onload = (res) => {
             const privateKeyImport = res.target.result;
-            this.privateKey = privateKeyImport;
+            const encryptPrivateKey = encryptPrivateKeyWithPasswordConfirm(
+              this.passwordConfirm,
+              privateKeyImport
+            );
+            this.hiddenPrivateKey(encryptPrivateKey);
+            this.privateKeyExport = privateKeyImport;
 
             const publicKey = privateKeyToPublicKey(privateKeyImport);
-            this.publicKey = publicKey;
+            this.hiddenPublicKey(publicKey);
 
-            localStorage.setItem("nms_publickey", publicKey);
-            localStorage.setItem("nms_privatekey", privateKeyImport);
+            localStorage.setItem(`${this.username}_publickey`, publicKey);
+            localStorage.setItem(
+              `${this.username}_privatekey`,
+              encryptPrivateKey
+            );
 
-            this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", privateKeyImport);
+            const userName = this.username;
+            this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
+              key: encryptPrivateKey,
+              userName,
+            });
             this.updateKeysApi(publicKey);
 
             this.$toast.success("Success Import Keys!", {
@@ -285,8 +367,8 @@ export default {
     },
 
     exportKeys() {
-      if (this.privateKey) {
-        const file = new Blob([this.privateKey], { type: "text/plain" });
+      if (this.privateKeyExport) {
+        const file = new Blob([this.privateKeyExport], { type: "text/plain" });
         if (window.navigator.msSaveOrOpenBlob)
           // IE10+
           window.navigator.msSaveOrOpenBlob(file, "PrivateKeys.pem");
