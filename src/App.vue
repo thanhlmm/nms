@@ -8,6 +8,7 @@
 import "./global.css";
 import getConfig from "./config";
 import Convert from "./Convert.vue";
+import { decryptPrivateKeyWithPasswordConfirm } from "./message";
 
 const nearConfig = getConfig(process.env.NODE_ENV || "development");
 console.log(
@@ -39,6 +40,15 @@ export default {
     },
     showConfirmPasswordModal() {
       return this.$store.state.confirmPasswordModal;
+    },
+    localPrivateKey() {
+      return this.$store.state.localPrivateKey;
+    },
+    checkPasswordConfirm() {
+      return this.$store.state.checkPasswordConfirm;
+    },
+    passwordConfirm() {
+      return this.$store.state.passwordConfirm;
     },
   },
 
@@ -76,12 +86,50 @@ export default {
         } else document.querySelector("body").style.overflow = "visible";
       },
     },
+    checkPasswordConfirm: {
+      immediate: true,
+      handler: function () {
+        if (
+          this.passwordConfirm &&
+          this.localPrivateKey &&
+          this.checkPasswordConfirm
+        ) {
+          const privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
+            this.passwordConfirm,
+            this.localPrivateKey
+          );
+          if (privateKeyDecrypt.includes("TEST")) {
+            this.$toast.success("Your Confirmation Password is correct", {
+              timeout: 2000,
+            });
+          } else {
+            this.$toast.error("Your Confirmation Password is incorrect", {
+              timeout: 2000,
+            });
+          }
+        }
+      },
+    },
     isSignedIn: {
       immediate: true,
       handler: function () {
         this.$store.commit("SET_AUTH", this.isSignedIn);
       },
     },
+  },
+
+  mounted() {
+    if (this.localPrivateKey) {
+      this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
+    }
+    if (this.localPrivateKey === null && this.$store.state.auth.auth.isLogin) {
+      this.$toast.warning(
+        "Empty Private Key. Please import or generate new key",
+        {
+          timeout: 3000,
+        }
+      );
+    }
   },
 };
 </script>

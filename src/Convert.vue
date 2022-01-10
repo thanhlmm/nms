@@ -10,6 +10,7 @@
     <SentMessageModal />
     <AlertModal />
     <KeyManagementModal />
+    <ConfirmPasswordModal />
     <Overlay />
   </div>
 </template>
@@ -21,6 +22,7 @@ import FooterMobile from "./components/FooterMobile.vue";
 import SentMessageModal from "./components/SentMessageModal.vue";
 import AlertModal from "./components/AlertModal.vue";
 import KeyManagementModal from "./components/KeyManagementModal.vue";
+import ConfirmPasswordModal from "./components/ConfirmPasswordModal.vue";
 import Overlay from "./components/Overlay.vue";
 
 export default {
@@ -31,6 +33,7 @@ export default {
     SentMessageModal,
     AlertModal,
     KeyManagementModal,
+    ConfirmPasswordModal,
     Overlay,
   },
 };

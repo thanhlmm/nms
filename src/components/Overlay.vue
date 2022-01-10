@@ -1,6 +1,9 @@
 <template>
   <transition name="fade" appear>
-    <div class="modalOverlay" v-if="alertModal || keyModal"></div>
+    <div
+      class="modalOverlay"
+      v-if="alertModal || keyModal || confirmPasswordModal"
+    ></div>
   </transition>
 </template>
 
@@ -12,6 +15,9 @@ export default {
     },
     keyModal() {
       return this.$store.state.keyModal;
+    },
+    confirmPasswordModal() {
+      return this.$store.state.confirmPasswordModal;
     },
   },
 };

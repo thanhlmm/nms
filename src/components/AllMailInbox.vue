@@ -40,6 +40,7 @@
 import message from "../message";
 import Avatar from "./Avatar";
 import { getIndexInfo } from "../utils";
+import { decryptPrivateKeyWithPasswordConfirm } from "../message";
 
 export default {
   components: {
@@ -73,9 +74,15 @@ export default {
     localPrivateKey() {
       return this.$store.state.localPrivateKey;
     },
+    passwordConfirm() {
+      return this.$store.state.passwordConfirm;
+    },
   },
 
   watch: {
+    passwordConfirm() {
+      this.getInboxMsg();
+    },
     page() {
       this.getInboxMsg();
     },
@@ -145,10 +152,19 @@ export default {
         return;
       }
 
+      let privateKeyDecrypt = null;
+      if (this.passwordConfirm && this.localPrivateKey) {
+        privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
+          this.passwordConfirm,
+          this.localPrivateKey
+        );
+      }
+
       const opts = {
         isLoadFromIpfs: message.clientConfig.isSupportIpfs,
         isInboxMsg: !this.routePathSent,
-        privateKey: this.localPrivateKey,
+        privateKey:
+          privateKeyDecrypt !== null ? privateKeyDecrypt.slice(5) : null,
       };
 
       const indexInfo = getIndexInfo(this.inboxMsgNum, this.page, 20);
@@ -157,6 +173,7 @@ export default {
       } else {
         this.$store.commit("SET_PREVENT_PAGINATION", false);
       }
+
       window.contract
         .getInboxMessages({
           accountId: this.accountId,

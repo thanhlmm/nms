@@ -32,7 +32,11 @@
       <div class="container">
         <div class="form-input d-flex pb-10 mb-20">
           <span :class="[{ isEmptyText: checkPasswordInput }]">Password:</span>
-          <input placeholder="Enter your password" v-model="password" />
+          <input
+            placeholder="Enter your password"
+            type="password"
+            v-model="password"
+          />
           <div class="line" :class="[{ isEmpty: checkPasswordInput }]"></div>
         </div>
 
@@ -67,17 +71,28 @@ export default {
     showModal() {
       return this.$store.state.confirmPasswordModal;
     },
+    localPrivateKey() {
+      return this.$store.state.localPrivateKey;
+    },
   },
   methods: {
     handleCloseModal() {
       this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
+      this.$store.commit("TOGGLE_PASSWORD_CONFIRM", false);
+      this.password = "";
     },
     handleConfirm() {
       if (this.password === "") {
         this.checkPasswordInput = true;
       } else {
         this.checkPasswordInput = false;
-        console.log("CONFIRM PASSWORD");
+        this.$store.commit("PASSWORD_CONFIRM", this.password);
+        this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
+        this.$store.commit("TOGGLE_PASSWORD_CONFIRM", true);
+        this.password = "";
+        if (this.localPrivateKey === null) {
+          this.$store.commit("TOGGLE_KEY_MODAL");
+        }
       }
     },
   },
@@ -90,7 +105,7 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 99999;
+  z-index: 9999;
 
   width: 100%;
   max-width: 450px;
