@@ -244,7 +244,7 @@ export default {
               if (data) {
                 this.senderKey = data;
               } else {
-                this.$store.commit("TOGGLE_KEY_MODAL");
+                this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
               }
             });
         }
@@ -308,9 +308,6 @@ export default {
         }
       } catch (error) {
         console.error(error);
-        this.$toast.error("Your message can not be send!", {
-          timeout: 2000,
-        });
       }
     },
 
@@ -356,6 +353,25 @@ export default {
         if (this.type === "PRIVATE") {
           window.contract.getPublicKey({ accountId: this.to }).then((data) => {
             if (data) {
+              const privateKeyLocal = localStorage.getItem(
+                `${this.username}_privatekey`
+              );
+              if (privateKeyLocal) {
+                window.contract
+                  .getPublicKey({ accountId: this.username })
+                  .then((publicKey) => {
+                    this.packMassage({
+                      title: this.title,
+                      content: this.data,
+                      attachmentFiles: {},
+                      type: this.type,
+                      keys: {
+                        sender: publicKey,
+                        receiver: data,
+                      },
+                    });
+                  });
+              }
               this.packMassage({
                 title: this.title,
                 content: this.data,

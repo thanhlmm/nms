@@ -102,10 +102,12 @@ export default {
             this.$toast.success("Your Confirmation Password is correct", {
               timeout: 2000,
             });
+            this.$store.commit("TOGGLE_PASSWORD_CONFIRM", true);
           } else {
             this.$toast.error("Your Confirmation Password is incorrect", {
               timeout: 2000,
             });
+            this.$store.commit("TOGGLE_PASSWORD_CONFIRM", false);
           }
         }
       },
