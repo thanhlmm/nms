@@ -272,6 +272,7 @@ async function depackMessage(msg, opts) {
     message: "Unknown error",
     title: null,
     content: null,
+    isPrivate: msg.isPrivate,
   };
   try {
     // Decode title
