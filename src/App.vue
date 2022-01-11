@@ -126,7 +126,7 @@ export default {
     }
     if (this.localPrivateKey === null && this.$store.state.auth.auth.isLogin) {
       this.$toast.warning(
-        "Empty Private Key. Please import or generate new key",
+        "Empty Private Key. Please Import your PrivateKey.pem or Generate new key!",
         {
           timeout: 3000,
         }
