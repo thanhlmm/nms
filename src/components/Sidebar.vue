@@ -370,4 +370,10 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.name {
+  width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
