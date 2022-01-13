@@ -97,7 +97,7 @@
     <section class="modal-sent__body">
       <div class="form-input d-flex pb-10 mb-20">
         <span :class="[{ isEmptyText: checkToInput }]">To: </span>
-        <input placeholder="Enter the email here" v-model="to" />
+        <input placeholder="Enter the NEAR account here" v-model="to" />
         <div class="line" :class="[{ isEmpty: checkToInput }]"></div>
       </div>
       <div class="form-input d-flex pb-10 mb-20">
@@ -105,12 +105,6 @@
         <input placeholder="Enter the subject here" v-model="title" />
         <div class="line" :class="[{ isEmpty: checkTitleInput }]"></div>
       </div>
-      <!-- <div class="form-textarea mb-20">
-        <textarea
-          placeholder="Enter the content here"
-          v-model="data"
-        ></textarea>
-      </div> -->
       <div class="mb-20">
         <TipTap
           :modelValue="data"
@@ -118,9 +112,31 @@
           @updateModelValue="updateModelValue"
         />
       </div>
+      <div class="mb-16">
+        <div class="f-500 mb-16">Select message type:</div>
+        <div class="near__value-list d-flex">
+          <div
+            class="near__value-item cursor-pointer"
+            v-bind:class="{
+              active: type === 'PUBLIC',
+            }"
+            @click="type = 'PUBLIC'"
+          >
+            Public
+          </div>
+          <div
+            class="near__value-item cursor-pointer"
+            v-bind:class="{
+              active: type === 'PRIVATE',
+            }"
+            @click="type = 'PRIVATE'"
+          >
+            Private
+          </div>
+        </div>
+      </div>
 
       <div class="f-500 mb-16">Select NEAR to send:</div>
-
       <div class="d-flex align-center justify-between">
         <div class="near__value-list d-flex">
           <div
@@ -187,17 +203,21 @@ export default {
   components: {
     TipTap,
   },
+
   data() {
     return {
       to: "",
       title: "",
       data: "",
       amount: 0.1,
+      type: "PUBLIC",
 
       checkToInput: false,
       checkTitleInput: false,
+      senderKey: null,
     };
   },
+
   computed: {
     showModal() {
       return this.$store.state.sendMessageModal.isShow;
@@ -208,50 +228,39 @@ export default {
     minimizeModal() {
       return this.$store.state.sendMessageModal.isMinimize;
     },
+    username() {
+      return window.walletConnection.getAccountId();
+    },
+    privateKeyLocal() {
+      return this.$store.state.localPrivateKey;
+    },
   },
+
+  watch: {
+    type: {
+      immediate: true,
+      handler: function () {
+        if (this.type === "PRIVATE") {
+          window.contract
+            .getPublicKey({ accountId: this.username })
+            .then((data) => {
+              if (data) {
+                this.senderKey = data;
+              } else {
+                this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
+              }
+            });
+        }
+      },
+    },
+  },
+
   methods: {
     updateModelValue(e) {
       this.data = e;
     },
 
-    async handleSendMessageModal() {
-      let msg = {
-        title: this.title,
-        content: this.data,
-        attachmentFiles: {},
-      };
-
-      if (!this.to.length && !this.title.length) {
-        this.checkTitleInput = true;
-        this.checkToInput = true;
-        return;
-      } else {
-        this.checkTitleInput = false;
-        this.checkToInput = false;
-      }
-
-      if (!this.to.length) {
-        // alert("Please enter the field 'To'!");
-        this.checkToInput = true;
-        return;
-      } else this.checkToInput = false;
-
-      if (!this.title.length) {
-        // alert("Please enter the field 'To'!");
-        this.checkTitleInput = true;
-        return;
-      } else this.checkTitleInput = false;
-
-      if (!(await isAccountExist(this.to))) {
-        // alert(
-        //   `The account '${this.to}' is not existed. Please enter the other account!`
-        // );
-        this.checkToInput = false;
-        this.checkTitleInput = false;
-        this.$store.commit("TOGGLE_ALERT_MODAL", this.to);
-        return;
-      }
-
+    async packMassage(msg) {
       try {
         console.log("start send", msg, tranformUnit(this.amount));
         const resp = await message.packMessage(msg);
@@ -274,7 +283,16 @@ export default {
               BOATLOAD_OF_GAS,
               tranformUnit(this.amount)
             )
-            .then(console.log);
+            .then(() => {
+              this.$toast.success(
+                "Your message have been sent with" +
+                  tranformUnit(this.amount) +
+                  " !",
+                {
+                  timeout: 2000,
+                }
+              );
+            });
         } else {
           window.contract
             .sendMessage({
@@ -285,10 +303,108 @@ export default {
               prevMsgId: 0,
               expiredTime: "0",
             })
-            .then(console.log);
+            .then(() => {
+              this.$toast.success("Your message have been sent!", {
+                timeout: 2000,
+              });
+            });
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
+      }
+    },
+
+    async handleSendMessageModal() {
+      if (!this.to.length && !this.title.length) {
+        this.$toast.error("Please enter the field 'To' and 'Subject'!", {
+          timeout: 2000,
+        });
+        this.checkTitleInput = true;
+        this.checkToInput = true;
+        return;
+      } else {
+        this.checkTitleInput = false;
+        this.checkToInput = false;
+      }
+
+      if (!this.to.length) {
+        this.$toast.error("Please enter the field 'To'!", {
+          timeout: 2000,
+        });
+        this.checkToInput = true;
+        return;
+      } else {
+        this.checkToInput = false;
+      }
+
+      if (!this.title.length) {
+        this.$toast.error("Please enter the field 'Subject'!", {
+          timeout: 2000,
+        });
+        this.checkTitleInput = true;
+        return;
+      } else {
+        this.checkTitleInput = false;
+      }
+
+      if (!(await isAccountExist(this.to))) {
+        this.checkToInput = false;
+        this.checkTitleInput = false;
+        this.$store.commit("TOGGLE_ALERT_MODAL", this.to);
+        return;
+      } else {
+        if (this.type === "PRIVATE") {
+          window.contract.getPublicKey({ accountId: this.to }).then((data) => {
+            if (data) {
+              // const privateKeyLocal = localStorage.getItem(
+              //   `${this.username}_privatekey`
+              // );
+              if (this.privateKeyLocal) {
+                window.contract
+                  .getPublicKey({ accountId: this.username })
+                  .then((publicKey) => {
+                    this.packMassage({
+                      title: this.title,
+                      content: this.data,
+                      attachmentFiles: {},
+                      type: this.type,
+                      keys: {
+                        sender: publicKey,
+                        receiver: data,
+                      },
+                    });
+                  });
+              }
+              this.packMassage({
+                title: this.title,
+                content: this.data,
+                attachmentFiles: {},
+                type: this.type,
+                keys: {
+                  sender: this.senderKey,
+                  receiver: data,
+                },
+              });
+            } else {
+              this.$toast.error("Receiver doesn't have public key!", {
+                timeout: 2000,
+              });
+              return;
+            }
+          });
+        }
+        if (this.type === "PUBLIC") {
+          this.packMassage({
+            title: this.title,
+            content: this.data,
+            attachmentFiles: {},
+            type: this.type,
+            keys: {
+              sender: null,
+              receiver: null,
+            },
+          });
+        }
       }
     },
 
@@ -299,6 +415,7 @@ export default {
       this.title = "";
       this.data = "";
       this.amount = 0.1;
+      this.type = "PUBLIC";
       this.$store.commit("TOGGLE_SEND_MESSAGE_MODAL");
     },
 

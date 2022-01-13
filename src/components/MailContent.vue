@@ -32,14 +32,9 @@
         >
           <div class="d-flex align-center no-wrap text-right top">
             <div>Page {{ page }}</div>
-            <div class="ml-20 mr-20 ml-sm-6 mr-sm-0">
-              <!-- <span>{{ countPage }}</span> of
-              <span>
-                {{ routePathSent ? sentMsgNum : inboxMsgNum }}
-              </span> -->
-            </div>
-
-            <div class="mail-content__button hidden-sm">
+            <div
+              class="mail-content__button hidden-sm ml-20 mr-20 ml-sm-6 mr-sm-0"
+            >
               <div>
                 <span
                   v-show="page > 1"
@@ -47,7 +42,7 @@
                   @click="prevPage()"
                 ></span>
                 <span
-                  v-show="!reachMaxPage"
+                  v-show="!reachMaxPage && !preventPagination"
                   class="mail-content__button-next cursor-pointer"
                   @click="nextPage()"
                 ></span>
@@ -102,7 +97,7 @@ export default {
     msgInboxId() {
       return this.$store.state.messageConversation.msgInboxId;
     },
-    routeInboxSent() {
+    routePathInbox() {
       return this.$route.path === "/inbox" || this.$route.path === "/";
     },
     routePathSent() {
@@ -115,13 +110,16 @@ export default {
       return this.$store.state.inboxMsgNum;
     },
     totalMsg() {
-      return this.routeInboxSent ? this.sentMsgNum : this.inboxMsgNum;
+      return this.routePathInbox ? this.inboxMsgNum : this.sentMsgNum;
     },
     page() {
       return this.$store.state.page;
     },
     reachMaxPage() {
       return this.page * 20 > this.totalMsg;
+    },
+    preventPagination() {
+      return this.$store.state.preventPagination;
     },
   },
   watch: {

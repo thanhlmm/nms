@@ -18,7 +18,7 @@ export default {
   data() {
     return {
       windowWidth: window.innerWidth,
-      url: "../../public/assets/images/icon.svg",
+      url: require("../../public/assets/images/icon.svg"),
     };
   },
 

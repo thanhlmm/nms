@@ -1,7 +1,7 @@
 const IpfsClient = require("ipfs-http-client");
 const aes256 = require("aes256");
 const axios = require("axios").default;
-const NodeRSA = require('node-rsa');
+const NodeRSA = require("node-rsa");
 axios.defaults.adapter = require("axios/lib/adapters/http");
 const stream = require("stream");
 
@@ -10,6 +10,8 @@ const clientConfig = {
   aesKey: "fc2f83976ad1342659c989ff91bc09d4efb891fd877e77fa03f61006467cff0e", // SHA256("near-message-service")
   isSupportIpfs: false,
 };
+exports.clientConfig = clientConfig;
+
 let ipfsClient = null;
 
 async function getIpfsClient() {
@@ -164,6 +166,30 @@ async function getMesageData(cid, aesKey) {
 }
 exports.getMesageData = getMesageData;
 
+function generateAESKey256() {
+  let key = "";
+  let hex = "0123456789abcdef";
+  for (i = 0; i < 64; i++) {
+    key += hex.charAt(Math.floor(Math.random() * 16));
+  }
+  return key;
+}
+
+function encryptWithPublicKey(publicKey, data) {
+  let pubKey = Buffer.from(publicKey, "hex").toString("utf8");
+  let key = new NodeRSA(pubKey, "public");
+  const encrypted = key.encrypt(data, "hex");
+  return encrypted;
+}
+
+function decryptWithPrivateKey(privateKey, data) {
+  let priKey = Buffer.from(privateKey, "hex").toString("utf8");
+  let key = new NodeRSA(priKey, "private");
+  let buffer = Buffer.from(data, "hex");
+  const decrypted = key.decrypt(buffer, "utf8");
+  return decrypted;
+}
+
 // msg: { title, content, attachmentFiles, type, keys: { sender, receiver } }
 // return: { code, message, title, data}
 async function packMessage(msg) {
@@ -176,7 +202,7 @@ async function packMessage(msg) {
     resp.title = encodeMsgTitle(msg.title);
 
     // AES Key
-    let isPrivateMsg = (msg.type && msg.type=="PRIVATE");
+    let isPrivateMsg = msg.type && msg.type == "PRIVATE";
     let aesKey = clientConfig.aesKey;
     if (isPrivateMsg) {
       aesKey = generateAESKey256();
@@ -198,7 +224,8 @@ async function packMessage(msg) {
         if (isPrivateMsg) {
           let senderKey = encryptWithPublicKey(msg.keys.sender, aesKey);
           let receiverKey = encryptWithPublicKey(msg.keys.receiver, aesKey);
-          resp.data = `#IPFS-PRI:${senderKey}-${receiverKey}-` + result.cid.toString();
+          resp.data =
+            `#IPFS-PRI:${senderKey}-${receiverKey}-` + result.cid.toString();
         } else {
           resp.data = "#IPFS:" + result.cid.toString();
         }
@@ -212,7 +239,9 @@ async function packMessage(msg) {
       if (isPrivateMsg) {
         let senderKey = encryptWithPublicKey(msg.keys.sender, aesKey);
         let receiverKey = encryptWithPublicKey(msg.keys.receiver, aesKey);
-        resp.data = `#DIRECT-PRI:${senderKey}-${receiverKey}-` + bodyBuffer.toString("hex");
+        resp.data =
+          `#DIRECT-PRI:${senderKey}-${receiverKey}-` +
+          bodyBuffer.toString("hex");
       } else {
         resp.data = "#DIRECT:" + bodyBuffer.toString("hex");
       }
@@ -241,6 +270,9 @@ async function depackMessage(msg, opts) {
     prevMsgId: msg.prevMsgId,
     code: 1,
     message: "Unknown error",
+    title: null,
+    content: null,
+    isPrivate: msg.isPrivate,
   };
   try {
     // Decode title
@@ -254,6 +286,8 @@ async function depackMessage(msg, opts) {
       } else if (data.startsWith("#DIRECT-PRI")) {
         if (!opts || !opts.privateKey) {
           resp.message = "Missing parameters!!!";
+          resp.title = "Missing Private Key";
+          resp.content = "Can not decrypt this message";
           return resp;
         }
         let items = data.substring(12).split("-");
@@ -268,7 +302,7 @@ async function depackMessage(msg, opts) {
         }
         let bodyBuffer = Buffer.from(bodyData, "hex");
         let bodyInfo = decodeMsgBody(bodyBuffer, aesKey);
-        // console.log("bodyInfo", bodyInfo);
+        // console.log("bodyInfo #DIRECT-PRI", bodyInfo);
         resp.content = bodyInfo.content;
         resp.attachmentFiles = bodyInfo.attachmentFiles;
         resp.code = 0;
@@ -277,7 +311,7 @@ async function depackMessage(msg, opts) {
         let bodyData = data.substring(8);
         let bodyBuffer = Buffer.from(bodyData, "hex");
         let bodyInfo = decodeMsgBody(bodyBuffer, clientConfig.aesKey);
-        // console.log("bodyInfo", bodyInfo);
+        // console.log("bodyInfo #DIRECT", bodyInfo);
         resp.content = bodyInfo.content;
         resp.attachmentFiles = bodyInfo.attachmentFiles;
         resp.code = 0;
@@ -305,6 +339,7 @@ async function depackMessage(msg, opts) {
   } catch (ex) {
     console.error("Error to depack message", ex);
     resp.message = ex.toString();
+    resp.content = "Can not decrypt this message";
   }
   return resp;
 }
@@ -312,14 +347,14 @@ exports.depackMessage = depackMessage;
 
 // Generate RSA Keypair
 function generateRSAKey() {
-  let key = new NodeRSA({b: 1024});
-  let publicKey = key.exportKey('public');
-  let strPublicKey = Buffer.from(publicKey, "utf8").toString('hex');
-  let privateKey = key.exportKey('private');
-  let strPrivateKey = Buffer.from(privateKey, "utf8").toString('hex');
+  let key = new NodeRSA({ b: 1024 });
+  let publicKey = key.exportKey("public");
+  let strPublicKey = Buffer.from(publicKey, "utf8").toString("hex");
+  let privateKey = key.exportKey("private");
+  let strPrivateKey = Buffer.from(privateKey, "utf8").toString("hex");
   return {
     publicKey: strPublicKey,
-    privateKey: strPrivateKey
+    privateKey: strPrivateKey,
   };
 }
 exports.generateRSAKey = generateRSAKey;
@@ -328,32 +363,24 @@ exports.generateRSAKey = generateRSAKey;
 function privateKeyToPublicKey(strPrivateKey) {
   let privateKey = Buffer.from(strPrivateKey, "hex").toString("utf8");
   let key = new NodeRSA(privateKey, "private");
-  let publicKey = key.exportKey('public');
-  let strPublicKey = Buffer.from(publicKey, "utf8").toString('hex');
+  let publicKey = key.exportKey("public");
+  let strPublicKey = Buffer.from(publicKey, "utf8").toString("hex");
   return strPublicKey;
 }
 exports.privateKeyToPublicKey = privateKeyToPublicKey;
 
-function generateAESKey256() {
-  let key = "";
-  let hex = "0123456789abcdef";
-  for (i = 0; i < 64; i++) {
-      key += hex.charAt(Math.floor(Math.random() * 16));
-  }
-  return key;
+// Encrypt PrivateKey with Password Confirm
+function encryptPrivateKeyWithPasswordConfirm(password, privateKey) {
+  const encrypt = aes256.encrypt(password, `TEST-${privateKey}`);
+  return encrypt;
 }
+exports.encryptPrivateKeyWithPasswordConfirm =
+  encryptPrivateKeyWithPasswordConfirm;
 
-function encryptWithPublicKey(publicKey, data) {
-  let pubKey = Buffer.from(publicKey, "hex").toString("utf8");
-  let key = new NodeRSA(pubKey, "public");
-  const encrypted = key.encrypt(data, 'hex');
-  return encrypted;
+// Decrypt PrivateKey with Password Confirm
+function decryptPrivateKeyWithPasswordConfirm(password, buffer) {
+  const decrypt = aes256.decrypt(password, buffer);
+  return decrypt;
 }
-
-function decryptWithPrivateKey(privateKey, data) {
-	let priKey = Buffer.from(privateKey, "hex").toString("utf8");
-    let key = new NodeRSA(priKey, "private");
-    let buffer = Buffer.from(data, "hex");
-    const decrypted = key.decrypt(buffer, 'utf8');
-    return decrypted;
-}
+exports.decryptPrivateKeyWithPasswordConfirm =
+  decryptPrivateKeyWithPasswordConfirm;

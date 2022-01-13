@@ -2,7 +2,15 @@
   <div class="mail-right__sent">
     <header class="mail-right__item-header d-flex">
       <Avatar :accountId="from" size="60" />
-      <div class="info pl-30 flex-grow-1 d-flex justify-between">
+      <div
+        class="
+          info
+          pl-30 pl-xl-16 pl-md-16 pl-sm-10
+          flex-grow-1
+          d-flex
+          justify-between
+        "
+      >
         <div>
           <div class="name title-20 mb-10 f-700">{{ from }}</div>
           <div class="to f-500">To: {{ to }}</div>
@@ -23,6 +31,7 @@
               cursor-pointer
               d-flex
               align-center
+              flex-shrink-0
             "
             @click="handleCancelForward"
           >
@@ -46,14 +55,30 @@
             @updateModelValue="updateModelValue"
           />
         </div>
-        <!-- <div class="description f-500 mb-10">
-          <div class="textArea-ForwardAndReply">
-            <textarea
-              placeholder="Enter the content here"
-              v-model="data"
-            ></textarea>
+      </div>
+
+      <div class="mb-16">
+        <div class="f-500 mb-16">Select message type:</div>
+        <div class="near__value-list d-flex">
+          <div
+            class="near__value-item cursor-pointer"
+            v-bind:class="{
+              active: type === 'PUBLIC',
+            }"
+            @click="type = 'PUBLIC'"
+          >
+            Public
           </div>
-        </div> -->
+          <div
+            class="near__value-item cursor-pointer"
+            v-bind:class="{
+              active: type === 'PRIVATE',
+            }"
+            @click="type = 'PRIVATE'"
+          >
+            Private
+          </div>
+        </div>
       </div>
 
       <div>
@@ -109,30 +134,45 @@ export default {
       data: "",
       titleData: this.title,
       amount: 0.1,
+      type: "PUBLIC",
+      senderKey: null,
     };
   },
+
+  computed: {
+    username() {
+      return window.walletConnection.getAccountId();
+    },
+    privateKeyLocal() {
+      return this.$store.state.localPrivateKey;
+    },
+  },
+
+  watch: {
+    type: {
+      immediate: true,
+      handler: function () {
+        if (this.type === "PRIVATE") {
+          window.contract
+            .getPublicKey({ accountId: this.username })
+            .then((data) => {
+              if (data) {
+                this.senderKey = data;
+              } else {
+                this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
+              }
+            });
+        }
+      },
+    },
+  },
+
   methods: {
     updateModelValue(e) {
       this.data = e;
     },
 
-    async handleForward() {
-      let msgForward = {
-        title: this.titleData,
-        content: this.data,
-        attachmentFiles: {},
-      };
-
-      if (!this.titleData.length) {
-        alert("Please enter the field 'Title'!");
-        return;
-      }
-
-      if (!await isAccountExist(this.to)) {
-          alert(`The account '${this.to}' is not existed. Please enter the other account!`);
-          return;
-      }
-
+    async packMassage(msgForward) {
       try {
         console.log("start send", msgForward, tranformUnit(this.amount));
         const resp = await message.packMessage(msgForward);
@@ -155,7 +195,16 @@ export default {
               BOATLOAD_OF_GAS,
               tranformUnit(this.amount)
             )
-            .then(console.log);
+            .then(() => {
+              this.$toast.success(
+                "Your message have been sent with" +
+                  tranformUnit(this.amount) +
+                  " !",
+                {
+                  timeout: 2000,
+                }
+              );
+            });
         } else {
           window.contract
             .sendMessage({
@@ -166,10 +215,75 @@ export default {
               prevMsgId: 0,
               expiredTime: "0",
             })
-            .then(console.log);
+            .then(() => {
+              this.$toast.success("Your message have been sent!", {
+                timeout: 2000,
+              });
+            });
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
+        this.$toast.error("Your message can not be send!", {
+          timeout: 2000,
+        });
+      }
+    },
+
+    async handleForward() {
+      if (!this.titleData.length) {
+        this.$toast.error("Please enter the field 'Title'!", {
+          timeout: 2000,
+        });
+        return;
+      }
+      if (this.type === "PRIVATE") {
+        window.contract.getPublicKey({ accountId: this.to }).then((data) => {
+          if (data) {
+            if (this.privateKeyLocal) {
+              window.contract
+                .getPublicKey({ accountId: this.username })
+                .then((publicKey) => {
+                  this.packMassage({
+                    title: this.title,
+                    content: this.data,
+                    attachmentFiles: {},
+                    type: this.type,
+                    keys: {
+                      sender: publicKey,
+                      receiver: data,
+                    },
+                  });
+                });
+            }
+            this.packMassage({
+              title: this.titleData,
+              content: this.data,
+              attachmentFiles: {},
+              type: this.type,
+              keys: {
+                sender: this.senderKey,
+                receiver: data,
+              },
+            });
+          } else {
+            this.$toast.error("Receiver doesn't have public key!", {
+              timeout: 2000,
+            });
+            return;
+          }
+        });
+      }
+      if (this.type === "PUBLIC") {
+        this.packMassage({
+          title: this.titleData,
+          content: this.data,
+          attachmentFiles: {},
+          type: this.type,
+          keys: {
+            sender: null,
+            receiver: null,
+          },
+        });
       }
     },
 

@@ -39,23 +39,28 @@
 <script>
 import MessageDetail from "./MessageDetail.vue";
 import message from "../message";
+import { decryptPrivateKeyWithPasswordConfirm } from "../message";
 
 export default {
   components: {
     MessageDetail,
   },
+
   data() {
     return {
       windowWidth: window.innerWidth,
       dataMsgConversation: [],
     };
   },
+
   created() {
     window.addEventListener("resize", this.myEventHandler);
   },
+
   destroyed() {
     window.removeEventListener("resize", this.myEventHandler);
   },
+
   computed: {
     userLogin() {
       return this.$store.state.auth.auth.isLogin;
@@ -63,32 +68,85 @@ export default {
     msgInboxId() {
       return this.$store.state.messageConversation.msgInboxId;
     },
+    routePathSent() {
+      return this.$route.path === "/sent";
+    },
+    localPrivateKey() {
+      return this.$store.state.localPrivateKey;
+    },
+    passwordConfirm() {
+      return this.$store.state.passwordConfirm;
+    },
   },
+
   watch: {
+    passwordConfirm: function () {
+      this.dataMsgConversation = [];
+      this.getMessages(this.msgInboxId);
+    },
     msgInboxId: function () {
       this.dataMsgConversation = [];
       this.getMessages(this.msgInboxId);
     },
+    localPrivateKey() {
+      this.dataMsgConversation = [];
+      this.getMessages(this.msgInboxId);
+    },
+    routePathSent() {
+      this.dataMsgConversation = [];
+      this.getMessages(this.msgInboxId);
+    },
   },
+
   methods: {
     myEventHandler() {
       this.windowWidth = window.innerWidth;
     },
+
     getMessages(id) {
       if (id === null) return;
 
+      let privateKeyDecrypt = null;
+      if (this.passwordConfirm && this.localPrivateKey) {
+        privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
+          this.passwordConfirm,
+          this.localPrivateKey
+        );
+      }
+
+      const opts = {
+        isLoadFromIpfs: message.clientConfig.isSupportIpfs,
+        isInboxMsg: !this.routePathSent,
+        privateKey:
+          privateKeyDecrypt !== null ? privateKeyDecrypt.slice(5) : null,
+      };
+
       const cacheMsg = window.localStorage.getItem(`msg-${id}`);
       if (cacheMsg) {
-        this.updateDataMessage(JSON.parse(cacheMsg));
+        this.updateDataMessage(JSON.parse(cacheMsg), opts);
         return;
       }
+
       window.contract.getMessage({ msgId: id }).then((data) => {
         window.localStorage.setItem(`msg-${id}`, JSON.stringify(data));
-        this.updateDataMessage(data);
+        this.updateDataMessage(data, opts);
       });
     },
-    async updateDataMessage(msg) {
-      const msgInbox = await message.depackMessage(msg);
+
+    async updateDataMessage(msg, opts) {
+      const structMsgInbox = {
+        baseSite: msg.baseSite,
+        data: msg.data,
+        expiredTime: msg.expiredTime,
+        from: msg.from,
+        id: msg.id,
+        prevMsgId: msg.prevMsgId,
+        timestamp: msg.timestamp,
+        title: msg.title,
+        to: msg.to,
+        isPrivate: msg.data.includes("DIRECT-PRI"),
+      };
+      const msgInbox = await message.depackMessage(structMsgInbox, opts);
 
       if (msgInbox.prevMsgId === 0) {
         this.dataMsgConversation.push(msgInbox);

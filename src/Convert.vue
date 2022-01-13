@@ -9,6 +9,8 @@
     </div>
     <SentMessageModal />
     <AlertModal />
+    <KeyManagementModal />
+    <ConfirmPasswordModal />
     <Overlay />
   </div>
 </template>
@@ -19,6 +21,8 @@ import MailContent from "./components/MailContent.vue";
 import FooterMobile from "./components/FooterMobile.vue";
 import SentMessageModal from "./components/SentMessageModal.vue";
 import AlertModal from "./components/AlertModal.vue";
+import KeyManagementModal from "./components/KeyManagementModal.vue";
+import ConfirmPasswordModal from "./components/ConfirmPasswordModal.vue";
 import Overlay from "./components/Overlay.vue";
 
 export default {
@@ -28,6 +32,8 @@ export default {
     FooterMobile,
     SentMessageModal,
     AlertModal,
+    KeyManagementModal,
+    ConfirmPasswordModal,
     Overlay,
   },
 };

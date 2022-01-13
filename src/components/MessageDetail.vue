@@ -70,12 +70,18 @@
     </header>
 
     <section class="mail-right__item-body">
-      <div class="title cursor-pointer" @click="showDetail = !showDetail">
-        Title: {{ dataMsg.title }}
+      <div :class="{ isPrivate: dataMsg.isPrivate }">
+        <img
+          v-if="dataMsg.isPrivate"
+          src="../../public/assets/images/privateMsg.svg"
+          class="private-message"
+        />
+        <div class="title cursor-pointer" @click="showDetail = !showDetail">
+          Title: {{ dataMsg.title }}
+        </div>
       </div>
       <div class="description f-500">
         <div class="content">
-          <!-- <div>{{ dataMsg.content }}</div> -->
           <TipTap :modelValue="dataMsg.content" :isDetail="true" />
         </div>
       </div>
@@ -97,16 +103,6 @@
         :showForward="showForward"
         @cancelForward="cancelForward"
       />
-      <!-- <div
-        :class="[
-          { 'is-hidden': !showDetail || showReply || showForward },
-          'description f-500',
-        ]"
-      >
-        <div class="content">
-          <div>{{ dataMsg.content }}</div>
-        </div>
-      </div> -->
     </section>
   </article>
 </template>
@@ -119,12 +115,14 @@ import TipTap from "../components/TipTap.vue";
 
 export default {
   props: ["dataMsg", "from"],
+
   components: {
     ReplyMessage,
     ForwardMessage,
     Avatar,
     TipTap,
   },
+
   data() {
     return {
       showDetail:
@@ -133,6 +131,7 @@ export default {
       showForward: false,
     };
   },
+
   methods: {
     handleShowReply() {
       if (this.showForward) return;
@@ -152,4 +151,13 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.isPrivate {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.private-message {
+  width: 20px;
+}
+</style>

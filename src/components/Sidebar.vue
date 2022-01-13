@@ -86,16 +86,28 @@
     </div>
 
     <div class="mail-left__static d-flex justify-center flex-column pl-10">
-      <div class="theme-change mb-16">
-        <label class="switch-theme">
-          <input
-            type="checkbox"
-            :checked="darkMode"
-            class="input__switch-theme"
-            @click="handleToggleDarkMode"
+      <div class="mb-16 d-flex align-start">
+        <div class="theme-change">
+          <label class="switch-theme">
+            <input
+              type="checkbox"
+              :checked="darkMode"
+              class="input__switch-theme"
+              @click="handleToggleDarkMode"
+            />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div
+          @click="showKeyModal"
+          class="lock d-flex align-center justify-center ml-20 cursor-pointer"
+          :class="[{ 'is-hidden': !isLoggedIn }]"
+        >
+          <img
+            src="../../public/assets/images/lock.svg"
+            class="flex-shrink-0"
           />
-          <span class="slider"></span>
-        </label>
+        </div>
       </div>
       <div class="f-12 f-500 mb-30 mb-sm-0">
         <div><b>Statics:</b></div>
@@ -193,6 +205,7 @@
 <script>
 import { login, logout, NEAR_UNIT } from "../utils";
 import { utils } from "near-api-js";
+import { decryptPrivateKeyWithPasswordConfirm } from "../message";
 
 export default {
   data() {
@@ -205,6 +218,7 @@ export default {
       balance: 0,
     };
   },
+
   computed: {
     isLoggedIn() {
       return this.$store.state.auth.auth.isLogin;
@@ -224,7 +238,17 @@ export default {
     darkMode() {
       return this.$store.state.darkMode;
     },
+    localPrivateKey() {
+      return this.$store.state.localPrivateKey;
+    },
+    passwordConfirm() {
+      return this.$store.state.passwordConfirm;
+    },
+    checkPasswordConfirm() {
+      return this.$store.state.checkPasswordConfirm;
+    },
   },
+
   mounted() {
     this.getSentMessageNum();
     this.getInboxMessageNum();
@@ -232,6 +256,23 @@ export default {
     this.getBalance();
     this.checkInboxMsgNum();
   },
+
+  watch: {
+    isLoggedIn: {
+      immediate: true,
+      handler: function () {
+        const privateKey = localStorage.getItem(`${this.username}_privatekey`);
+        const userName = this.username;
+        if (privateKey) {
+          this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
+            key: privateKey,
+            userName,
+          });
+        }
+      },
+    },
+  },
+
   methods: {
     handleAuth() {
       login();
@@ -298,8 +339,41 @@ export default {
         this.getInboxMessageNum();
       }, parseInt(TIME_CHECK));
     },
+
+    showKeyModal() {
+      if (this.localPrivateKey === null) {
+        this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
+      } else {
+        if (this.passwordConfirm) {
+          const privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
+            this.passwordConfirm,
+            this.localPrivateKey
+          );
+          if (
+            privateKeyDecrypt.includes("TEST") &&
+            this.checkPasswordConfirm === true
+          ) {
+            this.$store.commit("TOGGLE_KEY_MODAL");
+          }
+          if (
+            !privateKeyDecrypt.includes("TEST") &&
+            this.checkPasswordConfirm === false
+          ) {
+            this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
+          }
+        } else {
+          this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
+        }
+      }
+    },
   },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.name {
+  width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>

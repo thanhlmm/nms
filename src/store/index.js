@@ -10,6 +10,7 @@ const storeData = {
   modules: {
     auth,
   },
+
   state: {
     darkMode: JSON.parse(localStorage.getItem("darkMode")),
 
@@ -26,6 +27,12 @@ const storeData = {
       name: "",
     },
 
+    keyModal: false,
+    confirmPasswordModal: false,
+    localPrivateKey: null,
+    passwordConfirm: null,
+    checkPasswordConfirm: false,
+
     messageConversation: {
       msgInboxId: null,
     },
@@ -34,20 +41,25 @@ const storeData = {
     sentMsgNum: 0,
 
     page: 1,
+    preventPagination: false,
 
     inboxSearchKeyword: "",
     sentSearchKeyword: "",
   },
+
   mutations: {
+    // ACTIVE DARK MODE MUTATION
     TOGGLE_DARK_MODE(state) {
       state.darkMode = !state.darkMode;
       localStorage.setItem("darkMode", JSON.stringify(state.darkMode));
     },
 
+    // ACTIVE MOBILE HAMBURGER MUTATION
     TOGGLE_ACTIVE_MOBILE_MENU(state) {
       state.activeMobileMenu = !state.activeMobileMenu;
     },
 
+    // SEND MESSAGE MODAL MUTATION
     TOGGLE_SEND_MESSAGE_MODAL(state) {
       state.sendMessageModal.isShow = !state.sendMessageModal.isShow;
     },
@@ -58,11 +70,31 @@ const storeData = {
       state.sendMessageModal.isMinimize = !state.sendMessageModal.isMinimize;
     },
 
+    // ALERT MODAL MUTATION
     TOGGLE_ALERT_MODAL(state, payload) {
       state.alertModal.isShow = !state.alertModal.isShow;
       state.alertModal.name = payload;
     },
 
+    // KEY PRIVATE MANAGEMENT MUTATION
+    TOGGLE_KEY_MODAL(state) {
+      state.keyModal = !state.keyModal;
+    },
+    TOGGLE_CONFIRM_PASSWORD_MODAL(state) {
+      state.confirmPasswordModal = !state.confirmPasswordModal;
+    },
+    PASSWORD_CONFIRM(state, payload) {
+      state.passwordConfirm = payload;
+    },
+    TOGGLE_PASSWORD_CONFIRM(state, payload) {
+      state.checkPasswordConfirm = payload;
+    },
+    TOGGLE_PRIVATEKEY_LOCAL(state, { key, userName }) {
+      state.localPrivateKey = key;
+      localStorage.setItem(`${userName}_privatekey`, key);
+    },
+
+    // HANDLE MESSAGE MUTATION
     MESSAGE_CONVERSATION(state, msgId) {
       state.messageConversation.msgInboxId = msgId;
     },
@@ -78,7 +110,11 @@ const storeData = {
     SET_PAGE(state, payload) {
       state.page = payload;
     },
+    SET_PREVENT_PAGINATION(state, payload) {
+      state.preventPagination = payload;
+    },
 
+    // SEARCH MUTATION
     SET_INBOX_SEARCH(state, payload) {
       state.inboxSearchKeyword = payload;
     },

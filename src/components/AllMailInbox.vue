@@ -21,7 +21,14 @@
         >
           <div class="flex-grow-1 mail-content__item-header__top pr-20">
             <div class="name title-16 f-700">{{ message.from }}</div>
-            <div class="title f-500">Title: {{ message.title }}</div>
+            <div :class="{ isPrivate: message.isPrivate }">
+              <img
+                v-if="message.isPrivate"
+                src="../../public/assets/images/privateMsg.svg"
+                class="private-message"
+              />
+              <div class="title f-500">Title: {{ message.title }}</div>
+            </div>
           </div>
           <div class="text-right f-500">
             <div class="status-read">
@@ -40,6 +47,7 @@
 import message from "../message";
 import Avatar from "./Avatar";
 import { getIndexInfo } from "../utils";
+import { decryptPrivateKeyWithPasswordConfirm } from "../message";
 
 export default {
   components: {
@@ -67,15 +75,33 @@ export default {
     page() {
       return this.$store.state.page;
     },
+    routePathSent() {
+      return this.$route.path === "/sent";
+    },
+    localPrivateKey() {
+      return this.$store.state.localPrivateKey;
+    },
+    passwordConfirm() {
+      return this.$store.state.passwordConfirm;
+    },
   },
 
   watch: {
+    passwordConfirm() {
+      this.getInboxMsg();
+    },
     page() {
       this.getInboxMsg();
     },
     inboxMsgNum() {
       this.getInboxMsg();
       this.recallInboxMsgNumApi();
+    },
+    localPrivateKey() {
+      this.getInboxMsg();
+    },
+    routePathSent() {
+      this.getInboxMsg();
     },
   },
 
@@ -132,8 +158,29 @@ export default {
       if (this.inboxMsgNum === 0) {
         return;
       }
+
+      let privateKeyDecrypt = null;
+      if (this.passwordConfirm && this.localPrivateKey) {
+        privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
+          this.passwordConfirm,
+          this.localPrivateKey
+        );
+      }
+
+      const opts = {
+        isLoadFromIpfs: message.clientConfig.isSupportIpfs,
+        isInboxMsg: !this.routePathSent,
+        privateKey:
+          privateKeyDecrypt !== null ? privateKeyDecrypt.slice(5) : null,
+      };
+
       const indexInfo = getIndexInfo(this.inboxMsgNum, this.page, 20);
-      console.log(this.inboxMsgNum, this.page, indexInfo);
+      if (indexInfo.fromIndex === 0) {
+        this.$store.commit("SET_PREVENT_PAGINATION", true);
+      } else {
+        this.$store.commit("SET_PREVENT_PAGINATION", false);
+      }
+
       window.contract
         .getInboxMessages({
           accountId: this.accountId,
@@ -152,10 +199,11 @@ export default {
               prevMsgId: item.prevMsgId,
               title: item.title,
               data: item.data,
+              isPrivate: item.data.includes("DIRECT-PRI"),
             };
           });
           const structEachData = eachData.map((item) => {
-            return this.updateDataMessage(item);
+            return this.updateDataMessage(item, opts);
           });
           return Promise.all(structEachData);
         })
@@ -166,8 +214,8 @@ export default {
         });
     },
 
-    async updateDataMessage(msg) {
-      return await message.depackMessage(msg);
+    async updateDataMessage(msg, opts) {
+      return await message.depackMessage(msg, opts);
     },
 
     recallInboxMsgNumApi() {
@@ -179,4 +227,13 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.isPrivate {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.private-message {
+  width: 16px;
+}
+</style>
