@@ -1,7 +1,6 @@
 <template>
   <div
     class="editor"
-    :class="['editor', { 'modal-expand': expandModal }]"
     :style="[!isDetail ? { height: '260px' } : { height: 'auto' }]"
     v-if="editor"
   >
@@ -36,12 +35,6 @@ export default {
     return {
       editor: null,
     };
-  },
-
-  computed: {
-    expandModal() {
-      return this.$store.state.sendMessageModal.isExpand;
-    },
   },
 
   watch: {
