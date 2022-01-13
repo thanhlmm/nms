@@ -16,6 +16,17 @@
 import { Editor, EditorContent } from "@tiptap/vue-2";
 import StarterKit from "@tiptap/starter-kit";
 import MenuBarTipTap from "../components/MenuBarTipTap.vue";
+import Highlight from "@tiptap/extension-highlight";
+import TaskList from "@tiptap/extension-task-list";
+import TaskItem from "@tiptap/extension-task-item";
+import CodeBlock from "@tiptap/extension-code-block";
+import Code from "@tiptap/extension-code";
+import Underline from "@tiptap/extension-underline";
+import Superscript from "@tiptap/extension-superscript";
+import Subscript from "@tiptap/extension-subscript";
+import Link from "@tiptap/extension-link";
+import TextStyle from "@tiptap/extension-text-style";
+import FontFamily from "@tiptap/extension-font-family";
 
 export default {
   components: {
@@ -64,7 +75,24 @@ export default {
 
   mounted() {
     this.editor = new Editor({
-      extensions: [StarterKit],
+      extensions: [
+        StarterKit.configure({
+          history: false,
+        }),
+        Highlight,
+        TaskList,
+        TaskItem,
+        Code,
+        CodeBlock,
+        Underline,
+        Superscript,
+        Subscript,
+        Link.configure({
+          openOnClick: true,
+        }),
+        TextStyle,
+        FontFamily,
+      ],
       content: this.modelValue,
       onUpdate: () => {
         this.$emit("updateModelValue", this.editor.getHTML());
@@ -99,33 +127,34 @@ export default {
   }
 
   &__content {
-    position: relative;
-    max-width: 578px;
+    // max-width: 578px;
+    // border: 2px solid red;
+
     padding: 1.25rem 1rem;
     flex: 1 1 auto;
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
-  &__content.modal-expand {
-    max-width: 1130px;
-  }
+  // &__content.modal-expand {
+  //   margin: 0 auto;
+  // }
 
-  @media (max-width: 1024px) {
-    &__content.modal-expand {
-      width: 700px;
-      padding: 1.25rem 0;
-      margin: 0 auto;
-    }
-  }
+  // @media (max-width: 1024px) {
+  //   &__content.modal-expand {
+  //     width: 700px;
+  //     padding: 1.25rem 0;
+  //     margin: 0 auto;
+  //   }
+  // }
 
-  @media (max-width: 767px) {
-    &__content {
-      width: 328px;
-      padding: 1.25rem 0;
-      margin: 0 auto;
-    }
-  }
+  // @media (max-width: 767px) {
+  //   &__content {
+  //     width: 328px;
+  //     padding: 1.25rem 0;
+  //     margin: 0 auto;
+  //   }
+  // }
 }
 .collaboration-cursor__caret {
   position: relative;
@@ -173,24 +202,8 @@ export default {
     line-height: 1.1;
   }
 
-  code {
-    background-color: rgba(#616161, 0.1);
-    color: #616161;
-  }
-
-  pre {
-    background: #0d0d0d;
-    color: #fff;
-    font-family: "JetBrainsMono", monospace;
-    padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
-
-    code {
-      color: inherit;
-      padding: 0;
-      background: none;
-      font-size: 0.8rem;
-    }
+  a {
+    color: #68cef8;
   }
 
   mark {
