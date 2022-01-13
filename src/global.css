@@ -2794,7 +2794,7 @@ p {
 .ProseMirror:focus {
   outline: none;
 }
-.ProseMirror p{
+.ProseMirror {
   position: absolute;
   top: 0;
   left: 0;
