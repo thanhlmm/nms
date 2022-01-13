@@ -5,7 +5,10 @@
     v-if="editor"
   >
     <MenuBarTipTap class="editor__header" :editor="editor" v-show="!isDetail" />
-    <EditorContent class="editor__content" :editor="editor" />
+    <EditorContent
+      :class="['editor__content', { 'modal-expand': expandModal }]"
+      :editor="editor"
+    />
   </div>
 </template>
 
@@ -35,6 +38,12 @@ export default {
     return {
       editor: null,
     };
+  },
+
+  computed: {
+    expandModal() {
+      return this.$store.state.sendMessageModal.isExpand;
+    },
   },
 
   watch: {
@@ -90,11 +99,32 @@ export default {
   }
 
   &__content {
+    position: relative;
+    max-width: 578px;
     padding: 1.25rem 1rem;
     flex: 1 1 auto;
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+  }
+  &__content.modal-expand {
+    max-width: 1130px;
+  }
+
+  @media (max-width: 1024px) {
+    &__content.modal-expand {
+      width: 700px;
+      padding: 1.25rem 0;
+      margin: 0 auto;
+    }
+  }
+
+  @media (max-width: 767px) {
+    &__content {
+      width: 328px;
+      padding: 1.25rem 0;
+      margin: 0 auto;
+    }
   }
 }
 .collaboration-cursor__caret {

@@ -134,7 +134,19 @@ export default {
     },
 
     async updateDataMessage(msg, opts) {
-      const msgInbox = await message.depackMessage(msg, opts);
+      const structMsgInbox = {
+        baseSite: msg.baseSite,
+        data: msg.data,
+        expiredTime: msg.expiredTime,
+        from: msg.from,
+        id: msg.id,
+        prevMsgId: msg.prevMsgId,
+        timestamp: msg.timestamp,
+        title: msg.title,
+        to: msg.to,
+        isPrivate: msg.data.includes("DIRECT-PRI"),
+      };
+      const msgInbox = await message.depackMessage(structMsgInbox, opts);
 
       if (msgInbox.prevMsgId === 0) {
         this.dataMsgConversation.push(msgInbox);

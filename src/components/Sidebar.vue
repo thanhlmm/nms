@@ -244,6 +244,9 @@ export default {
     passwordConfirm() {
       return this.$store.state.passwordConfirm;
     },
+    checkPasswordConfirm() {
+      return this.$store.state.checkPasswordConfirm;
+    },
   },
 
   mounted() {
@@ -340,18 +343,26 @@ export default {
     showKeyModal() {
       if (this.localPrivateKey === null) {
         this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
-      }
-      if (this.localPrivateKey && this.passwordConfirm) {
-        const privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
-          this.passwordConfirm,
-          this.localPrivateKey
-        );
-        if (privateKeyDecrypt.includes("TEST")) {
-          this.$store.commit("TOGGLE_KEY_MODAL");
-          this.$store.commit("TOGGLE_PASSWORD_CONFIRM", true);
+      } else {
+        if (this.passwordConfirm) {
+          const privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
+            this.passwordConfirm,
+            this.localPrivateKey
+          );
+          if (
+            privateKeyDecrypt.includes("TEST") &&
+            this.checkPasswordConfirm === true
+          ) {
+            this.$store.commit("TOGGLE_KEY_MODAL");
+          }
+          if (
+            !privateKeyDecrypt.includes("TEST") &&
+            this.checkPasswordConfirm === false
+          ) {
+            this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
+          }
         } else {
           this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
-          this.$store.commit("TOGGLE_PASSWORD_CONFIRM", false);
         }
       }
     },
@@ -359,4 +370,10 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.name {
+  width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>

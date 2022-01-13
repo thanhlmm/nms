@@ -70,8 +70,15 @@
     </header>
 
     <section class="mail-right__item-body">
-      <div class="title cursor-pointer" @click="showDetail = !showDetail">
-        Title: {{ dataMsg.title }}
+      <div :class="{ isPrivate: dataMsg.isPrivate }">
+        <img
+          v-if="dataMsg.isPrivate"
+          src="../../public/assets/images/privateMsg.svg"
+          class="private-message"
+        />
+        <div class="title cursor-pointer" @click="showDetail = !showDetail">
+          Title: {{ dataMsg.title }}
+        </div>
       </div>
       <div class="description f-500">
         <div class="content">
@@ -144,4 +151,13 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.isPrivate {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.private-message {
+  width: 20px;
+}
+</style>
