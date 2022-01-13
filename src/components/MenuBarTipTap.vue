@@ -48,16 +48,9 @@ export default {
           isActive: () => this.editor.isActive("strike"),
         },
         {
-          icon: "code-view",
-          title: "Code",
-          action: () => this.editor.chain().focus().toggleCode().run(),
-          isActive: () => this.editor.isActive("code"),
-        },
-        {
-          icon: "mark-pen-line",
-          title: "Highlight",
-          action: () => this.editor.chain().focus().toggleHighlight().run(),
-          isActive: () => this.editor.isActive("highlight"),
+          icon: "separator",
+          title: "Horizontal Rule",
+          action: () => this.editor.chain().focus().setHorizontalRule().run(),
         },
         {
           type: "divider",
@@ -93,46 +86,6 @@ export default {
           title: "Ordered List",
           action: () => this.editor.chain().focus().toggleOrderedList().run(),
           isActive: () => this.editor.isActive("orderedList"),
-        },
-        {
-          icon: "list-check-2",
-          title: "Task List",
-          action: () => this.editor.chain().focus().toggleTaskList().run(),
-          isActive: () => this.editor.isActive("taskList"),
-        },
-        {
-          icon: "code-box-line",
-          title: "Code Block",
-          action: () => this.editor.chain().focus().toggleCodeBlock().run(),
-          isActive: () => this.editor.isActive("codeBlock"),
-        },
-        {
-          type: "divider",
-        },
-        {
-          icon: "double-quotes-l",
-          title: "Blockquote",
-          action: () => this.editor.chain().focus().toggleBlockquote().run(),
-          isActive: () => this.editor.isActive("blockquote"),
-        },
-        {
-          icon: "separator",
-          title: "Horizontal Rule",
-          action: () => this.editor.chain().focus().setHorizontalRule().run(),
-        },
-        {
-          type: "divider",
-        },
-        {
-          icon: "text-wrap",
-          title: "Hard Break",
-          action: () => this.editor.chain().focus().setHardBreak().run(),
-        },
-        {
-          icon: "format-clear",
-          title: "Clear Format",
-          action: () =>
-            this.editor.chain().focus().clearNodes().unsetAllMarks().run(),
         },
         {
           type: "divider",
