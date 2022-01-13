@@ -2791,6 +2791,16 @@ p {
   z-index: 99;
 }
 
+.ProseMirror:focus {
+  outline: none;
+}
+.ProseMirror p{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
 @media (max-width: 767px) {
   .modal-sent {
     padding: 35px 15px 15px;
@@ -2960,14 +2970,6 @@ p {
 }
 
 .description .textArea-ForwardAndReply textarea:focus {
-  outline: none;
-}
-
-.modal-sent .form-textarea textarea:focus {
-  outline: none;
-}
-
-.ProseMirror:focus {
   outline: none;
 }
 
