@@ -143,6 +143,9 @@ export default {
     username() {
       return window.walletConnection.getAccountId();
     },
+    privateKeyLocal() {
+      return this.$store.state.localPrivateKey;
+    },
   },
 
   watch: {
@@ -156,7 +159,7 @@ export default {
               if (data) {
                 this.senderKey = data;
               } else {
-                this.$store.commit("TOGGLE_KEY_MODAL");
+                this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
               }
             });
         }
@@ -236,6 +239,22 @@ export default {
       if (this.type === "PRIVATE") {
         window.contract.getPublicKey({ accountId: this.to }).then((data) => {
           if (data) {
+            if (this.privateKeyLocal) {
+              window.contract
+                .getPublicKey({ accountId: this.username })
+                .then((publicKey) => {
+                  this.packMassage({
+                    title: this.title,
+                    content: this.data,
+                    attachmentFiles: {},
+                    type: this.type,
+                    keys: {
+                      sender: publicKey,
+                      receiver: data,
+                    },
+                  });
+                });
+            }
             this.packMassage({
               title: this.titleData,
               content: this.data,

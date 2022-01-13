@@ -231,6 +231,9 @@ export default {
     username() {
       return window.walletConnection.getAccountId();
     },
+    privateKeyLocal() {
+      return this.$store.state.localPrivateKey;
+    },
   },
 
   watch: {
@@ -353,10 +356,10 @@ export default {
         if (this.type === "PRIVATE") {
           window.contract.getPublicKey({ accountId: this.to }).then((data) => {
             if (data) {
-              const privateKeyLocal = localStorage.getItem(
-                `${this.username}_privatekey`
-              );
-              if (privateKeyLocal) {
+              // const privateKeyLocal = localStorage.getItem(
+              //   `${this.username}_privatekey`
+              // );
+              if (this.privateKeyLocal) {
                 window.contract
                   .getPublicKey({ accountId: this.username })
                   .then((publicKey) => {
