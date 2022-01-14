@@ -2794,11 +2794,10 @@ p {
 .ProseMirror:focus {
   outline: none;
 }
-.ProseMirror {
-  position: relative;
+
+/* .ProseMirror {
   border: 1px solid green;
-  max-width: auto;
-}
+} */
 
 .ProseMirror code {
   font-size: 0.9rem;
