@@ -2803,9 +2803,14 @@ p {
   font-size: 0.9rem;
   padding: 0.25em;
   border-radius: 0.25em;
-  background-color: rgba(#616161, 0.4);
-  color: #fcb641;
+  background-color: #616161;
+  color: #fff;
   box-decoration-break: clone;
+}
+
+.ProseMirror blockquote {
+  padding-left: 1rem;
+  border-left: 3px solid #616161;
 }
 
 .ProseMirror pre {

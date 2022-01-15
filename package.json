@@ -23,6 +23,7 @@
     "lint": "eslint . --ext .js --ext .vue --fix"
   },
   "dependencies": {
+    "@tiptap/extension-blockquote": "^2.0.0-beta.26",
     "@tiptap/extension-code": "^2.0.0-beta.26",
     "@tiptap/extension-code-block": "^2.0.0-beta.35",
     "@tiptap/extension-font-family": "^2.0.0-beta.21",
