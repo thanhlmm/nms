@@ -89,9 +89,9 @@ const storeData = {
     TOGGLE_PASSWORD_CONFIRM(state, payload) {
       state.checkPasswordConfirm = payload;
     },
-    TOGGLE_PRIVATEKEY_LOCAL(state, { key, username }) {
+    TOGGLE_PRIVATEKEY_LOCAL(state, { key, userName }) {
       state.localPrivateKey = key;
-      localStorage.setItem(`${username}_privatekey`, key);
+      localStorage.setItem(`${userName}_privatekey`, key);
     },
 
     // HANDLE MESSAGE MUTATION

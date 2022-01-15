@@ -172,10 +172,9 @@ export default {
           this.hiddenPublicKey(generateKeys.publicKey);
           this.hiddenPrivateKey(encryptPrivateKey);
 
-          const userName = this.username;
           this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
             key: encryptPrivateKey,
-            userName,
+            userName: this.username,
           });
           this.updateKeysApi(generateKeys.publicKey);
 
@@ -208,10 +207,9 @@ export default {
                 encryptPrivateKey
               );
 
-              const userName = this.username;
               this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
                 key: encryptPrivateKey,
-                userName,
+                userName: this.username,
               });
               this.updateKeysApi(publicKey);
 
@@ -230,6 +228,9 @@ export default {
             });
             reader.onerror = (err) => console.log(err);
             reader.readAsText(this.file);
+
+            this.checkClickReImportBtn = false;
+            this.confirm = false;
           }
         }
       },
@@ -298,10 +299,9 @@ export default {
         this.hiddenPublicKey(generateKeys.publicKey);
         this.hiddenPrivateKey(encryptPrivateKey);
 
-        const userName = this.username;
         this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
           key: encryptPrivateKey,
-          userName,
+          userName: this.username,
         });
         this.updateKeysApi(generateKeys.publicKey);
 
@@ -343,10 +343,9 @@ export default {
               encryptPrivateKey
             );
 
-            const userName = this.username;
             this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
               key: encryptPrivateKey,
-              userName,
+              userName: this.username,
             });
             this.updateKeysApi(publicKey);
 

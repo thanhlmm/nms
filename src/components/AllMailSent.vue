@@ -21,7 +21,14 @@
         >
           <div class="flex-grow-1 mail-content__item-header__top pr-20">
             <div class="name title-16 f-700">{{ message.from }}</div>
-            <div class="title f-500">Title: {{ message.title }}</div>
+            <div :class="{ isPrivate: message.isPrivate }">
+              <img
+                v-if="message.isPrivate"
+                src="../../public/assets/images/privateMsg.svg"
+                class="private-message"
+              />
+              <div class="title f-500">Title: {{ message.title }}</div>
+            </div>
           </div>
           <div class="text-right f-500">
             <div class="date-time no-wrap">{{ message.timestamp }}</div>
@@ -153,6 +160,7 @@ export default {
               prevMsgId: item.prevMsgId,
               title: item.title,
               data: item.data,
+              isPrivate: item.data.includes("DIRECT-PRI"),
             };
           });
           const structEachData = eachData.map((item) => {
@@ -174,4 +182,13 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.isPrivate {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.private-message {
+  width: 16px;
+}
+</style>

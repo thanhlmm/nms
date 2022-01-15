@@ -2,7 +2,9 @@
   <transition name="slide" appear>
     <div class="modal" v-if="showModal">
       <div class="header d-flex align-center justify-between mb-20">
-        <div class="title title-20 f-700 d-flex align-center">Confirmation</div>
+        <div class="title title-20 f-700 d-flex align-center">
+          Enter password for private message
+        </div>
         <div class="action">
           <span class="btn-close cursor-pointer" @click="handleCloseModal">
             <svg
@@ -108,7 +110,7 @@ export default {
   z-index: 9999;
 
   width: 100%;
-  max-width: 450px;
+  max-width: 480px;
   background: var(--background-modal);
   border-radius: 16px;
 
