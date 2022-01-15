@@ -75,8 +75,8 @@ export default {
           title: "Highlight",
           action: () => this.editor.chain().focus().toggleHighlight().run(),
           isActive: () => this.editor.isActive("highlight"),
-         },
-         {
+        },
+        {
           icon: "separator",
           title: "Horizontal Rule",
           action: () => this.editor.chain().focus().setHorizontalRule().run(),
