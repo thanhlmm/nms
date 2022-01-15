@@ -66,6 +66,12 @@ export default {
           isActive: () => this.editor.isActive("subscript"),
         },
         {
+          icon: "double-quotes-l",
+          title: "Quotes",
+          action: () => this.editor.chain().focus().toggleBlockquote().run(),
+          isActive: () => this.editor.isActive("blockquote"),
+        },
+        {
           icon: "separator",
           title: "Horizontal Rule",
           action: () => this.editor.chain().focus().setHorizontalRule().run(),
@@ -75,11 +81,6 @@ export default {
           title: "Highlight",
           action: () => this.editor.chain().focus().toggleHighlight().run(),
           isActive: () => this.editor.isActive("highlight"),
-         },
-         {
-          icon: "separator",
-          title: "Horizontal Rule",
-          action: () => this.editor.chain().focus().setHorizontalRule().run(),
         },
         {
           icon: "code-view",

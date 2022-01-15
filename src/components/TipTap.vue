@@ -27,6 +27,7 @@ import Subscript from "@tiptap/extension-subscript";
 import Link from "@tiptap/extension-link";
 import TextStyle from "@tiptap/extension-text-style";
 import FontFamily from "@tiptap/extension-font-family";
+import Blockquote from "@tiptap/extension-blockquote";
 
 export default {
   components: {
@@ -76,9 +77,7 @@ export default {
   mounted() {
     this.editor = new Editor({
       extensions: [
-        StarterKit.configure({
-          history: false,
-        }),
+        StarterKit,
         Highlight,
         TaskList,
         TaskItem,
@@ -92,6 +91,7 @@ export default {
         }),
         TextStyle,
         FontFamily,
+        Blockquote,
       ],
       content: this.modelValue,
       onUpdate: () => {
@@ -216,11 +216,6 @@ export default {
 
   hr {
     margin: 1rem 0;
-  }
-
-  blockquote {
-    padding-left: 1rem;
-    border-left: 2px solid rgba(#0d0d0d, 0.1);
   }
 
   hr {
