@@ -2795,9 +2795,9 @@ p {
   outline: none;
 }
 
-/* .ProseMirror {
-  border: 1px solid green;
-} */
+.ProseMirror {
+  /* border: 1px solid green; */
+}
 
 .ProseMirror code {
   font-size: 0.9rem;
