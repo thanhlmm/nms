@@ -2794,11 +2794,33 @@ p {
 .ProseMirror:focus {
   outline: none;
 }
-.ProseMirror {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
+
+/* .ProseMirror {
+  border: 1px solid green;
+} */
+
+.ProseMirror code {
+  font-size: 0.9rem;
+  padding: 0.25em;
+  border-radius: 0.25em;
+  background-color: rgba(#616161, 0.4);
+  color: #fcb641;
+  box-decoration-break: clone;
+}
+
+.ProseMirror pre {
+  background-color: #0d0d0d;
+  color: #fff;
+  font-family: "JetBrainsMono", monospace;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+}
+
+.ProseMirror pre code {
+  color: inherit;
+  padding: 0;
+  background: none;
+  font-size: 0.8rem;
 }
 
 @media (max-width: 767px) {
