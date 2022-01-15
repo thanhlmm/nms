@@ -127,34 +127,33 @@ export default {
   }
 
   &__content {
-    // max-width: 578px;
-    // border: 2px solid red;
-
+    max-width: 578px;
     padding: 1.25rem 1rem;
     flex: 1 1 auto;
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
-  // &__content.modal-expand {
-  //   margin: 0 auto;
-  // }
+  &__content.modal-expand {
+    width: 100%;
+    margin: 0 auto;
+  }
 
-  // @media (max-width: 1024px) {
-  //   &__content.modal-expand {
-  //     width: 700px;
-  //     padding: 1.25rem 0;
-  //     margin: 0 auto;
-  //   }
-  // }
+  @media (max-width: 1024px) {
+    &__content.modal-expand {
+      width: 700px;
+      padding: 1.25rem 0;
+      margin: 0 auto;
+    }
+  }
 
-  // @media (max-width: 767px) {
-  //   &__content {
-  //     width: 328px;
-  //     padding: 1.25rem 0;
-  //     margin: 0 auto;
-  //   }
-  // }
+  @media (max-width: 767px) {
+    &__content {
+      width: 328px;
+      padding: 1.25rem 0;
+      margin: 0 auto;
+    }
+  }
 }
 .collaboration-cursor__caret {
   position: relative;
