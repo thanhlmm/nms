@@ -140,6 +140,11 @@ export default {
   }
 
   @media (max-width: 1024px) {
+    &__content {
+      width: 420px;
+      padding: 1.25rem 0;
+      margin: 0 auto;
+    }
     &__content.modal-expand {
       width: 700px;
       padding: 1.25rem 0;
@@ -149,7 +154,7 @@ export default {
 
   @media (max-width: 767px) {
     &__content {
-      width: 328px;
+      width: 300px;
       padding: 1.25rem 0;
       margin: 0 auto;
     }
