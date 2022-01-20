@@ -108,22 +108,34 @@ function encodeMsgTitle(msgTitle) {
 }
 
 function decodeMsgTitle(hexaTitle) {
+  // let blabla = Buffer.from("Hello World", "utf8");
+  // blabla = aes256.encrypt(clientConfig.aesKey, blabla);
+  // console.log("encryptBlabla: ", blabla.toString("base64")); // <=> return buffer.toString("base64")
+  // let blabla1 = Buffer.from(blabla);
+  // blabla1 = aes256.decrypt(clientConfig.aesKey, blabla1);
+  // console.log("decryptBlabla: ", blabla1.toString("ascii")); // <=> return buffer.toString("ascii")
+
   if (!hexaTitle) return "";
   let buffer = Buffer.from(hexaTitle, "base64");
   buffer = aes256.decrypt(clientConfig.aesKey, buffer);
-  return buffer.toString("utf8");
+  return buffer.toString("ascii");
 }
 
 function encodeMsgBody(msgBody, aesKey) {
   let buffer = Buffer.from(JSON.stringify(msgBody), "utf8");
   buffer = aes256.encrypt(aesKey, buffer);
-  return buffer;
+  return buffer.toString("base64");
 }
 
 function decodeMsgBody(bodyBuffer, aesKey) {
-  let buffer = aes256.decrypt(aesKey, bodyBuffer);
-  let strBody = buffer.toString("utf8");
-  return JSON.parse(strBody);
+  if (!bodyBuffer) return "";
+  let buffer = Buffer.from(bodyBuffer, "base64");
+  buffer = aes256.decrypt(aesKey, buffer).toString("ascii");
+  return JSON.parse(buffer);
+
+  // let buffer = aes256.decrypt(aesKey, buffer);
+  // let strBody = buffer.toString("utf8");
+  // return JSON.parse(strBody);
 }
 
 async function decodeMsgData(buffer, aesKey) {
