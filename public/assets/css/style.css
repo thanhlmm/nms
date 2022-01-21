@@ -1552,7 +1552,7 @@ p {
 }
 
 .is-hidden {
-	display: none!important
+	display: none !important;
 }
 
 .p-relative {

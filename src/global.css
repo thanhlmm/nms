@@ -2535,6 +2535,12 @@ p {
   padding: 0 40px;
 }
 
+@media (max-width: 1024px) { 
+  .mail-right__selected {
+    padding: 0 20px 50px;
+  }
+}
+
 @media (max-width: 767px) {
   .mail-right__selected {
     padding: 0 15px 50px;
@@ -2794,11 +2800,44 @@ p {
 .ProseMirror:focus {
   outline: none;
 }
-.ProseMirror {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
+
+/* .ProseMirror {
+  border: 1px solid green;
+} */
+
+.ProseMirror code {
+  font-size: 0.9rem;
+  padding: 0.25em;
+  border-radius: 0.25em;
+  background-color: #616161;
+  color: #fff;
+  box-decoration-break: clone;
+}
+
+.ProseMirror blockquote {
+  padding-left: 1rem;
+  border-left: 3px solid #616161;
+}
+
+.ProseMirror pre {
+  background-color: #0d0d0d;
+  color: #fff;
+  font-family: "JetBrainsMono", monospace;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+}
+
+.ProseMirror pre code {
+  color: inherit;
+  padding: 0;
+  background: none;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 1024px) { 
+  .mail-right__sent {
+    padding: 20px;
+  }
 }
 
 @media (max-width: 767px) {
@@ -2815,7 +2854,7 @@ p {
     background: var(--background-body);
   }
   .mail-right__sent {
-    padding: 20px;
+    padding: 10px;
   }
 }
 

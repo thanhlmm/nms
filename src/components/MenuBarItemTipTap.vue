@@ -1,13 +1,16 @@
 <template>
   <button
-    class="menu-item"
-    :class="{ 'is-active': isActive ? isActive() : null }"
+    :class="[
+      { 'is-active': isActive ? isActive() : null },
+      icon !== 'null' ? 'menu-item' : 'menu-item-text',
+    ]"
     @click="action"
     :title="title"
   >
-    <svg class="remix">
+    <svg class="remix" v-if="icon !== 'null'">
       <use :xlink:href="`${remixiconUrl}#ri-${icon}`" />
     </svg>
+    <div v-else>{{ title }}</div>
   </button>
 </template>
 
@@ -48,6 +51,29 @@ export default {
 <style lang="scss">
 .menu-item {
   width: 1.75rem;
+  height: 1.75rem;
+  color: #0d0d0d;
+  border: none;
+  background-color: transparent;
+  border-radius: 0.4rem;
+  padding: 0.25rem;
+  margin-right: 0.25rem;
+  cursor: pointer;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
+  }
+
+  &.is-active,
+  &:hover {
+    color: #fff;
+    background-color: #0d0d0d;
+  }
+}
+.menu-item-text {
+  width: auto;
   height: 1.75rem;
   color: #0d0d0d;
   border: none;

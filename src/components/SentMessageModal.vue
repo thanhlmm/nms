@@ -170,11 +170,18 @@
 
         <div class="btnModalContainer">
           <button
-            class="btn-sent cursor-pointer d-flex align-center flex-shrink-0"
+            class="
+              btn-sent
+              text-btn-sent
+              cursor-pointer
+              d-flex
+              align-center
+              flex-shrink-0
+            "
             @click="handleSendMessageModal"
           >
             <img src="../../public/assets/images/sent.svg" />
-            <span>Sent</span>
+            <span>Send</span>
           </button>
           <button
             class="
@@ -436,5 +443,12 @@ export default {
 }
 .isEmptyText {
   color: red !important;
+}
+.text-btn-sent {
+  background: #fcb641;
+}
+.text-btn-sent span {
+  font-weight: 500;
+  color: #353739;
 }
 </style>

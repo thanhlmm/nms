@@ -277,7 +277,7 @@ export default {
     genKeys() {
       this.checkClickReGenBtn = true;
 
-      const publicKeyCache = localStorage.getItem("nms_publickey");
+      const publicKeyCache = localStorage.getItem(`${this.username}_publickey`);
       const privateKeyCache = localStorage.getItem(
         `${this.username}_privatekey`
       );
