@@ -18,11 +18,11 @@
         <div class="btnModalForwardReplayContainer">
           <div class="text-right">
             <button
-              class="btn-sent cursor-pointer d-flex align-center"
+              class="btn-sent text-btn-sent cursor-pointer d-flex align-center"
               @click="handleReply"
             >
               <img src="../../public/assets/images/sent.svg" />
-              <span>Sent</span>
+              <span>Send</span>
             </button>
           </div>
           <button
@@ -298,4 +298,12 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.text-btn-sent {
+  background: #fcb641;
+}
+.text-btn-sent span {
+  font-weight: 500;
+  color: #353739;
+}
+</style>
