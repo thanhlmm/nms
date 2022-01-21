@@ -118,7 +118,7 @@
         </div>
       </div>
 
-      <div class="hidden-sm">
+      <!-- <div class="hidden-sm">
         <img src="../../public/assets/images/lnc.svg" class="logo-dark" />
         <img
           src="../../public/assets/images/lnc-light.svg"
@@ -136,7 +136,7 @@
             />
           </a>
         </div>
-      </div>
+      </div> -->
     </div>
 
     <div class="mail-left__connect">

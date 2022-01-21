@@ -2535,6 +2535,12 @@ p {
   padding: 0 40px;
 }
 
+@media (max-width: 1024px) { 
+  .mail-right__selected {
+    padding: 0 20px 50px;
+  }
+}
+
 @media (max-width: 767px) {
   .mail-right__selected {
     padding: 0 15px 50px;
@@ -2828,6 +2834,12 @@ p {
   font-size: 0.8rem;
 }
 
+@media (max-width: 1024px) { 
+  .mail-right__sent {
+    padding: 20px;
+  }
+}
+
 @media (max-width: 767px) {
   .modal-sent {
     padding: 35px 15px 15px;
@@ -2842,7 +2854,7 @@ p {
     background: var(--background-body);
   }
   .mail-right__sent {
-    padding: 20px;
+    padding: 10px;
   }
 }
 
