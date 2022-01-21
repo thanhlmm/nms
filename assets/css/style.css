@@ -1552,7 +1552,7 @@ p {
 }
 
 .is-hidden {
-	display: none!important
+	display: none !important;
 }
 
 .p-relative {
@@ -1685,7 +1685,7 @@ p {
 }
 
 .btn-sent span {
-	color: var(--color-menu);
+	/* color: var(--color-menu); */
 	margin-left: 20px
 }
 
