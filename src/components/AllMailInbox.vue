@@ -75,8 +75,8 @@ export default {
     page() {
       return this.$store.state.page;
     },
-    routePathSent() {
-      return this.$route.path === "/sent";
+    routePathInbox() {
+      return this.$route.path === "/inbox";
     },
     localPrivateKey() {
       return this.$store.state.localPrivateKey;
@@ -100,7 +100,7 @@ export default {
     localPrivateKey() {
       this.getInboxMsg();
     },
-    routePathSent() {
+    routePathInbox() {
       this.getInboxMsg();
     },
   },
@@ -166,6 +166,9 @@ export default {
           this.localPrivateKey
         );
       }
+      // console.log("this.passwordConfirm INBOX: ", this.passwordConfirm);
+      // console.log("this.localPrivateKey INBOX: ", this.localPrivateKey);
+      // console.log("privateKeyDecrypt INBOX: ", privateKeyDecrypt);
 
       const opts = {
         isLoadFromIpfs: message.clientConfig.isSupportIpfs,

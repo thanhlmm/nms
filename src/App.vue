@@ -44,12 +44,6 @@ export default {
     localPrivateKey() {
       return this.$store.state.localPrivateKey;
     },
-    checkPasswordConfirm() {
-      return this.$store.state.checkPasswordConfirm;
-    },
-    passwordConfirm() {
-      return this.$store.state.passwordConfirm;
-    },
   },
 
   watch: {
@@ -86,32 +80,6 @@ export default {
         } else document.querySelector("body").style.overflow = "visible";
       },
     },
-    checkPasswordConfirm: {
-      immediate: true,
-      handler: function () {
-        if (
-          this.passwordConfirm &&
-          this.localPrivateKey &&
-          this.checkPasswordConfirm
-        ) {
-          const privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
-            this.passwordConfirm,
-            this.localPrivateKey
-          );
-          if (privateKeyDecrypt.includes("TEST")) {
-            this.$toast.success("Your Confirmation Password is correct", {
-              timeout: 2000,
-            });
-            this.$store.commit("TOGGLE_PASSWORD_CONFIRM", true);
-          } else {
-            this.$toast.error("Your Confirmation Password is incorrect", {
-              timeout: 2000,
-            });
-            this.$store.commit("TOGGLE_PASSWORD_CONFIRM", false);
-          }
-        }
-      },
-    },
     isSignedIn: {
       immediate: true,
       handler: function () {
@@ -121,16 +89,16 @@ export default {
   },
 
   mounted() {
-    if (this.localPrivateKey) {
-      this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
+    if (this.localPrivateKey !== null && this.$store.state.auth.auth.isLogin) {
+      this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL", true);
+      this.$toast.warning("Please confirm password to read private message", {
+        timeout: 3000,
+      });
     }
     if (this.localPrivateKey === null && this.$store.state.auth.auth.isLogin) {
-      this.$toast.warning(
-        "Empty Private Key. Please Import your PrivateKey.pem or Generate new key!",
-        {
-          timeout: 3000,
-        }
-      );
+      this.$toast.warning("Please generate or import key to use this app", {
+        timeout: 3000,
+      });
     }
   },
 };

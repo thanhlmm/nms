@@ -31,7 +31,6 @@ const storeData = {
     confirmPasswordModal: false,
     localPrivateKey: null,
     passwordConfirm: null,
-    checkPasswordConfirm: false,
 
     messageConversation: {
       msgInboxId: null,
@@ -80,14 +79,11 @@ const storeData = {
     TOGGLE_KEY_MODAL(state) {
       state.keyModal = !state.keyModal;
     },
-    TOGGLE_CONFIRM_PASSWORD_MODAL(state) {
-      state.confirmPasswordModal = !state.confirmPasswordModal;
+    TOGGLE_CONFIRM_PASSWORD_MODAL(state, payload) {
+      state.confirmPasswordModal = payload;
     },
     PASSWORD_CONFIRM(state, payload) {
       state.passwordConfirm = payload;
-    },
-    TOGGLE_PASSWORD_CONFIRM(state, payload) {
-      state.checkPasswordConfirm = payload;
     },
     TOGGLE_PRIVATEKEY_LOCAL(state, { key, userName }) {
       state.localPrivateKey = key;

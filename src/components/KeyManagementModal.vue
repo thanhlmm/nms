@@ -96,20 +96,24 @@
       @toggleClickReImport="toggleClickReImport($event)"
       @confirmGen="confirmGen($event)"
     />
+    <ConfirmPasswordModal
+      :showModalConfirm="showModalConfirm"
+      :privateKeyToConfirm="privateKeyToConfirm"
+      @encryptPrivateKeyWithPassword="encryptPrivateKeyWithPassword($event)"
+      @toggleConfirmPasswordModal="toggleConfirmPasswordModal($event)"
+    />
   </div>
 </template>
 
 <script>
-import {
-  generateRSAKey,
-  privateKeyToPublicKey,
-  encryptPrivateKeyWithPasswordConfirm,
-} from "../message";
+import { generateRSAKey, privateKeyToPublicKey } from "../message";
 import ConfirmModal from "../components/ConfirmModal.vue";
+import ConfirmPasswordModal from "../components/ConfirmPasswordModal.vue";
 
 export default {
   components: {
     ConfirmModal,
+    ConfirmPasswordModal,
   },
   data() {
     return {
@@ -117,6 +121,8 @@ export default {
       privateKey: null,
       privateKeyExport: null,
       file: null,
+      privateKeyToConfirm: null,
+      showModalConfirm: false,
 
       checkClickReGenBtn: false,
       checkClickReImportBtn: false,
@@ -139,13 +145,15 @@ export default {
 
   mounted() {
     if (
-      localStorage.getItem(`${this.username}_publickey`) &&
-      localStorage.getItem(`${this.username}_privatekey`)
+      localStorage.getItem(`${this.username}_privatekey`) &&
+      this.privateKeyExport
     ) {
-      this.hiddenPublicKey(localStorage.getItem(`${this.username}_publickey`));
       this.hiddenPrivateKey(
         localStorage.getItem(`${this.username}_privatekey`)
       );
+    }
+    if (localStorage.getItem(`${this.username}_publickey`)) {
+      this.hiddenPublicKey(localStorage.getItem(`${this.username}_publickey`));
     }
   },
 
@@ -156,26 +164,15 @@ export default {
         if (this.confirm === true && this.checkClickReGenBtn === true) {
           const generateKeys = generateRSAKey();
 
-          const encryptPrivateKey = encryptPrivateKeyWithPasswordConfirm(
-            this.passwordConfirm,
-            generateKeys.privateKey
-          );
+          this.privateKeyToConfirm = generateKeys.privateKey;
+          this.showModalConfirm = true;
           this.privateKeyExport = generateKeys.privateKey;
+
           localStorage.setItem(
             `${this.username}_publickey`,
             generateKeys.publicKey
           );
-          localStorage.setItem(
-            `${this.username}_privatekey`,
-            encryptPrivateKey
-          );
           this.hiddenPublicKey(generateKeys.publicKey);
-          this.hiddenPrivateKey(encryptPrivateKey);
-
-          this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
-            key: encryptPrivateKey,
-            userName: this.username,
-          });
           this.updateKeysApi(generateKeys.publicKey);
 
           this.$toast.success("Success Generate New Keys!", {
@@ -191,26 +188,14 @@ export default {
           if (this.file.name.includes(".pem")) {
             reader.onload = (res) => {
               const privateKeyImport = res.target.result;
-              const encryptPrivateKey = encryptPrivateKeyWithPasswordConfirm(
-                this.passwordConfirm,
-                privateKeyImport
-              );
-              this.hiddenPrivateKey(encryptPrivateKey);
+
+              this.privateKeyToConfirm = privateKeyImport;
+              this.showModalConfirm = true;
               this.privateKeyExport = privateKeyImport;
 
               const publicKey = privateKeyToPublicKey(privateKeyImport);
-              this.hiddenPublicKey(publicKey);
-
               localStorage.setItem(`${this.username}_publickey`, publicKey);
-              localStorage.setItem(
-                `${this.username}_privatekey`,
-                encryptPrivateKey
-              );
-
-              this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
-                key: encryptPrivateKey,
-                userName: this.username,
-              });
+              this.hiddenPublicKey(publicKey);
               this.updateKeysApi(publicKey);
 
               this.$toast.success("Success Import Keys!", {
@@ -241,7 +226,7 @@ export default {
     handleCloseModal() {
       this.$store.commit("TOGGLE_KEY_MODAL");
     },
-
+    // handle Modal Confirm ReGen or ReImport
     closeConfirmModal(e) {
       this.showModalReGen = e;
     },
@@ -254,7 +239,7 @@ export default {
     confirmGen(e) {
       this.confirm = e;
     },
-
+    //handle Hidden Key
     hiddenPublicKey(key) {
       this.publicKey =
         key.slice(0, 10) + "********************" + key.substr(-10);
@@ -263,7 +248,7 @@ export default {
       this.privateKey =
         key.slice(0, 10) + "********************" + key.substr(-10);
     },
-
+    //handle save Public Key to server
     updateKeysApi(key) {
       window.contract.updatePublicKey({ publicKey: key }).then((data) => {
         if (data) {
@@ -273,7 +258,20 @@ export default {
         }
       });
     },
-
+    //handle Modal Confirm Password
+    encryptPrivateKeyWithPassword(e) {
+      const privateKeyEncrypted = e;
+      localStorage.setItem(`${this.username}_privatekey`, privateKeyEncrypted);
+      this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
+        key: privateKeyEncrypted,
+        userName: this.username,
+      });
+      this.hiddenPrivateKey(privateKeyEncrypted);
+    },
+    toggleConfirmPasswordModal(e) {
+      this.showModalConfirm = e;
+    },
+    //handle Gen Key
     genKeys() {
       this.checkClickReGenBtn = true;
 
@@ -286,23 +284,15 @@ export default {
         this.showModalReGen = true;
       } else {
         const generateKeys = generateRSAKey();
-        const encryptPrivateKey = encryptPrivateKeyWithPasswordConfirm(
-          this.passwordConfirm,
-          generateKeys.privateKey
-        );
+        this.privateKeyToConfirm = generateKeys.privateKey;
+        this.showModalConfirm = true;
         this.privateKeyExport = generateKeys.privateKey;
+
         localStorage.setItem(
           `${this.username}_publickey`,
           generateKeys.publicKey
         );
-        localStorage.setItem(`${this.username}_privatekey`, encryptPrivateKey);
         this.hiddenPublicKey(generateKeys.publicKey);
-        this.hiddenPrivateKey(encryptPrivateKey);
-
-        this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
-          key: encryptPrivateKey,
-          userName: this.username,
-        });
         this.updateKeysApi(generateKeys.publicKey);
 
         this.$toast.success("Success Generate New Keys!", {
@@ -310,7 +300,7 @@ export default {
         });
       }
     },
-
+    // handle Import Key
     importKeys() {
       this.checkClickReImportBtn = true;
 
@@ -327,26 +317,13 @@ export default {
         if (this.file.name.includes(".pem")) {
           reader.onload = (res) => {
             const privateKeyImport = res.target.result;
-            const encryptPrivateKey = encryptPrivateKeyWithPasswordConfirm(
-              this.passwordConfirm,
-              privateKeyImport
-            );
-            this.hiddenPrivateKey(encryptPrivateKey);
+            this.privateKeyToConfirm = privateKeyImport;
+            this.showModalConfirm = true;
             this.privateKeyExport = privateKeyImport;
 
             const publicKey = privateKeyToPublicKey(privateKeyImport);
-            this.hiddenPublicKey(publicKey);
-
             localStorage.setItem(`${this.username}_publickey`, publicKey);
-            localStorage.setItem(
-              `${this.username}_privatekey`,
-              encryptPrivateKey
-            );
-
-            this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
-              key: encryptPrivateKey,
-              userName: this.username,
-            });
+            this.hiddenPublicKey(publicKey);
             this.updateKeysApi(publicKey);
 
             this.$toast.success("Success Import Keys!", {
@@ -364,7 +341,7 @@ export default {
         }
       }
     },
-
+    //handle Export Original Private Key
     exportKeys() {
       if (this.privateKeyExport) {
         const file = new Blob([this.privateKeyExport], { type: "text/plain" });
@@ -385,6 +362,10 @@ export default {
           }, 0);
         }
         this.$toast.success("Success Export Private Key!", {
+          timeout: 2000,
+        });
+      } else {
+        this.$toast.warning("Please Import or Generate new key", {
           timeout: 2000,
         });
       }

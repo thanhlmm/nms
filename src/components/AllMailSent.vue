@@ -95,7 +95,7 @@ export default {
       this.getSentMsg();
     },
     routePathSent() {
-      this.getInboxMsg();
+      this.getSentMsg();
     },
   },
 
@@ -125,6 +125,9 @@ export default {
           this.localPrivateKey
         );
       }
+      // console.log("this.passwordConfirm SENT: ", this.passwordConfirm);
+      // console.log("this.localPrivateKey SENT: ", this.localPrivateKey);
+      // console.log("privateKeyDecrypt SENT: ", privateKeyDecrypt);
 
       const opts = {
         isLoadFromIpfs: message.clientConfig.isSupportIpfs,
