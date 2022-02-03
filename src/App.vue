@@ -8,7 +8,6 @@
 import "./global.css";
 import getConfig from "./config";
 import Convert from "./Convert.vue";
-import { decryptPrivateKeyWithPasswordConfirm } from "./message";
 
 const nearConfig = getConfig(process.env.NODE_ENV || "development");
 console.log(
@@ -50,34 +49,41 @@ export default {
     darkMode: {
       immediate: true,
       handler: function () {
-        if (this.$store.state.darkMode) {
+        if (this.darkMode) {
           document.querySelector("html").setAttribute("data-theme", "light");
-        } else
+        } else {
           document.querySelector("html").setAttribute("data-theme", "dark");
+        }
       },
     },
     showAlertModal: {
       immediate: true,
       handler: function () {
-        if (this.$store.state.alertModal.isShow) {
+        if (this.showAlertModal) {
           document.querySelector("body").style.overflow = "hidden";
-        } else document.querySelector("body").style.overflow = "visible";
+        } else {
+          document.querySelector("body").style.overflow = "visible";
+        }
       },
     },
     showKeyModal: {
       immediate: true,
       handler: function () {
-        if (this.$store.state.keyModal) {
+        if (this.showKeyModal) {
           document.querySelector("body").style.overflow = "hidden";
-        } else document.querySelector("body").style.overflow = "visible";
+        } else {
+          document.querySelector("body").style.overflow = "visible";
+        }
       },
     },
     showConfirmPasswordModal: {
       immediate: true,
       handler: function () {
-        if (this.$store.state.confirmPasswordModal) {
+        if (this.showConfirmPasswordModal) {
           document.querySelector("body").style.overflow = "hidden";
-        } else document.querySelector("body").style.overflow = "visible";
+        } else {
+          document.querySelector("body").style.overflow = "visible";
+        }
       },
     },
     isSignedIn: {

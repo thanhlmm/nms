@@ -87,6 +87,7 @@ export default {
   methods: {
     handleCloseModal() {
       this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL", false);
+      this.$store.commit("TOGGLE_CHECK_PASSWORD_CONFIRM", false);
       this.$emit("toggleConfirmPasswordModal", false);
       this.password = "";
     },
@@ -97,7 +98,6 @@ export default {
       } else {
         this.checkPasswordInput = false;
 
-        // console.log("this.privateKeyToConfirm: ", this.privateKeyToConfirm);
         if (this.privateKeyToConfirm === null) {
           this.$store.commit("PASSWORD_CONFIRM", this.password);
           this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL", false);
@@ -112,6 +112,7 @@ export default {
         this.$emit("encryptPrivateKeyWithPassword", encryptPrivateKey);
         this.$store.commit("PASSWORD_CONFIRM", this.password);
         this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL", false);
+        this.$store.commit("TOGGLE_CHECK_PASSWORD_CONFIRM", true);
         this.$emit("toggleConfirmPasswordModal", false);
         this.password = "";
       }

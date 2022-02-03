@@ -79,13 +79,13 @@ export default {
   methods: {
     handleCloseModal() {
       this.$emit("closeConfirmModal", false);
-      this.$emit("confirmGen", false);
+      this.$emit("confirmReGen", false);
       this.$emit("toggleClickReGen", false);
       this.$emit("toggleClickReImport", false);
     },
     handleConfirm() {
       this.$emit("closeConfirmModal", false);
-      this.$emit("confirmGen", true);
+      this.$emit("confirmReGen", true);
     },
   },
 };
