@@ -1,6 +1,11 @@
 <template>
   <div id="root">
     <Convert />
+    <ConfirmPasswordModal
+      :showModalConfirm="showModalPassword"
+      @toggleConfirmPasswordModal="toggleConfirmPasswordModal($event)"
+      :onPasswordConfirm="onPasswordConfirm"
+    />
   </div>
 </template>
 
@@ -8,6 +13,8 @@
 import "./global.css";
 import getConfig from "./config";
 import Convert from "./Convert.vue";
+import ConfirmPasswordModal from "./components/ConfirmPasswordModal.vue";
+import { decryptPrivateKeyWithPasswordConfirm } from "./message";
 
 const nearConfig = getConfig(process.env.NODE_ENV || "development");
 console.log(
@@ -22,6 +29,14 @@ export default {
   name: "App",
   components: {
     Convert,
+    ConfirmPasswordModal,
+  },
+
+  data() {
+    return {
+      showModalPassword: false,
+      onPasswordConfirm: () => {},
+    };
   },
 
   computed: {
@@ -42,6 +57,12 @@ export default {
     },
     localPrivateKey() {
       return this.$store.state.localPrivateKey;
+    },
+  },
+
+  methods: {
+    toggleConfirmPasswordModal(e) {
+      this.showModalPassword = e;
     },
   },
 
@@ -99,10 +120,24 @@ export default {
 
   mounted() {
     if (this.localPrivateKey !== null && this.$store.state.auth.auth.isLogin) {
-      this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL", true);
       this.$toast.warning("Please confirm password to read private message", {
         timeout: 3000,
       });
+      this.showModalPassword = true;
+      this.onPasswordConfirm = (password) => {
+        const privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
+          password,
+          this.localPrivateKey
+        );
+        if (privateKeyDecrypt.includes("TEST")) {
+          this.$store.commit("PASSWORD_CONFIRM", password);
+          this.$toast.success("Password is correct");
+        } else {
+          this.$toast.error(
+            "Your Confirmation Password is incorrect. Refresh to retry"
+          );
+        }
+      };
     }
     if (this.localPrivateKey === null && this.$store.state.auth.auth.isLogin) {
       this.$toast.warning("Please generate or import key to use this app", {
