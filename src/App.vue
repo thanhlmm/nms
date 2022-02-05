@@ -64,6 +64,13 @@ export default {
     toggleConfirmPasswordModal(e) {
       this.showModalPassword = e;
     },
+    handleOverflow(checkState) {
+      if (checkState) {
+        document.querySelector("body").style.overflow = "hidden";
+      } else {
+        document.querySelector("body").style.overflow = "visible";
+      }
+    },
   },
 
   watch: {
@@ -144,16 +151,6 @@ export default {
         timeout: 3000,
       });
     }
-  },
-
-  methods: {
-    handleOverflow(checkState) {
-      if (checkState) {
-        document.querySelector("body").style.overflow = "hidden";
-      } else {
-        document.querySelector("body").style.overflow = "visible";
-      }
-    },
   },
 };
 </script>
