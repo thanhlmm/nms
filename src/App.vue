@@ -59,31 +59,34 @@ export default {
     showAlertModal: {
       immediate: true,
       handler: function () {
-        if (this.showAlertModal) {
-          document.querySelector("body").style.overflow = "hidden";
-        } else {
-          document.querySelector("body").style.overflow = "visible";
-        }
+        this.handleOverflow(this.showAlertModal);
+        // if (this.showAlertModal) {
+        //   document.querySelector("body").style.overflow = "hidden";
+        // } else {
+        //   document.querySelector("body").style.overflow = "visible";
+        // }
       },
     },
     showKeyModal: {
       immediate: true,
       handler: function () {
-        if (this.showKeyModal) {
-          document.querySelector("body").style.overflow = "hidden";
-        } else {
-          document.querySelector("body").style.overflow = "visible";
-        }
+        this.handleOverflow(this.showKeyModal);
+        // if (this.showKeyModal) {
+        //   document.querySelector("body").style.overflow = "hidden";
+        // } else {
+        //   document.querySelector("body").style.overflow = "visible";
+        // }
       },
     },
     showConfirmPasswordModal: {
       immediate: true,
       handler: function () {
-        if (this.showConfirmPasswordModal) {
-          document.querySelector("body").style.overflow = "hidden";
-        } else {
-          document.querySelector("body").style.overflow = "visible";
-        }
+        this.handleOverflow(this.showConfirmPasswordModal);
+        // if (this.showConfirmPasswordModal) {
+        //   document.querySelector("body").style.overflow = "hidden";
+        // } else {
+        //   document.querySelector("body").style.overflow = "visible";
+        // }
       },
     },
     isSignedIn: {
@@ -106,6 +109,16 @@ export default {
         timeout: 3000,
       });
     }
+  },
+
+  methods: {
+    handleOverflow(checkState) {
+      if (checkState) {
+        document.querySelector("body").style.overflow = "hidden";
+      } else {
+        document.querySelector("body").style.overflow = "visible";
+      }
+    },
   },
 };
 </script>
