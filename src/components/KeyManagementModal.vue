@@ -169,7 +169,7 @@ export default {
     updateKeysApi(key) {
       window.contract.updatePublicKey({ publicKey: key }).then((data) => {
         if (data) {
-          this.$toast.success("Success Add Key!", {
+          this.$toast.success("Success update key!", {
             timeout: 2000,
           });
         }
