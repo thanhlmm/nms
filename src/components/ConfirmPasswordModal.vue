@@ -1,6 +1,6 @@
 <template>
   <transition name="slide" appear>
-    <div class="modal" v-if="showModal || showModalConfirm">
+    <div class="modal" v-if="showModalConfirm">
       <div class="header d-flex align-center justify-between mb-20">
         <div class="title title-20 f-700 d-flex align-center">
           Enter password for private message
@@ -43,14 +43,7 @@
         </div>
 
         <button
-          class="
-            btn-sent btn-sent-key
-            cursor-pointer
-            d-flex
-            align-center
-            justify-center
-            flex-shrink-0
-          "
+          class="btn-sent btn-sent-key cursor-pointer d-flex align-center justify-center flex-shrink-0"
           @click="handleConfirm"
         >
           <img src="../../public/assets/images/sent.svg" />
@@ -62,8 +55,6 @@
 </template>
 
 <script>
-import { encryptPrivateKeyWithPasswordConfirm } from "../message";
-
 export default {
   props: {
     privateKeyToConfirm: {
@@ -72,6 +63,9 @@ export default {
     showModalConfirm: {
       type: Boolean,
     },
+    onPasswordConfirm: {
+      type: Function,
+    },
   },
   data() {
     return {
@@ -79,15 +73,8 @@ export default {
       checkPasswordInput: false,
     };
   },
-  computed: {
-    showModal() {
-      return this.$store.state.confirmPasswordModal;
-    },
-  },
   methods: {
     handleCloseModal() {
-      this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL", false);
-      this.$store.commit("TOGGLE_CHECK_PASSWORD_CONFIRM", false);
       this.$emit("toggleConfirmPasswordModal", false);
       this.password = "";
     },
@@ -97,24 +84,10 @@ export default {
         this.checkPasswordInput = true;
       } else {
         this.checkPasswordInput = false;
-
-        if (this.privateKeyToConfirm === null) {
-          this.$store.commit("PASSWORD_CONFIRM", this.password);
-          this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL", false);
-          this.password = "";
-          return;
+        if (this.onPasswordConfirm) {
+          this.onPasswordConfirm(this.password);
         }
-
-        const encryptPrivateKey = encryptPrivateKeyWithPasswordConfirm(
-          this.password,
-          this.privateKeyToConfirm
-        );
-        this.$emit("encryptPrivateKeyWithPassword", encryptPrivateKey);
-        this.$store.commit("PASSWORD_CONFIRM", this.password);
-        this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL", false);
-        this.$store.commit("TOGGLE_CHECK_PASSWORD_CONFIRM", true);
-        this.$emit("toggleConfirmPasswordModal", false);
-        this.password = "";
+        this.handleCloseModal();
       }
     },
   },

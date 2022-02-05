@@ -1,6 +1,6 @@
 <template>
   <transition name="slide" appear>
-    <div class="modal" v-if="showModalReGen">
+    <div class="modal" v-if="showModal">
       <div class="header d-flex align-center justify-between mb-20">
         <div class="title title-20 f-700 d-flex align-center">Confirmation</div>
         <div class="action">
@@ -36,28 +36,14 @@
         </div>
         <div class="container-btn">
           <button
-            class="
-              btn-sent btn-sent-key
-              cursor-pointer
-              d-flex
-              align-center
-              justify-center
-              flex-shrink-0
-            "
+            class="btn-sent btn-sent-key cursor-pointer d-flex align-center justify-center flex-shrink-0"
             @click="handleConfirm"
           >
             <img src="../../public/assets/images/sent.svg" />
             <span>Confirm</span>
           </button>
           <button
-            class="
-              btn-sent btn-sent-key
-              cursor-pointer
-              d-flex
-              align-center
-              justify-center
-              flex-shrink-0
-            "
+            class="btn-sent btn-sent-key cursor-pointer d-flex align-center justify-center flex-shrink-0"
             @click="handleCloseModal"
           >
             <img src="../../public/assets/images/sent.svg" />
@@ -72,20 +58,20 @@
 <script>
 export default {
   props: {
-    showModalReGen: {
+    showModal: {
       type: Boolean,
+    },
+    handleConfirmFn: {
+      type: Function,
     },
   },
   methods: {
     handleCloseModal() {
       this.$emit("closeConfirmModal", false);
-      this.$emit("confirmReGen", false);
-      this.$emit("toggleClickReGen", false);
-      this.$emit("toggleClickReImport", false);
     },
     handleConfirm() {
       this.$emit("closeConfirmModal", false);
-      this.$emit("confirmReGen", true);
+      this.handleConfirmFn();
     },
   },
 };
