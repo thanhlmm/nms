@@ -36,14 +36,28 @@
         </div>
         <div class="container-btn">
           <button
-            class="btn-sent btn-sent-key cursor-pointer d-flex align-center justify-center flex-shrink-0"
+            class="
+              btn-sent btn-sent-key
+              cursor-pointer
+              d-flex
+              align-center
+              justify-center
+              flex-shrink-0
+            "
             @click="handleConfirm"
           >
             <img src="../../public/assets/images/sent.svg" />
             <span>Confirm</span>
           </button>
           <button
-            class="btn-sent btn-sent-key cursor-pointer d-flex align-center justify-center flex-shrink-0"
+            class="
+              btn-sent btn-sent-key
+              cursor-pointer
+              d-flex
+              align-center
+              justify-center
+              flex-shrink-0
+            "
             @click="handleCloseModal"
           >
             <img src="../../public/assets/images/sent.svg" />

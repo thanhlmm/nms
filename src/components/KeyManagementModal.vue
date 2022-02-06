@@ -44,21 +44,42 @@
           </div>
           <div class="d-flex flex-col-sm" style="gap: 1rem">
             <button
-              class="btn-sent btn-sent-key cursor-pointer d-flex align-center justify-center flex-shrink-0"
+              class="
+                btn-sent btn-sent-key
+                cursor-pointer
+                d-flex
+                align-center
+                justify-center
+                flex-shrink-0
+              "
               @click="genKeyClick"
             >
               <img src="../../public/assets/images/sent.svg" />
               <span>Generate</span>
             </button>
             <label
-              class="btn-sent btn-sent-key cursor-pointer d-flex align-center justify-center flex-shrink-0"
+              class="
+                btn-sent btn-sent-key
+                cursor-pointer
+                d-flex
+                align-center
+                justify-center
+                flex-shrink-0
+              "
             >
               <img src="../../public/assets/images/sent.svg" />
               <span>Import</span>
               <input type="file" ref="doc" @change="importKeyClick()" />
             </label>
             <button
-              class="btn-sent btn-sent-key cursor-pointer d-flex align-center justify-center flex-shrink-0"
+              class="
+                btn-sent btn-sent-key
+                cursor-pointer
+                d-flex
+                align-center
+                justify-center
+                flex-shrink-0
+              "
               @click="exportKeys"
             >
               <img src="../../public/assets/images/sent.svg" />
@@ -69,7 +90,7 @@
       </div>
     </transition>
     <ConfirmModal
-      :showModal="showModalReGen"
+      :showModal="showModalConfirmReGenImport"
       @closeConfirmModal="closeConfirmModal($event)"
       :handleConfirmFn="handleConfirm"
     />
@@ -101,7 +122,7 @@ export default {
       publicKey: null,
       privateKey: null,
       file: null,
-      showModalReGen: false,
+      showModalConfirmReGenImport: false,
       showModalPassword: false,
       handleConfirm: () => {},
       handlePasswordConfirm: () => {},
@@ -118,9 +139,6 @@ export default {
     username() {
       return window.walletConnection.getAccountId();
     },
-    checkPasswordConfirm() {
-      return this.$store.state.checkPasswordConfirm;
-    },
     hiddenPubKey() {
       if (this.publicKey) {
         return (
@@ -131,7 +149,6 @@ export default {
       }
       return "";
     },
-
     hiddenPriKey() {
       if (this.privateKey) {
         return (
@@ -153,8 +170,6 @@ export default {
     }
   },
 
-  watch: {},
-
   methods: {
     handleCloseModal() {
       this.$store.commit("TOGGLE_KEY_MODAL");
@@ -162,7 +177,7 @@ export default {
 
     // handle Modal Confirm ReGen or ReImport
     closeConfirmModal(e) {
-      this.showModalReGen = e;
+      this.showModalConfirmReGenImport = e;
     },
 
     //handle save Public Key to server
@@ -189,7 +204,7 @@ export default {
       );
 
       if (publicKeyCache && privateKeyCache) {
-        this.showModalReGen = true;
+        this.showModalConfirmReGenImport = true;
         this.handleConfirm = onDone;
       } else {
         onDone();

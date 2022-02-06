@@ -43,7 +43,14 @@
         </div>
 
         <button
-          class="btn-sent btn-sent-key cursor-pointer d-flex align-center justify-center flex-shrink-0"
+          class="
+            btn-sent btn-sent-key
+            cursor-pointer
+            d-flex
+            align-center
+            justify-center
+            flex-shrink-0
+          "
           @click="handleConfirm"
         >
           <img src="../../public/assets/images/sent.svg" />
@@ -57,9 +64,6 @@
 <script>
 export default {
   props: {
-    privateKeyToConfirm: {
-      type: String,
-    },
     showModalConfirm: {
       type: Boolean,
     },

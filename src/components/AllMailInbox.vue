@@ -166,9 +166,6 @@ export default {
           this.localPrivateKey
         );
       }
-      // console.log("this.passwordConfirm INBOX: ", this.passwordConfirm);
-      // console.log("this.localPrivateKey INBOX: ", this.localPrivateKey);
-      // console.log("privateKeyDecrypt INBOX: ", privateKeyDecrypt);
 
       const opts = {
         isLoadFromIpfs: message.clientConfig.isSupportIpfs,
