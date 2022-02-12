@@ -205,7 +205,6 @@
 <script>
 import { login, logout, NEAR_UNIT } from "../utils";
 import { utils } from "near-api-js";
-import { decryptPrivateKeyWithPasswordConfirm } from "../message";
 
 export default {
   data() {
@@ -238,15 +237,6 @@ export default {
     darkMode() {
       return this.$store.state.darkMode;
     },
-    localPrivateKey() {
-      return this.$store.state.localPrivateKey;
-    },
-    passwordConfirm() {
-      return this.$store.state.passwordConfirm;
-    },
-    checkPasswordConfirm() {
-      return this.$store.state.checkPasswordConfirm;
-    },
   },
 
   mounted() {
@@ -262,11 +252,10 @@ export default {
       immediate: true,
       handler: function () {
         const privateKey = localStorage.getItem(`${this.username}_privatekey`);
-        const userName = this.username;
         if (privateKey) {
           this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
             key: privateKey,
-            userName,
+            userName: this.username,
           });
         }
       },
@@ -341,30 +330,7 @@ export default {
     },
 
     showKeyModal() {
-      if (this.localPrivateKey === null) {
-        this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
-      } else {
-        if (this.passwordConfirm) {
-          const privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
-            this.passwordConfirm,
-            this.localPrivateKey
-          );
-          if (
-            privateKeyDecrypt.includes("TEST") &&
-            this.checkPasswordConfirm === true
-          ) {
-            this.$store.commit("TOGGLE_KEY_MODAL");
-          }
-          if (
-            !privateKeyDecrypt.includes("TEST") &&
-            this.checkPasswordConfirm === false
-          ) {
-            this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
-          }
-        } else {
-          this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
-        }
-      }
+      this.$store.commit("TOGGLE_KEY_MODAL");
     },
   },
 };

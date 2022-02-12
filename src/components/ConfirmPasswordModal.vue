@@ -1,6 +1,6 @@
 <template>
   <transition name="slide" appear>
-    <div class="modal" v-if="showModal">
+    <div class="modal" v-if="showModalConfirm">
       <div class="header d-flex align-center justify-between mb-20">
         <div class="title title-20 f-700 d-flex align-center">
           Enter password for private message
@@ -63,38 +63,35 @@
 
 <script>
 export default {
+  props: {
+    showModalConfirm: {
+      type: Boolean,
+    },
+    onPasswordConfirm: {
+      type: Function,
+    },
+  },
   data() {
     return {
       password: "",
       checkPasswordInput: false,
     };
   },
-  computed: {
-    showModal() {
-      return this.$store.state.confirmPasswordModal;
-    },
-    localPrivateKey() {
-      return this.$store.state.localPrivateKey;
-    },
-  },
   methods: {
     handleCloseModal() {
-      this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
-      this.$store.commit("TOGGLE_PASSWORD_CONFIRM", false);
+      this.$emit("toggleConfirmPasswordModal", false);
       this.password = "";
     },
+
     handleConfirm() {
       if (this.password === "") {
         this.checkPasswordInput = true;
       } else {
         this.checkPasswordInput = false;
-        this.$store.commit("PASSWORD_CONFIRM", this.password);
-        this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
-        this.$store.commit("TOGGLE_PASSWORD_CONFIRM", true);
-        this.password = "";
-        if (this.localPrivateKey === null) {
-          this.$store.commit("TOGGLE_KEY_MODAL");
+        if (this.onPasswordConfirm) {
+          this.onPasswordConfirm(this.password);
         }
+        this.handleCloseModal();
       }
     },
   },

@@ -158,8 +158,6 @@ export default {
             .then((data) => {
               if (data) {
                 this.senderKey = data;
-              } else {
-                this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
               }
             });
         }

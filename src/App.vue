@@ -1,6 +1,11 @@
 <template>
   <div id="root">
     <Convert />
+    <ConfirmPasswordModal
+      :showModalConfirm="showModalPassword"
+      @toggleConfirmPasswordModal="toggleConfirmPasswordModal($event)"
+      :onPasswordConfirm="onPasswordConfirm"
+    />
   </div>
 </template>
 
@@ -8,6 +13,7 @@
 import "./global.css";
 import getConfig from "./config";
 import Convert from "./Convert.vue";
+import ConfirmPasswordModal from "./components/ConfirmPasswordModal.vue";
 import { decryptPrivateKeyWithPasswordConfirm } from "./message";
 
 const nearConfig = getConfig(process.env.NODE_ENV || "development");
@@ -23,6 +29,14 @@ export default {
   name: "App",
   components: {
     Convert,
+    ConfirmPasswordModal,
+  },
+
+  data() {
+    return {
+      showModalPassword: false,
+      onPasswordConfirm: () => {},
+    };
   },
 
   computed: {
@@ -44,11 +58,18 @@ export default {
     localPrivateKey() {
       return this.$store.state.localPrivateKey;
     },
-    checkPasswordConfirm() {
-      return this.$store.state.checkPasswordConfirm;
+  },
+
+  methods: {
+    toggleConfirmPasswordModal(e) {
+      this.showModalPassword = e;
     },
-    passwordConfirm() {
-      return this.$store.state.passwordConfirm;
+    handleOverflow(checkState) {
+      if (checkState) {
+        document.querySelector("body").style.overflow = "hidden";
+      } else {
+        document.querySelector("body").style.overflow = "visible";
+      }
     },
   },
 
@@ -56,60 +77,29 @@ export default {
     darkMode: {
       immediate: true,
       handler: function () {
-        if (this.$store.state.darkMode) {
+        if (this.darkMode) {
           document.querySelector("html").setAttribute("data-theme", "light");
-        } else
+        } else {
           document.querySelector("html").setAttribute("data-theme", "dark");
+        }
       },
     },
     showAlertModal: {
       immediate: true,
       handler: function () {
-        if (this.$store.state.alertModal.isShow) {
-          document.querySelector("body").style.overflow = "hidden";
-        } else document.querySelector("body").style.overflow = "visible";
+        this.handleOverflow(this.showAlertModal);
       },
     },
     showKeyModal: {
       immediate: true,
       handler: function () {
-        if (this.$store.state.keyModal) {
-          document.querySelector("body").style.overflow = "hidden";
-        } else document.querySelector("body").style.overflow = "visible";
+        this.handleOverflow(this.showKeyModal);
       },
     },
     showConfirmPasswordModal: {
       immediate: true,
       handler: function () {
-        if (this.$store.state.confirmPasswordModal) {
-          document.querySelector("body").style.overflow = "hidden";
-        } else document.querySelector("body").style.overflow = "visible";
-      },
-    },
-    checkPasswordConfirm: {
-      immediate: true,
-      handler: function () {
-        if (
-          this.passwordConfirm &&
-          this.localPrivateKey &&
-          this.checkPasswordConfirm
-        ) {
-          const privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
-            this.passwordConfirm,
-            this.localPrivateKey
-          );
-          if (privateKeyDecrypt.includes("TEST")) {
-            this.$toast.success("Your Confirmation Password is correct", {
-              timeout: 2000,
-            });
-            this.$store.commit("TOGGLE_PASSWORD_CONFIRM", true);
-          } else {
-            this.$toast.error("Your Confirmation Password is incorrect", {
-              timeout: 2000,
-            });
-            this.$store.commit("TOGGLE_PASSWORD_CONFIRM", false);
-          }
-        }
+        this.handleOverflow(this.showConfirmPasswordModal);
       },
     },
     isSignedIn: {
@@ -121,16 +111,30 @@ export default {
   },
 
   mounted() {
-    if (this.localPrivateKey) {
-      this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
+    if (this.localPrivateKey !== null && this.$store.state.auth.auth.isLogin) {
+      this.$toast.warning("Please confirm password to read private message", {
+        timeout: 3000,
+      });
+      this.showModalPassword = true;
+      this.onPasswordConfirm = (password) => {
+        const privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
+          password,
+          this.localPrivateKey
+        );
+        if (privateKeyDecrypt.includes("TEST")) {
+          this.$store.commit("PASSWORD_CONFIRM", password);
+          this.$toast.success("Password is correct");
+        } else {
+          this.$toast.error(
+            "Your Confirmation Password is incorrect. Refresh to retry"
+          );
+        }
+      };
     }
     if (this.localPrivateKey === null && this.$store.state.auth.auth.isLogin) {
-      this.$toast.warning(
-        "Empty Private Key. Please Import your PrivateKey.pem or Generate new key!",
-        {
-          timeout: 3000,
-        }
-      );
+      this.$toast.warning("Please generate or import key to use this app", {
+        timeout: 3000,
+      });
     }
   },
 };

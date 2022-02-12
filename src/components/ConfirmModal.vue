@@ -1,6 +1,6 @@
 <template>
   <transition name="slide" appear>
-    <div class="modal" v-if="showModalReGen">
+    <div class="modal" v-if="showModal">
       <div class="header d-flex align-center justify-between mb-20">
         <div class="title title-20 f-700 d-flex align-center">Confirmation</div>
         <div class="action">
@@ -71,20 +71,20 @@
 <script>
 export default {
   props: {
-    showModalReGen: {
+    showModal: {
       type: Boolean,
+    },
+    handleConfirmFn: {
+      type: Function,
     },
   },
   methods: {
     handleCloseModal() {
       this.$emit("closeConfirmModal", false);
-      this.$emit("confirmGen", false);
-      this.$emit("toggleClickReGen", false);
-      this.$emit("toggleClickReImport", false);
     },
     handleConfirm() {
       this.$emit("closeConfirmModal", false);
-      this.$emit("confirmGen", true);
+      this.handleConfirmFn();
     },
   },
 };

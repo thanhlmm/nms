@@ -75,8 +75,8 @@ export default {
     page() {
       return this.$store.state.page;
     },
-    routePathSent() {
-      return this.$route.path === "/sent";
+    routePathInbox() {
+      return this.$route.path === "/inbox";
     },
     localPrivateKey() {
       return this.$store.state.localPrivateKey;
@@ -100,7 +100,7 @@ export default {
     localPrivateKey() {
       this.getInboxMsg();
     },
-    routePathSent() {
+    routePathInbox() {
       this.getInboxMsg();
     },
   },

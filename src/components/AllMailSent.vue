@@ -95,7 +95,7 @@ export default {
       this.getSentMsg();
     },
     routePathSent() {
-      this.getInboxMsg();
+      this.getSentMsg();
     },
   },
 
