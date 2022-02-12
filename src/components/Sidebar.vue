@@ -4,14 +4,7 @@
       <div class="d-flex align-center">
         <img src="../../public/assets/images/logo.svg" class="flex-shrink-0" />
         <span
-          class="
-            text-logo
-            title-16
-            f-700 f-obi
-            ml-10
-            letter-spacing-5
-            text-justify
-          "
+          class="text-logo title-16 f-700 f-obi ml-10 letter-spacing-5 text-justify"
         >
           Near Messaging Service
         </span>
@@ -118,13 +111,13 @@
         </div>
       </div>
 
-      <!-- <div class="hidden-sm">
+      <div class="hidden-sm">
         <img src="../../public/assets/images/lnc.svg" class="logo-dark" />
         <img
           src="../../public/assets/images/lnc-light.svg"
           class="logo-light"
         />
-        <div class="f-12 f-500 mb-10">
+        <!-- <div class="f-12 f-500 mb-10">
           <br /><a href="https://learnnear.club" target="_blank">
             <img
               src="../../public/assets/images/lnc-logo-dark.svg"
@@ -135,8 +128,8 @@
               class="logo-light"
             />
           </a>
-        </div>
-      </div> -->
+        </div> -->
+      </div>
     </div>
 
     <div class="mail-left__connect">
