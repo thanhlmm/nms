@@ -80,11 +80,7 @@ export default {
   },
 
   watch: {
-    passwordConfirm: function () {
-      this.dataMsgConversation = [];
-      this.getMessages(this.msgInboxId);
-    },
-    msgInboxId: function () {
+    msgInboxId() {
       this.dataMsgConversation = [];
       this.getMessages(this.msgInboxId);
     },
@@ -95,6 +91,9 @@ export default {
     routePathSent() {
       this.dataMsgConversation = [];
       this.getMessages(this.msgInboxId);
+    },
+    passwordConfirm() {
+      this.dataMsgConversation = [];
     },
   },
 

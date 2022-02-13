@@ -4,14 +4,7 @@
       <div class="d-flex align-center">
         <img src="../../public/assets/images/logo.svg" class="flex-shrink-0" />
         <span
-          class="
-            text-logo
-            title-16
-            f-700 f-obi
-            ml-10
-            letter-spacing-5
-            text-justify
-          "
+          class="text-logo title-16 f-700 f-obi ml-10 letter-spacing-5 text-justify"
         >
           Near Messaging Service
         </span>
@@ -118,13 +111,13 @@
         </div>
       </div>
 
-      <!-- <div class="hidden-sm">
+      <div class="hidden-sm">
         <img src="../../public/assets/images/lnc.svg" class="logo-dark" />
         <img
           src="../../public/assets/images/lnc-light.svg"
           class="logo-light"
         />
-        <div class="f-12 f-500 mb-10">
+        <!-- <div class="f-12 f-500 mb-10">
           <br /><a href="https://learnnear.club" target="_blank">
             <img
               src="../../public/assets/images/lnc-logo-dark.svg"
@@ -135,8 +128,8 @@
               class="logo-light"
             />
           </a>
-        </div>
-      </div> -->
+        </div> -->
+      </div>
     </div>
 
     <div class="mail-left__connect">
@@ -205,7 +198,6 @@
 <script>
 import { login, logout, NEAR_UNIT } from "../utils";
 import { utils } from "near-api-js";
-import { decryptPrivateKeyWithPasswordConfirm } from "../message";
 
 export default {
   data() {
@@ -238,15 +230,6 @@ export default {
     darkMode() {
       return this.$store.state.darkMode;
     },
-    localPrivateKey() {
-      return this.$store.state.localPrivateKey;
-    },
-    passwordConfirm() {
-      return this.$store.state.passwordConfirm;
-    },
-    checkPasswordConfirm() {
-      return this.$store.state.checkPasswordConfirm;
-    },
   },
 
   mounted() {
@@ -262,11 +245,10 @@ export default {
       immediate: true,
       handler: function () {
         const privateKey = localStorage.getItem(`${this.username}_privatekey`);
-        const userName = this.username;
         if (privateKey) {
           this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
             key: privateKey,
-            userName,
+            userName: this.username,
           });
         }
       },
@@ -341,30 +323,7 @@ export default {
     },
 
     showKeyModal() {
-      if (this.localPrivateKey === null) {
-        this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
-      } else {
-        if (this.passwordConfirm) {
-          const privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
-            this.passwordConfirm,
-            this.localPrivateKey
-          );
-          if (
-            privateKeyDecrypt.includes("TEST") &&
-            this.checkPasswordConfirm === true
-          ) {
-            this.$store.commit("TOGGLE_KEY_MODAL");
-          }
-          if (
-            !privateKeyDecrypt.includes("TEST") &&
-            this.checkPasswordConfirm === false
-          ) {
-            this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
-          }
-        } else {
-          this.$store.commit("TOGGLE_CONFIRM_PASSWORD_MODAL");
-        }
-      }
+      this.$store.commit("TOGGLE_KEY_MODAL");
     },
   },
 };
