@@ -188,6 +188,7 @@ export default {
           toIndex: indexInfo.toIndex,
         })
         .then((data) => {
+          console.log("data inbox: ", data);
           let eachData = data.map((item) => {
             return {
               baseSite: item.baseSite,
