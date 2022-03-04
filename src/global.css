@@ -2713,6 +2713,16 @@ p {
   background: var(--near-background-active);
 }
 
+@media (max-width: 1024px) {
+  .near__value-list {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  .near__value-list .near__value-item {
+    margin-right: 5px;
+  }
+}
+
 @media (max-width: 767px) {
   .near__value-list .near__value-item {
     width: 90px;
@@ -2790,7 +2800,7 @@ p {
   bottom: 0;
   right: 125px;
   width: 100%;
-  max-width: 640px;
+  max-width: 740px;
   height: 100%;
   max-height: 540px;
   display: table;
@@ -2834,7 +2844,10 @@ p {
   font-size: 0.8rem;
 }
 
-@media (max-width: 1024px) { 
+@media (max-width: 1024px) {
+  .modal-sent {
+    right: 0px;
+  } 
   .mail-right__sent {
     padding: 20px;
   }
@@ -2845,9 +2858,9 @@ p {
     padding: 35px 15px 15px;
     max-width: 100%;
     max-height: 100%;
-    height: -webkit-calc(100vh - 46px);
+    /* height: -webkit-calc(100vh - 46px);
     height: -moz-calc(100vh - 46px);
-    height: calc(100vh - 46px);
+    height: calc(100vh - 46px); */
     right: 0;
     top: 0;
     bottom: auto;
