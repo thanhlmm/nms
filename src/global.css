@@ -2627,6 +2627,13 @@ p {
   font-weight: 700;
 }
 
+.mail-right__item-header .action .coin-info {
+  position: absolute;
+  top: -6px;
+  right: 12px;
+  font-size: 0.6rem;
+}
+
 @media (max-width: 767px) {
   .mail-right__item-header .action .action-sent svg {
     width: 14px;
@@ -2661,6 +2668,11 @@ p {
 }
 
 @media (max-width: 1024px) {
+  .mail-right__item-header .action .coin-info {
+    font-size: 0.5rem;
+    top: -8px;
+    right: 2px;
+  }
   .mail-right__item-body .title {
     font-size: 16px;
     line-height: 20px;
@@ -2668,6 +2680,11 @@ p {
 }
 
 @media (max-width: 767px) {
+  .mail-right__item-header .action .coin-info {
+    font-size: 0.4rem;
+    top: -4px;
+    right: 4px;
+  }
   .mail-right__item-body .title {
     font-size: 12px;
     line-height: 18px;

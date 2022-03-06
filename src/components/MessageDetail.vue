@@ -16,33 +16,40 @@
           <div class="to f-500">To: {{ dataMsg.to }}</div>
         </div>
         <div class="text-right">
-          <div class="action mb-10 mb-sm-4 d-flex">
+          <div class="action mb-10 mb-sm-4 d-flex" style="position: relative">
             <div
-              class="
-                action-sent
-                reply
-                cursor-pointer
-                d-flex
-                align-center
-                mr-40 mr-xl-20
-                md-md-20 md-sm-20
-              "
-              @click="handleShowReply"
+              style="position: relative"
+              @mouseover="showTooltip = true"
+              @mouseleave="showTooltip = false"
             >
-              <svg
-                class="mr-10"
-                width="28"
-                height="20"
-                viewBox="0 0 28 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+              <div
+                class="
+                  action-sent
+                  reply
+                  cursor-pointer
+                  d-flex
+                  align-center
+                  mr-40 mr-xl-20
+                  md-md-20 md-sm-20
+                "
+                @click="handleShowReply"
               >
-                <path
-                  d="M28 20C28 20 25.3167 5.55556 11.6667 5.55556V0L0 10L11.6667 19.3333V12.9236C19.075 12.9236 24.1354 13.5417 28 20Z"
-                  fill="#3B4551"
-                />
-              </svg>
-              Reply
+                <svg
+                  class="mr-10"
+                  width="28"
+                  height="20"
+                  viewBox="0 0 28 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M28 20C28 20 25.3167 5.55556 11.6667 5.55556V0L0 10L11.6667 19.3333V12.9236C19.075 12.9236 24.1354 13.5417 28 20Z"
+                    fill="#3B4551"
+                  />
+                </svg>
+                Reply
+                <span class="coin-info">0.97N</span>
+              </div>
             </div>
             <div
               class="action-sent forward cursor-pointer d-flex align-center"
@@ -63,6 +70,9 @@
                 />
               </svg>
             </div>
+            <Tooltip :isShow="this.showTooltip">
+              Reply this message to get 0.97NEAR now!
+            </Tooltip>
           </div>
           <div class="f-500 date">{{ dataMsg.timestamp }}</div>
         </div>
@@ -112,6 +122,7 @@ import ReplyMessage from "./ReplyMessage.vue";
 import ForwardMessage from "./ForwardMessage.vue";
 import Avatar from "./Avatar";
 import TipTap from "../components/TipTap.vue";
+import Tooltip from "../components/Tooltip.vue";
 
 export default {
   props: ["dataMsg", "from"],
@@ -121,6 +132,7 @@ export default {
     ForwardMessage,
     Avatar,
     TipTap,
+    Tooltip,
   },
 
   data() {
@@ -129,6 +141,7 @@ export default {
         this.dataMsg.id === this.$store.state.messageConversation.msgInboxId,
       showReply: false,
       showForward: false,
+      showTooltip: false,
     };
   },
 

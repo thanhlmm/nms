@@ -200,9 +200,11 @@ export default {
               prevMsgId: item.prevMsgId,
               title: item.title,
               data: item.data,
+              moneyInfo: item.moneyInfo,
               isPrivate: item.data.includes("DIRECT-PRI"),
             };
           });
+          console.log("eachData inbox: ", eachData);
           const structEachData = eachData.map((item) => {
             return this.updateDataMessage(item, opts);
           });
