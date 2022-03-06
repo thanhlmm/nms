@@ -71,7 +71,7 @@
               </svg>
             </div>
             <Tooltip :isShow="this.showTooltip">
-              Reply this message to get 0.97NEAR now!
+              Reply this message to get 0.97 NEAR now!
             </Tooltip>
           </div>
           <div class="f-500 date">{{ dataMsg.timestamp }}</div>

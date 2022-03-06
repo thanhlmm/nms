@@ -2628,6 +2628,7 @@ p {
 }
 
 .mail-right__item-header .action .coin-info {
+  color: #fcb641;
   position: absolute;
   top: -6px;
   right: 12px;
