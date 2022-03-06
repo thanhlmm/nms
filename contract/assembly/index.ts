@@ -1,8 +1,11 @@
 import { Context, PersistentVector, ContractPromiseBatch, env, u128, logging } from 'near-sdk-as'
-import { Message, StaticsInfo, messages, staticsInfos, sentInfos, inboxInfos, publicKeys } from './model';
+import { Message, StaticsInfo, messages, staticsInfos, sentInfos, inboxInfos, publicKeys, MoneyInfo } from './model';
 
 const STATICS_KEY = "statics";
-const NEAR_SEND_MIN = u128.from("10000000000000000000000");
+const NEAR_SEND_MIN = u128.from("5000000000000000000000");
+const ONE_HOUR = u64(3600*10**9);
+const ONE_DAY = u64(24)*ONE_HOUR;
+const TWO_DAY = u64(2*24)*ONE_HOUR;
 
 // Get StaticsInfo, auto created if not existed in the Map
 function getStaticsInfo(): StaticsInfo {
@@ -89,7 +92,7 @@ export function getSentMessages(accountId: string, fromIndex: i32, toIndex: i32)
             let item = messages[sentMsgIndexes[idx]];
             if (item.expiredTime>0 && item.expiredTime<now) {
                 // Message exprired
-                item = new Message(item.id, item.from, item.to, item.title, "#EXPIRED", item.baseSite, item.prevMsgId, item.expiredTime);
+                item = new Message(item.id, item.from, item.to, item.title, "#EXPIRED", item.baseSite, item.prevMsgId, item.expiredTime, item.moneyInfo);
             }
             results[idx-fromIndex] = item;
         }
@@ -136,7 +139,7 @@ export function getInboxMessages(accountId: string, fromIndex: i32, toIndex: i32
             let item = messages[inboxMsgIndexes[idx]];
             if (item.expiredTime>0 && item.expiredTime<now) {
                 // Message exprired
-                item = new Message(item.id, item.from, item.to, item.title, "#EXPIRED", item.baseSite, item.prevMsgId, item.expiredTime);
+                item = new Message(item.id, item.from, item.to, item.title, "#EXPIRED", item.baseSite, item.prevMsgId, item.expiredTime, item.moneyInfo);
             }
             results[idx-fromIndex] = item;
         }
@@ -146,7 +149,7 @@ export function getInboxMessages(accountId: string, fromIndex: i32, toIndex: i32
 
 /**
  * Get message from index
- * @param index Index of message 
+ * @param msgId ID of message 
  * @returns Return a message or null
  */
  export function getMessage(msgId: i32): Message | null {
@@ -183,10 +186,13 @@ export function sendMessage(to: string, title: string, data: string, baseSite: s
     // Get static info
     let staticsInfo = getStaticsInfo();
 
-    // Store new message into blockchain
+    // Create message object
     let accountId = Context.sender;
     let msgId = messages.length + 1;
-    let msg = new Message(msgId, accountId, to, title, data, baseSite, prevMsgId, expiredTime);
+    let moneyInfo = new MoneyInfo(attachedDeposit, staticsInfo.userRate);
+    let msg = new Message(msgId, accountId, to, title, data, baseSite, prevMsgId, expiredTime, moneyInfo);
+
+    // Store new message into blockchain
     let index = messages.push(msg);
     staticsInfo.messageNum = messages.length;
 
@@ -217,15 +223,70 @@ export function sendMessage(to: string, title: string, data: string, baseSite: s
     // Store StaticInfo
     staticsInfos.set(STATICS_KEY, staticsInfo);
 
-    // Send NEAR to receiver
+    // Send NEAR Fee to DAO account
     if (!attachedDeposit.isZero()) {
-        let userAmount = attachedDeposit*staticsInfo.userRate/u128.from(1000);
-        ContractPromiseBatch.create(to).transfer(userAmount);
-        let feeAmount = attachedDeposit - userAmount;
-        ContractPromiseBatch.create(staticsInfo.feeAddress).transfer(feeAmount);
+        // let userAmount = attachedDeposit*staticsInfo.userRate/u128.from(1000);
+        // ContractPromiseBatch.create(to).transfer(userAmount);
+        ContractPromiseBatch.create(staticsInfo.feeAddress).transfer(moneyInfo.appFee);
+    }
+
+    // Check prevMsgId and send fund
+    if (prevMsgId>0 && prevMsgId<messages.length) {
+        let msgIdx = prevMsgId-1;
+        let preMsg = messages[msgIdx];
+        if (preMsg.to==accountId && preMsg.from==to && preMsg.moneyInfo && preMsg.moneyInfo.receivedAmount.isZero() && preMsg.moneyInfo.sendBackAmount.isZero()) {
+            let receivedAmount = u128.from(0);
+            let receivedTime = env.block_timestamp();
+            let period = u64(receivedTime - preMsg.timestamp);
+            if (period<=ONE_HOUR) {
+                receivedAmount = preMsg.moneyInfo.canReceivedAmount;                                    // 100%
+            } else if (period<=ONE_DAY) {
+                receivedAmount = preMsg.moneyInfo.canReceivedAmount/u128.from(2);                       // 50%
+            } else {
+                receivedAmount = preMsg.moneyInfo.canReceivedAmount/u128.from(10);                      // 10%
+            }
+            if (!receivedAmount.isZero()) {
+                ContractPromiseBatch.create(accountId).transfer(receivedAmount);
+                preMsg.moneyInfo.receivedAmount = receivedAmount;
+                preMsg.moneyInfo.receivedTime = receivedTime;
+                messages.replace(msgIdx, preMsg);
+            }
+        }
     }
 
     return true;
+}
+
+/**
+ * Send back NEAR to sender
+ * @param msgId ID of message 
+ * @returns Return true or false
+ */
+ export function sendBack(msgId: i32): bool {
+    // Checking msgIndex
+    let index = msgId - 1;
+    if (index<0 || index>=messages.length) {
+        // Invalid input
+        return false;
+    };
+
+    // Checking message
+    let msg = messages[index];
+    if (!msg.moneyInfo) return false;
+    if (!msg.moneyInfo.sendBackAmount.isZero()) return false;
+    let backTime = env.block_timestamp();
+    let period = u64(backTime - msg.timestamp);
+    if (period<=TWO_DAY) return false;
+
+    let backAmount = msg.moneyInfo.canReceivedAmount - msg.moneyInfo.receivedAmount;
+    if (backAmount>u128.from(0)) {
+        ContractPromiseBatch.create(msg.from).transfer(backAmount);
+        msg.moneyInfo.sendBackAmount = backAmount;
+        msg.moneyInfo.sendBackTime = backTime;
+        messages.replace(index, msg);
+        return true;
+    }
+    return false;
 }
 
 export function getStatics(): StaticsInfo | null {
