@@ -19,8 +19,18 @@
           <div class="action mb-10 mb-sm-4 d-flex" style="position: relative">
             <div
               style="position: relative"
-              @mouseover="showTooltip = true"
-              @mouseleave="showTooltip = false"
+              @mouseover="
+                parseInt(dataMsg.moneyInfo.receivedAmount) === 0 &&
+                parseInt(dataMsg.moneyInfo.sendBackAmount) === 0
+                  ? (showTooltip = true)
+                  : null
+              "
+              @mouseleave="
+                parseInt(dataMsg.moneyInfo.receivedAmount) === 0 &&
+                parseInt(dataMsg.moneyInfo.sendBackAmount) === 0
+                  ? (showTooltip = false)
+                  : null
+              "
             >
               <div
                 class="
@@ -48,7 +58,15 @@
                   />
                 </svg>
                 Reply
-                <span class="coin-info">0.97N</span>
+                <span
+                  class="coin-info"
+                  v-show="
+                    parseInt(dataMsg.moneyInfo.receivedAmount) === 0 &&
+                    parseInt(dataMsg.moneyInfo.sendBackAmount) === 0
+                  "
+                >
+                  0.97N</span
+                >
               </div>
             </div>
             <div
@@ -114,6 +132,8 @@
         @cancelForward="cancelForward"
       />
     </section>
+    <div>{{ realTime }}</div>
+    <div>{{ percent }}</div>
   </article>
 </template>
 
@@ -142,7 +162,23 @@ export default {
       showReply: false,
       showForward: false,
       showTooltip: false,
+      percent: 10 / 100,
     };
+  },
+
+  computed: {
+    realTime() {
+      return this.$store.state.realTime;
+    },
+  },
+
+  watch: {
+    realTime: {
+      immediate: true,
+      handler: function () {
+        this.handleFormatTime(parseInt(this.dataMsg.timestamp.slice(0, 2)));
+      },
+    },
   },
 
   methods: {
@@ -159,6 +195,21 @@ export default {
     },
     cancelForward(e) {
       this.showForward = e;
+    },
+
+    handleFormatTime(hourSentMsg) {
+      if (hourSentMsg && this.realTime) {
+        const timeCheck = this.realTime - hourSentMsg;
+        console.log("timeCheck: ", timeCheck);
+        // within 24 hour
+        if (timeCheck > 1 && timeCheck < 24) {
+          this.percent = 50 / 100;
+        }
+        // within 1 hour
+        if (timeCheck < 1 && timeCheck < 24) {
+          this.percent = 100 / 100;
+        }
+      }
     },
   },
 };

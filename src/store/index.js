@@ -43,9 +43,16 @@ const storeData = {
 
     inboxSearchKeyword: "",
     sentSearchKeyword: "",
+
+    realTime: null,
   },
 
   mutations: {
+    // GET REAL TIME
+    GET_REAL_TIME(state, payload) {
+      state.realTime = payload;
+    },
+
     // ACTIVE DARK MODE MUTATION
     TOGGLE_DARK_MODE(state) {
       state.darkMode = !state.darkMode;

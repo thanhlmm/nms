@@ -15,6 +15,7 @@ import getConfig from "./config";
 import Convert from "./Convert.vue";
 import ConfirmPasswordModal from "./components/ConfirmPasswordModal.vue";
 import { decryptPrivateKeyWithPasswordConfirm } from "./message";
+import dayjs from "dayjs";
 
 const nearConfig = getConfig(process.env.NODE_ENV || "development");
 console.log(
@@ -70,6 +71,16 @@ export default {
       } else {
         document.querySelector("body").style.overflow = "visible";
       }
+    },
+    handleCheckTime() {
+      const formatTime = dayjs().add(0, "hour").$d.toString().slice(15, 24);
+      const getHour = formatTime.slice(0, 3);
+      this.$store.commit("GET_REAL_TIME", getHour);
+    },
+    checkTime() {
+      window.setInterval(() => {
+        this.handleCheckTime();
+      }, 1000);
     },
   },
 
@@ -136,6 +147,7 @@ export default {
         timeout: 3000,
       });
     }
+    this.checkTime();
   },
 };
 </script>

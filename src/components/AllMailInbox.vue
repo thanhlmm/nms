@@ -188,7 +188,6 @@ export default {
           toIndex: indexInfo.toIndex,
         })
         .then((data) => {
-          console.log("data inbox: ", data);
           let eachData = data.map((item) => {
             return {
               baseSite: item.baseSite,
@@ -200,11 +199,9 @@ export default {
               prevMsgId: item.prevMsgId,
               title: item.title,
               data: item.data,
-              moneyInfo: item.moneyInfo,
               isPrivate: item.data.includes("DIRECT-PRI"),
             };
           });
-          console.log("eachData inbox: ", eachData);
           const structEachData = eachData.map((item) => {
             return this.updateDataMessage(item, opts);
           });
