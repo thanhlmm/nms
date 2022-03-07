@@ -16,7 +16,7 @@ export default {
 .container {
   position: absolute;
   top: 30px;
-  right: 0;
+  left: 0;
   z-index: 9998;
   border: 1px solid #fcb641;
   background-color: #fff;
@@ -24,6 +24,7 @@ export default {
   text-align: left;
   padding: 0 0.5rem;
   border-radius: 0.2rem;
+  width: max-content;
 }
 .container::after {
   content: "";

@@ -17,21 +17,7 @@
         </div>
         <div class="text-right">
           <div class="action mb-10 mb-sm-4 d-flex" style="position: relative">
-            <div
-              style="position: relative"
-              @mouseover="
-                Number(dataMsg.moneyInfo.receivedAmount) === 0 &&
-                Number(dataMsg.moneyInfo.sendBackAmount) === 0
-                  ? (showTooltip = true)
-                  : null
-              "
-              @mouseleave="
-                Number(dataMsg.moneyInfo.receivedAmount) === 0 &&
-                Number(dataMsg.moneyInfo.sendBackAmount) === 0
-                  ? (showTooltip = false)
-                  : null
-              "
-            >
+            <div style="position: relative">
               <div
                 class="
                   action-sent
@@ -60,12 +46,13 @@
                 Reply
                 <span
                   class="coin-info"
-                  v-show="
-                    Number(dataMsg.moneyInfo.receivedAmount) === 0 &&
-                    Number(dataMsg.moneyInfo.sendBackAmount) === 0
-                  "
+                  v-show="this.handleCheck()"
+                  @mouseover="showTooltip = true"
+                  @mouseleave="showTooltip = false"
                 >
-                  {{ this.handleCalculateReceivedAmount() }}N</span
+                  {{
+                    this.handleCalculateReceivedAmount().toString().slice(0, 5)
+                  }}N</span
                 >
               </div>
             </div>
@@ -90,7 +77,8 @@
             </div>
             <Tooltip :isShow="this.showTooltip">
               Reply this message to get
-              {{ this.handleCalculateReceivedAmount() }} NEAR now!
+              {{ this.handleCalculateReceivedAmount().toString().slice(0, 5) }}
+              NEAR now!
             </Tooltip>
           </div>
           <div class="f-500 date">{{ dataMsg.timestamp.toLocaleString() }}</div>
@@ -214,11 +202,26 @@ export default {
         }
       }
     },
+
     handleCalculateReceivedAmount() {
       const convertReceivedAmount = convertUnit(
         this.dataMsg.moneyInfo.canReceivedAmount
       );
       return convertReceivedAmount * this.percent;
+    },
+
+    handleCheck() {
+      const convertReceivedAmount = convertUnit(
+        this.dataMsg.moneyInfo.receivedAmount
+      );
+      const convertSendBackAmount = convertUnit(
+        this.dataMsg.moneyInfo.sendBackAmount
+      );
+      if (convertReceivedAmount == 0 && convertSendBackAmount == 0) {
+        return true;
+      } else {
+        return false;
+      }
     },
   },
 };

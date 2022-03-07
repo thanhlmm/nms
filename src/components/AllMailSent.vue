@@ -1,12 +1,18 @@
 <template>
-  <div class="mail-content__list scrollbar">
+  <div class="mail-content__list scrollbar" style="overflow-y: unset">
     <div v-if="sentMsgNum === 0">
       You haven't sent any message.<br />
       Do you want to send a message to someone? Please click
       <span class="link f-700" @click="handleSendMessageModal">here</span> to
       start!!!
     </div>
-    <article
+    <MailSent
+      v-else
+      v-for="message in dataMsgSent"
+      :message="message"
+      :key="message.id"
+    />
+    <!-- <article
       v-else
       v-for="message in dataMsgSent"
       :key="message.id"
@@ -30,26 +36,42 @@
               <div class="title f-500">Title: {{ message.title }}</div>
             </div>
           </div>
-          <div class="text-right f-500">
+          <div
+            class="text-right f-500"
+            style="display: flex; flex-direction: column"
+          >
             <div class="date-time no-wrap">
               {{ message.timestamp.toLocaleString() }}
+            </div>
+            <div
+              style="
+                position: relative;
+                border: 1px solid red;
+                display: inline-block;
+              "
+              v-show="() => handleCheck(message.timestamp)"
+              @mouseover="showTooltip = true"
+              @mouseleave="showTooltip = false"
+            >
+              hello
+              <Tooltip :isShow="showTooltip">Hello</Tooltip>
             </div>
           </div>
         </header>
       </div>
-    </article>
+    </article> -->
   </div>
 </template>
 
 <script>
 import { getIndexInfo } from "../utils";
 import message from "../message";
-import Avatar from "./Avatar";
 import { decryptPrivateKeyWithPasswordConfirm } from "../message";
+import MailSent from "./MailSent.vue";
 
 export default {
   components: {
-    Avatar,
+    MailSent,
   },
 
   data() {
@@ -102,10 +124,6 @@ export default {
   },
 
   methods: {
-    handleSelectedMail(id) {
-      this.$store.commit("MESSAGE_CONVERSATION", id);
-    },
-
     handleSendMessageModal() {
       if (this.$store.state.sendMessageModal.isShow) return;
       this.$store.commit("TOGGLE_SEND_MESSAGE_MODAL");
@@ -160,6 +178,7 @@ export default {
               prevMsgId: item.prevMsgId,
               title: item.title,
               data: item.data,
+              moneyInfo: item.moneyInfo,
               isPrivate: item.data.includes("DIRECT-PRI"),
             };
           });
