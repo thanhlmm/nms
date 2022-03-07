@@ -49,7 +49,7 @@ const storeData = {
 
   mutations: {
     // GET REAL TIME
-    GET_REAL_TIME(state, payload) {
+    SAVE_REAL_TIME(state, payload) {
       state.realTime = payload;
     },
 

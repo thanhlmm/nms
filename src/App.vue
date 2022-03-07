@@ -73,9 +73,8 @@ export default {
       }
     },
     handleCheckTime() {
-      const formatTime = dayjs().add(0, "hour").$d.toString().slice(15, 24);
-      const getHour = formatTime.slice(0, 3);
-      this.$store.commit("GET_REAL_TIME", getHour);
+      const date = new Date();
+      this.$store.commit("SAVE_REAL_TIME", date);
     },
     checkTime() {
       window.setInterval(() => {

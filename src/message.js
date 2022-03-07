@@ -230,7 +230,7 @@ async function depackMessage(msg, opts) {
     expiredTime: msg.expiredTime,
     from: msg.from,
     to: msg.to,
-    timestamp: new Date(msg.timestamp / 10 ** 6).toLocaleString(),
+    timestamp: new Date(msg.timestamp / 10 ** 6),
     id: msg.id,
     prevMsgId: msg.prevMsgId,
     code: 1,

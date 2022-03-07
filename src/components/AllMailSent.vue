@@ -31,7 +31,9 @@
             </div>
           </div>
           <div class="text-right f-500">
-            <div class="date-time no-wrap">{{ message.timestamp }}</div>
+            <div class="date-time no-wrap">
+              {{ message.timestamp.toLocaleString() }}
+            </div>
           </div>
         </header>
       </div>

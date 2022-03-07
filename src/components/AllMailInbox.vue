@@ -34,7 +34,9 @@
             <div class="status-read">
               <span v-if="!checkUnread(message.id)">Unread</span>
             </div>
-            <div class="date-time no-wrap">{{ message.timestamp }}</div>
+            <div class="date-time no-wrap">
+              {{ message.timestamp.toLocaleString() }}
+            </div>
           </div>
         </header>
       </div>

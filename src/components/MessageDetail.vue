@@ -20,14 +20,14 @@
             <div
               style="position: relative"
               @mouseover="
-                parseInt(dataMsg.moneyInfo.receivedAmount) === 0 &&
-                parseInt(dataMsg.moneyInfo.sendBackAmount) === 0
+                Number(dataMsg.moneyInfo.receivedAmount) === 0 &&
+                Number(dataMsg.moneyInfo.sendBackAmount) === 0
                   ? (showTooltip = true)
                   : null
               "
               @mouseleave="
-                parseInt(dataMsg.moneyInfo.receivedAmount) === 0 &&
-                parseInt(dataMsg.moneyInfo.sendBackAmount) === 0
+                Number(dataMsg.moneyInfo.receivedAmount) === 0 &&
+                Number(dataMsg.moneyInfo.sendBackAmount) === 0
                   ? (showTooltip = false)
                   : null
               "
@@ -61,11 +61,13 @@
                 <span
                   class="coin-info"
                   v-show="
-                    parseInt(dataMsg.moneyInfo.receivedAmount) === 0 &&
-                    parseInt(dataMsg.moneyInfo.sendBackAmount) === 0
+                    Number(dataMsg.moneyInfo.receivedAmount) === 0 &&
+                    Number(dataMsg.moneyInfo.sendBackAmount) === 0
                   "
                 >
-                  0.97N</span
+                  {{
+                    percent * Number(dataMsg.moneyInfo.canReceivedAmount)
+                  }}N</span
                 >
               </div>
             </div>
@@ -92,7 +94,7 @@
               Reply this message to get 0.97 NEAR now!
             </Tooltip>
           </div>
-          <div class="f-500 date">{{ dataMsg.timestamp }}</div>
+          <div class="f-500 date">{{ dataMsg.timestamp.toLocaleString() }}</div>
         </div>
       </div>
     </header>
@@ -132,8 +134,6 @@
         @cancelForward="cancelForward"
       />
     </section>
-    <div>{{ realTime }}</div>
-    <div>{{ percent }}</div>
   </article>
 </template>
 
@@ -143,6 +143,7 @@ import ForwardMessage from "./ForwardMessage.vue";
 import Avatar from "./Avatar";
 import TipTap from "../components/TipTap.vue";
 import Tooltip from "../components/Tooltip.vue";
+import dayjs from "dayjs";
 
 export default {
   props: ["dataMsg", "from"],
@@ -176,7 +177,7 @@ export default {
     realTime: {
       immediate: true,
       handler: function () {
-        this.handleFormatTime(parseInt(this.dataMsg.timestamp.slice(0, 2)));
+        this.handleFormatTime(this.dataMsg.timestamp);
       },
     },
   },
@@ -199,14 +200,16 @@ export default {
 
     handleFormatTime(hourSentMsg) {
       if (hourSentMsg && this.realTime) {
-        const timeCheck = this.realTime - hourSentMsg;
-        console.log("timeCheck: ", timeCheck);
+        const timeConvert = dayjs(this.realTime).diff(
+          dayjs(hourSentMsg),
+          "hour"
+        );
         // within 24 hour
-        if (timeCheck > 1 && timeCheck < 24) {
+        if (timeConvert > 1 && timeConvert < 24) {
           this.percent = 50 / 100;
         }
         // within 1 hour
-        if (timeCheck < 1 && timeCheck < 24) {
+        if (timeConvert < 1 && timeConvert < 24) {
           this.percent = 100 / 100;
         }
       }
