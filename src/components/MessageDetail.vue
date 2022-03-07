@@ -65,9 +65,7 @@
                     Number(dataMsg.moneyInfo.sendBackAmount) === 0
                   "
                 >
-                  {{
-                    percent * Number(dataMsg.moneyInfo.canReceivedAmount)
-                  }}N</span
+                  {{ this.handleCalculateReceivedAmount() }}N</span
                 >
               </div>
             </div>
@@ -91,7 +89,8 @@
               </svg>
             </div>
             <Tooltip :isShow="this.showTooltip">
-              Reply this message to get 0.97 NEAR now!
+              Reply this message to get
+              {{ this.handleCalculateReceivedAmount() }} NEAR now!
             </Tooltip>
           </div>
           <div class="f-500 date">{{ dataMsg.timestamp.toLocaleString() }}</div>
@@ -144,6 +143,7 @@ import Avatar from "./Avatar";
 import TipTap from "../components/TipTap.vue";
 import Tooltip from "../components/Tooltip.vue";
 import dayjs from "dayjs";
+import { convertUnit } from "../utils";
 
 export default {
   props: ["dataMsg", "from"],
@@ -213,6 +213,12 @@ export default {
           this.percent = 100 / 100;
         }
       }
+    },
+    handleCalculateReceivedAmount() {
+      const convertReceivedAmount = convertUnit(
+        this.dataMsg.moneyInfo.canReceivedAmount
+      );
+      return convertReceivedAmount * this.percent;
     },
   },
 };
