@@ -12,54 +12,6 @@
       :message="message"
       :key="message.id"
     />
-    <!-- <article
-      v-else
-      v-for="message in dataMsgSent"
-      :key="message.id"
-      class="mail-content__item d-flex"
-      @click="handleSelectedMail(message.id)"
-    >
-      <Avatar :accountId="message.from" size="40" />
-
-      <div class="content pl-20 pl-md-10 flex-grow-1">
-        <header
-          class="d-flex justify-between mb-10 mb-sm-0 mail-content__item-header"
-        >
-          <div class="flex-grow-1 mail-content__item-header__top pr-20">
-            <div class="name title-16 f-700">To: {{ message.to }}</div>
-            <div :class="{ isPrivate: message.isPrivate }">
-              <img
-                v-if="message.isPrivate"
-                src="../../public/assets/images/privateMsg.svg"
-                class="private-message"
-              />
-              <div class="title f-500">Title: {{ message.title }}</div>
-            </div>
-          </div>
-          <div
-            class="text-right f-500"
-            style="display: flex; flex-direction: column"
-          >
-            <div class="date-time no-wrap">
-              {{ message.timestamp.toLocaleString() }}
-            </div>
-            <div
-              style="
-                position: relative;
-                border: 1px solid red;
-                display: inline-block;
-              "
-              v-show="() => handleCheck(message.timestamp)"
-              @mouseover="showTooltip = true"
-              @mouseleave="showTooltip = false"
-            >
-              hello
-              <Tooltip :isShow="showTooltip">Hello</Tooltip>
-            </div>
-          </div>
-        </header>
-      </div>
-    </article> -->
   </div>
 </template>
 
