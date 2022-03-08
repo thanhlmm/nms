@@ -28,16 +28,15 @@
             {{ message.timestamp.toLocaleString() }}
           </div>
           <div
-            style="
-              position: relative;
-              border: 1px solid red;
-              width: min-content;
-            "
+            style="position: relative; width: min-content"
             v-show="this.handleCheck()"
             @mouseover="showTooltip = true"
             @mouseleave="showTooltip = false"
           >
-            hello
+            <img
+              src="../../public/assets/images/coin.svg"
+              style="width: 20px; height: 20px; max-width: min-content"
+            />
             <Tooltip :isShow="showTooltip">
               You can get back NEAR due to the receiver has not replied in 48
               hours!</Tooltip
