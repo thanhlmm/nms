@@ -14,6 +14,11 @@ export const tranformUnit = (input) =>
 
 let nearConnection = null;
 
+export const convertUnit = (input) =>
+  Big(input || "0")
+    .div(10 ** 24)
+    .toFixed(2);
+
 // Initialize contract & set global variables
 export async function initContract() {
   // Initialize connection to the NEAR testnet

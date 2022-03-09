@@ -87,6 +87,15 @@
           <div
             class="near__value-item cursor-pointer"
             v-bind:class="{
+              active: amount === 0.05,
+            }"
+            @click="amount = 0.05"
+          >
+            0.05 NEAR
+          </div>
+          <div
+            class="near__value-item cursor-pointer"
+            v-bind:class="{
               active: amount === 0.1,
             }"
             @click="amount = 0.1"
@@ -133,7 +142,7 @@ export default {
     return {
       data: "",
       titleData: this.title,
-      amount: 0.1,
+      amount: 0.05,
       type: "PUBLIC",
       senderKey: null,
     };
@@ -288,7 +297,7 @@ export default {
     handleCancelReply() {
       this.data = "";
       this.titleData = this.title;
-      this.amount = 0.1;
+      this.amount = 0.05;
       this.type = "PUBLIC";
       this.$emit("cancelReplay", !this.showReply);
     },
