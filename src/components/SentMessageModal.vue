@@ -27,6 +27,7 @@
       <div class="action hidden-sm">
         <span
           class="btn-minimize cursor-pointer"
+          :class="{ 'mr-20': windowWidth <= 1024 }"
           @click="handleMinimizeSendMessageModal"
         >
           <svg
@@ -49,6 +50,7 @@
         </span>
         <span
           class="btn-expand cursor-pointer ml-20 mr-20"
+          :class="{ 'd-none': windowWidth <= 1024 }"
           @click="handleExpandSendMessageModal"
         >
           <svg
@@ -142,6 +144,15 @@
           <div
             class="near__value-item cursor-pointer"
             v-bind:class="{
+              active: amount === 0.05,
+            }"
+            @click="amount = 0.05"
+          >
+            0.05 NEAR
+          </div>
+          <div
+            class="near__value-item cursor-pointer"
+            v-bind:class="{
               active: amount === 0.1,
             }"
             @click="amount = 0.1"
@@ -216,13 +227,22 @@ export default {
       to: "",
       title: "",
       data: "",
-      amount: 0.1,
+      amount: 0.05,
       type: "PUBLIC",
+      windowWidth: window.innerWidth,
 
       checkToInput: false,
       checkTitleInput: false,
       senderKey: null,
     };
+  },
+
+  created() {
+    window.addEventListener("resize", this.myEventHandler);
+  },
+
+  destroyed() {
+    window.removeEventListener("resize", this.myEventHandler);
   },
 
   computed: {
@@ -261,6 +281,10 @@ export default {
   },
 
   methods: {
+    myEventHandler() {
+      this.windowWidth = window.innerWidth;
+    },
+
     updateModelValue(e) {
       this.data = e;
     },
@@ -416,12 +440,13 @@ export default {
       this.to = "";
       this.title = "";
       this.data = "";
-      this.amount = 0.1;
+      this.amount = 0.05;
       this.type = "PUBLIC";
       this.$store.commit("TOGGLE_SEND_MESSAGE_MODAL");
     },
 
     handleExpandSendMessageModal() {
+      if (this.windowWidth <= 1024) return;
       this.$store.commit("TOGGLE_SEND_MESSAGE_MODAL_EXPAND");
     },
 

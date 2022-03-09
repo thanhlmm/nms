@@ -133,7 +133,7 @@ export default {
     },
 
     async updateDataMessage(msg, opts) {
-      const structMsgInbox = {
+      const structMsg = {
         baseSite: msg.baseSite,
         data: msg.data,
         expiredTime: msg.expiredTime,
@@ -143,17 +143,18 @@ export default {
         timestamp: msg.timestamp,
         title: msg.title,
         to: msg.to,
+        moneyInfo: msg.moneyInfo,
         isPrivate: msg.data.includes("DIRECT-PRI"),
       };
-      const msgInbox = await message.depackMessage(structMsgInbox, opts);
+      const eachMsg = await message.depackMessage(structMsg, opts);
 
-      if (msgInbox.prevMsgId === 0) {
-        this.dataMsgConversation.push(msgInbox);
+      if (eachMsg.prevMsgId === 0) {
+        this.dataMsgConversation.push(eachMsg);
         this.dataMsgConversation.reverse();
       } else {
-        this.getMessages(msgInbox.prevMsgId);
+        this.getMessages(eachMsg.prevMsgId);
         const newData = [...this.dataMsgConversation];
-        newData.push(msgInbox);
+        newData.push(eachMsg);
         this.dataMsgConversation = newData;
       }
     },

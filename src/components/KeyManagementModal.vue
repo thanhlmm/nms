@@ -187,6 +187,10 @@ export default {
           this.$toast.success("Success update key!", {
             timeout: 2000,
           });
+        } else {
+          this.$toast.error("Error update key!", {
+            timeout: 2000,
+          });
         }
       });
     },
