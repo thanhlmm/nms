@@ -15,8 +15,8 @@ export default {
 <style lang="scss" scoped>
 .container {
   position: absolute;
-  top: 30px;
-  left: 0;
+  top: 25px;
+  right: -6px;
   z-index: 9998;
   border: 1px solid #fcb641;
   background-color: #fff;
@@ -25,14 +25,6 @@ export default {
   padding: 0 0.5rem;
   border-radius: 0.2rem;
   width: max-content;
-}
-.container::after {
-  content: "";
-  border: 10px solid transparent;
-  border-bottom-color: #fff;
-  position: absolute;
-  top: -18px;
-  left: 5px;
 }
 .fade-enter-active,
 .fade-leave-active {
