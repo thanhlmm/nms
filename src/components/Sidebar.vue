@@ -244,7 +244,9 @@ export default {
     isLoggedIn: {
       immediate: true,
       handler: function () {
-        const privateKey = localStorage.getItem(`${this.username}_privatekey`);
+        const privateKey = localStorage.getItem(
+          `${process.env.VUE_APP_CONTRACT_NAME}_${this.username}_privatekey`
+        );
         if (privateKey) {
           this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
             key: privateKey,
