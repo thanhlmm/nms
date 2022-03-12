@@ -44,42 +44,21 @@
           </div>
           <div class="d-flex flex-col-sm" style="gap: 1rem">
             <button
-              class="
-                btn-sent btn-sent-key
-                cursor-pointer
-                d-flex
-                align-center
-                justify-center
-                flex-shrink-0
-              "
+              class="btn-sent btn-sent-key cursor-pointer d-flex align-center justify-center flex-shrink-0"
               @click="genKeyClick"
             >
               <img src="../../public/assets/images/sent.svg" />
               <span>Generate</span>
             </button>
             <label
-              class="
-                btn-sent btn-sent-key
-                cursor-pointer
-                d-flex
-                align-center
-                justify-center
-                flex-shrink-0
-              "
+              class="btn-sent btn-sent-key cursor-pointer d-flex align-center justify-center flex-shrink-0"
             >
               <img src="../../public/assets/images/sent.svg" />
               <span>Import</span>
               <input type="file" ref="doc" @change="importKeyClick()" />
             </label>
             <button
-              class="
-                btn-sent btn-sent-key
-                cursor-pointer
-                d-flex
-                align-center
-                justify-center
-                flex-shrink-0
-              "
+              class="btn-sent btn-sent-key cursor-pointer d-flex align-center justify-center flex-shrink-0"
               @click="exportKeys"
             >
               <img src="../../public/assets/images/sent.svg" />
@@ -162,11 +141,23 @@ export default {
   },
 
   mounted() {
-    if (localStorage.getItem(`${this.username}_privatekey`)) {
-      this.privateKey = localStorage.getItem(`${this.username}_privatekey`);
+    if (
+      localStorage.getItem(
+        `${process.env.VUE_APP_CONTRACT_NAME}_${this.username}_privatekey`
+      )
+    ) {
+      this.privateKey = localStorage.getItem(
+        `${process.env.VUE_APP_CONTRACT_NAME}_${this.username}_privatekey`
+      );
     }
-    if (localStorage.getItem(`${this.username}_publickey`)) {
-      this.publicKey = localStorage.getItem(`${this.username}_publickey`);
+    if (
+      localStorage.getItem(
+        `${process.env.VUE_APP_CONTRACT_NAME}_${this.username}_publickey`
+      )
+    ) {
+      this.publicKey = localStorage.getItem(
+        `${process.env.VUE_APP_CONTRACT_NAME}_${this.username}_publickey`
+      );
     }
   },
 
@@ -202,9 +193,11 @@ export default {
 
     // Check confirm
     confirmOverride(onDone) {
-      const publicKeyCache = localStorage.getItem(`${this.username}_publickey`);
+      const publicKeyCache = localStorage.getItem(
+        `${process.env.VUE_APP_CONTRACT_NAME}_${this.username}_publickey`
+      );
       const privateKeyCache = localStorage.getItem(
-        `${this.username}_privatekey`
+        `${process.env.VUE_APP_CONTRACT_NAME}_${this.username}_privatekey`
       );
 
       if (publicKeyCache && privateKeyCache) {
@@ -270,12 +263,18 @@ export default {
 
     //handle Export Original Private Key
     exportKeys() {
-      if (localStorage.getItem(`${this.username}_privatekey`)) {
+      if (
+        localStorage.getItem(
+          `${process.env.VUE_APP_CONTRACT_NAME}_${this.username}_privatekey`
+        )
+      ) {
         this.showModalPassword = true;
         this.handlePasswordConfirm = (password) => {
           const privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
             password,
-            localStorage.getItem(`${this.username}_privatekey`)
+            localStorage.getItem(
+              `${process.env.VUE_APP_CONTRACT_NAME}_${this.username}_privatekey`
+            )
           );
           if (privateKeyDecrypt.includes("TEST")) {
             this.handleExportKeys(privateKeyDecrypt);
@@ -323,13 +322,19 @@ export default {
     },
 
     handlePublicKeyGen(publicKeyGen) {
-      localStorage.setItem(`${this.username}_publickey`, publicKeyGen);
+      localStorage.setItem(
+        `${process.env.VUE_APP_CONTRACT_NAME}_${this.username}_publickey`,
+        publicKeyGen
+      );
       this.publicKey = publicKeyGen;
       this.updateKeysApi(publicKeyGen);
     },
 
     handlePrivateKey(key) {
-      localStorage.setItem(`${this.username}_privatekey`, key);
+      localStorage.setItem(
+        `${process.env.VUE_APP_CONTRACT_NAME}_${this.username}_privatekey`,
+        key
+      );
       this.$store.commit("TOGGLE_PRIVATEKEY_LOCAL", {
         key,
         userName: this.username,
