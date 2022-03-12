@@ -77,7 +77,7 @@
             </div>
             <Tooltip :isShow="this.showTooltip">
               Reply this message to get
-              {{ this.handleCalculateReceivedAmount().toString().slice(0, 5) }}
+              {{ this.handleCalculateReceivedAmount().toString().slice(0, 6) }}
               NEAR now!
             </Tooltip>
           </div>
@@ -207,6 +207,8 @@ export default {
       const convertReceivedAmount = convertUnit(
         this.dataMsg.moneyInfo.canReceivedAmount
       );
+      console.log(this.dataMsg.moneyInfo.canReceivedAmount);
+      console.log("convertReceivedAmount: ", convertReceivedAmount);
       return convertReceivedAmount * this.percent;
     },
 
