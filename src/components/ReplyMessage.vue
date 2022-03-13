@@ -3,13 +3,7 @@
     <header class="mail-right__item-header d-flex">
       <Avatar :accountId="from" size="60" />
       <div
-        class="
-          info
-          pl-30 pl-xl-16 pl-md-16 pl-sm-10
-          flex-grow-1
-          d-flex
-          justify-between
-        "
+        class="info pl-30 pl-xl-16 pl-md-16 pl-sm-10 flex-grow-1 d-flex justify-between"
       >
         <div>
           <div class="name title-20 mb-10 f-700">{{ from }}</div>
@@ -26,13 +20,7 @@
             </button>
           </div>
           <button
-            class="
-              btn-cancelForwardReply btn-sent
-              cursor-pointer
-              d-flex
-              align-center
-              flex-shrink-0
-            "
+            class="btn-cancelForwardReply btn-sent cursor-pointer d-flex align-center flex-shrink-0"
             @click="handleCancelReply"
           >
             Cancel
@@ -188,6 +176,10 @@ export default {
           throw new Error("Error when packing messsage" + resp);
         }
 
+        if (this.id) {
+          window.localStorage.removeItem(`msg-${this.id}`);
+        }
+
         if (this.amount) {
           window.contract
             .sendMessage(
@@ -219,7 +211,7 @@ export default {
               title: resp.title,
               data: resp.data,
               baseSite: window.location.origin,
-              prevMsgId: 0,
+              prevMsgId: this.id,
               expiredTime: "0",
             })
             .then(() => {
