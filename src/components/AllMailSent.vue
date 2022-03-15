@@ -6,48 +6,24 @@
       <span class="link f-700" @click="handleSendMessageModal">here</span> to
       start!!!
     </div>
-    <article
+    <MailSent
       v-else
       v-for="message in dataMsgSent"
+      :message="message"
       :key="message.id"
-      class="mail-content__item d-flex"
-      @click="handleSelectedMail(message.id)"
-    >
-      <Avatar :accountId="message.from" size="40" />
-
-      <div class="content pl-20 pl-md-10 flex-grow-1">
-        <header
-          class="d-flex justify-between mb-10 mb-sm-0 mail-content__item-header"
-        >
-          <div class="flex-grow-1 mail-content__item-header__top pr-20">
-            <div class="name title-16 f-700">To: {{ message.to }}</div>
-            <div :class="{ isPrivate: message.isPrivate }">
-              <img
-                v-if="message.isPrivate"
-                src="../../public/assets/images/privateMsg.svg"
-                class="private-message"
-              />
-              <div class="title f-500">Title: {{ message.title }}</div>
-            </div>
-          </div>
-          <div class="text-right f-500">
-            <div class="date-time no-wrap">{{ message.timestamp }}</div>
-          </div>
-        </header>
-      </div>
-    </article>
+    />
   </div>
 </template>
 
 <script>
 import { getIndexInfo } from "../utils";
 import message from "../message";
-import Avatar from "./Avatar";
 import { decryptPrivateKeyWithPasswordConfirm } from "../message";
+import MailSent from "./MailSent.vue";
 
 export default {
   components: {
-    Avatar,
+    MailSent,
   },
 
   data() {
@@ -100,10 +76,6 @@ export default {
   },
 
   methods: {
-    handleSelectedMail(id) {
-      this.$store.commit("MESSAGE_CONVERSATION", id);
-    },
-
     handleSendMessageModal() {
       if (this.$store.state.sendMessageModal.isShow) return;
       this.$store.commit("TOGGLE_SEND_MESSAGE_MODAL");
@@ -158,6 +130,7 @@ export default {
               prevMsgId: item.prevMsgId,
               title: item.title,
               data: item.data,
+              moneyInfo: item.moneyInfo,
               isPrivate: item.data.includes("DIRECT-PRI"),
             };
           });

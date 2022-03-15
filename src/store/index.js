@@ -43,9 +43,16 @@ const storeData = {
 
     inboxSearchKeyword: "",
     sentSearchKeyword: "",
+
+    realTime: null,
   },
 
   mutations: {
+    // GET REAL TIME
+    SAVE_REAL_TIME(state, payload) {
+      state.realTime = payload;
+    },
+
     // ACTIVE DARK MODE MUTATION
     TOGGLE_DARK_MODE(state) {
       state.darkMode = !state.darkMode;
@@ -83,7 +90,7 @@ const storeData = {
     },
     TOGGLE_PRIVATEKEY_LOCAL(state, { key, userName }) {
       state.localPrivateKey = key;
-      localStorage.setItem(`${userName}_privatekey`, key);
+      localStorage.setItem(`${process.env.VUE_APP_CONTRACT_NAME}_${userName}_privatekey`, key);
     },
 
     // HANDLE MESSAGE MUTATION

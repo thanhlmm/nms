@@ -3,13 +3,7 @@
     <header class="mail-right__item-header d-flex">
       <Avatar :accountId="from" size="60" />
       <div
-        class="
-          info
-          pl-30 pl-xl-16 pl-md-16 pl-sm-10
-          flex-grow-1
-          d-flex
-          justify-between
-        "
+        class="info pl-30 pl-xl-16 pl-md-16 pl-sm-10 flex-grow-1 d-flex justify-between"
       >
         <div>
           <div class="name title-20 mb-10 f-700">{{ from }}</div>
@@ -26,13 +20,7 @@
             </button>
           </div>
           <button
-            class="
-              btn-cancelForwardReply btn-sent
-              cursor-pointer
-              d-flex
-              align-center
-              flex-shrink-0
-            "
+            class="btn-cancelForwardReply btn-sent cursor-pointer d-flex align-center flex-shrink-0"
             @click="handleCancelReply"
           >
             Cancel
@@ -87,6 +75,15 @@
           <div
             class="near__value-item cursor-pointer"
             v-bind:class="{
+              active: amount === 0.05,
+            }"
+            @click="amount = 0.05"
+          >
+            0.05 NEAR
+          </div>
+          <div
+            class="near__value-item cursor-pointer"
+            v-bind:class="{
               active: amount === 0.1,
             }"
             @click="amount = 0.1"
@@ -133,7 +130,7 @@ export default {
     return {
       data: "",
       titleData: this.title,
-      amount: 0.1,
+      amount: 0.05,
       type: "PUBLIC",
       senderKey: null,
     };
@@ -179,6 +176,10 @@ export default {
           throw new Error("Error when packing messsage" + resp);
         }
 
+        if (this.id) {
+          window.localStorage.removeItem(`msg-${this.id}`);
+        }
+
         if (this.amount) {
           window.contract
             .sendMessage(
@@ -210,7 +211,7 @@ export default {
               title: resp.title,
               data: resp.data,
               baseSite: window.location.origin,
-              prevMsgId: 0,
+              prevMsgId: this.id,
               expiredTime: "0",
             })
             .then(() => {
@@ -288,7 +289,7 @@ export default {
     handleCancelReply() {
       this.data = "";
       this.titleData = this.title;
-      this.amount = 0.1;
+      this.amount = 0.05;
       this.type = "PUBLIC";
       this.$emit("cancelReplay", !this.showReply);
     },
