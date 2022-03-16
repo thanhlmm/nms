@@ -120,6 +120,7 @@ export default {
         })
         .then((data) => {
           let eachData = data.map((item) => {
+            console.log(item);
             return {
               baseSite: item.baseSite,
               expiredTime: item.expiredTime,
@@ -130,7 +131,7 @@ export default {
               prevMsgId: item.prevMsgId,
               title: item.title,
               data: item.data,
-              isPrivate: item.data.includes("DIRECT-PRI"),
+              isPrivate: item.data.includes("#IPFS-PRI"),
             };
           });
           const structEachData = eachData.map((item) => {

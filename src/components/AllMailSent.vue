@@ -131,7 +131,7 @@ export default {
               title: item.title,
               data: item.data,
               moneyInfo: item.moneyInfo,
-              isPrivate: item.data.includes("DIRECT-PRI"),
+              isPrivate: item.data.includes("#IPFS-PRI"),
             };
           });
           const structEachData = eachData.map((item) => {
