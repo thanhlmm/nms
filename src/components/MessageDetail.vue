@@ -207,8 +207,6 @@ export default {
       const convertReceivedAmount = convertUnit(
         this.dataMsg.moneyInfo.canReceivedAmount
       );
-      console.log(this.dataMsg.moneyInfo.canReceivedAmount);
-      console.log("convertReceivedAmount: ", convertReceivedAmount);
       return convertReceivedAmount * this.percent;
     },
 
