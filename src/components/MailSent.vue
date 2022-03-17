@@ -29,7 +29,7 @@
           </div>
           <div
             style="position: relative; width: min-content"
-            v-show="this.handleShowCoinIcon() && !isReceive"
+            v-show="this.handleShowCoinIcon && !isReceive"
             @click="handleClaim"
             @mouseover="showTooltip = true"
             @mouseleave="showTooltip = false"
@@ -39,8 +39,8 @@
               style="width: 20px; height: 20px; max-width: min-content"
             />
             <Tooltip :isShow="showTooltip">
-              You can get back {{ this.coinReceive }} NEAR due to the receiver
-              has not replied in 48 hours!</Tooltip
+              You can get back {{ this.handleCalculateReceiveCoin() }} NEAR due
+              to the receiver has not replied in 48 hours!</Tooltip
             >
           </div>
         </div>
@@ -77,6 +77,28 @@ export default {
     realTime() {
       return this.$store.state.realTime;
     },
+    handleShowCoinIcon() {
+      const convertSendBackAmount = convertUnit(
+        this.message.moneyInfo.sendBackAmount
+      );
+      const convertReceivedAmount = convertUnit(
+        this.message.moneyInfo.receivedAmount
+      );
+      const convertCanReceivedAmount = convertUnit(
+        this.message.moneyInfo.canReceivedAmount
+      );
+      const backAmount = convertCanReceivedAmount - convertReceivedAmount;
+
+      if (
+        this.checkTime &&
+        Number(convertSendBackAmount) === 0 &&
+        backAmount > 0
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
   },
 
   watch: {
@@ -108,10 +130,7 @@ export default {
       }
     },
 
-    handleShowCoinIcon() {
-      const convertSendBackAmount = convertUnit(
-        this.message.moneyInfo.sendBackAmount
-      );
+    handleCalculateReceiveCoin() {
       const convertReceivedAmount = convertUnit(
         this.message.moneyInfo.receivedAmount
       );
@@ -119,17 +138,7 @@ export default {
         this.message.moneyInfo.canReceivedAmount
       );
       const backAmount = convertCanReceivedAmount - convertReceivedAmount;
-      this.coinReceive = backAmount;
-
-      if (
-        this.checkTime &&
-        Number(convertSendBackAmount) === 0 &&
-        backAmount > 0
-      ) {
-        return true;
-      } else {
-        return false;
-      }
+      return backAmount;
     },
 
     handleClaim() {
