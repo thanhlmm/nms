@@ -29,7 +29,7 @@
           </div>
           <div
             style="position: relative; width: min-content"
-            v-show="this.handleShowCoinIcon()"
+            v-show="this.handleShowCoinIcon() && !isReceive"
             @click="handleClaim"
             @mouseover="showTooltip = true"
             @mouseleave="showTooltip = false"
@@ -69,6 +69,7 @@ export default {
       showTooltip: false,
       checkTime: false,
       coinReceive: 0,
+      isReceive: false,
     };
   },
 
@@ -137,10 +138,12 @@ export default {
           this.$toast.success("Success receive NEAR!", {
             timeout: 2000,
           });
+          this.isReceive = data;
         } else {
           this.$toast.error("Fail receive NEAR!", {
             timeout: 2000,
           });
+          this.isReceive = data;
         }
       });
     },
