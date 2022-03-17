@@ -120,7 +120,6 @@ export default {
         })
         .then((data) => {
           let eachData = data.map((item) => {
-            console.log(item);
             return {
               baseSite: item.baseSite,
               expiredTime: item.expiredTime,

@@ -132,7 +132,6 @@ export default {
     },
 
     handleClaim() {
-      console.log(this.message.id);
       window.contract.sendBack({ msgId: this.message.id }).then((data) => {
         if (data) {
           this.$toast.success("Success receive NEAR!", {
