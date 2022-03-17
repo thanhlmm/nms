@@ -283,7 +283,7 @@ async function depackMessage(msg, opts) {
         resp.code = 0;
         resp.message = "SUCCESS";
       } else if (data.startsWith("#IPFS-PRI")) {
-        console.log("#IPFS-PRI data", data);
+        // console.log("#IPFS-PRI data", data);
         let items = data.substring(10).split("-");
         let cid = items[2];
         let senderKey = items[0];

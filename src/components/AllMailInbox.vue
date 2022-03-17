@@ -130,7 +130,9 @@ export default {
               prevMsgId: item.prevMsgId,
               title: item.title,
               data: item.data,
-              isPrivate: item.data.includes("DIRECT-PRI"),
+              isPrivate: ["DIRECT-PRI", "#IPFS-PRI"].some((condition) =>
+                item.data.includes(condition)
+              ),
             };
           });
           const structEachData = eachData.map((item) => {
