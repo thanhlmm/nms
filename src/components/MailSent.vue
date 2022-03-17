@@ -137,7 +137,8 @@ export default {
       const convertCanReceivedAmount = convertUnit(
         this.message.moneyInfo.canReceivedAmount
       );
-      const backAmount = convertCanReceivedAmount - convertReceivedAmount;
+      const backAmount =
+        Number(convertCanReceivedAmount) - Number(convertReceivedAmount);
       return backAmount;
     },
 
@@ -148,11 +149,13 @@ export default {
             timeout: 2000,
           });
           this.isReceive = data;
+          this.$store.commit("CHECK_RECEIVE_COIN", data);
         } else {
           this.$toast.error("Fail receive NEAR!", {
             timeout: 2000,
           });
           this.isReceive = data;
+          this.$store.commit("CHECK_RECEIVE_COIN", data);
         }
       });
     },

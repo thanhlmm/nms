@@ -4,7 +4,14 @@
       <div class="d-flex align-center">
         <img src="../../public/assets/images/logo.svg" class="flex-shrink-0" />
         <span
-          class="text-logo title-16 f-700 f-obi ml-10 letter-spacing-5 text-justify"
+          class="
+            text-logo
+            title-16
+            f-700 f-obi
+            ml-10
+            letter-spacing-5
+            text-justify
+          "
         >
           Near Messaging Service
         </span>
@@ -230,6 +237,9 @@ export default {
     darkMode() {
       return this.$store.state.darkMode;
     },
+    isReceive() {
+      return this.$store.state.isReceive;
+    },
   },
 
   mounted() {
@@ -252,6 +262,14 @@ export default {
             key: privateKey,
             userName: this.username,
           });
+        }
+      },
+    },
+    isReceive: {
+      immediate: true,
+      handler: function () {
+        if (this.isReceive) {
+          this.getBalance();
         }
       },
     },

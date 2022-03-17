@@ -45,6 +45,8 @@ const storeData = {
     sentSearchKeyword: "",
 
     realTime: null,
+
+    isReceive: false,
   },
 
   mutations: {
@@ -90,7 +92,10 @@ const storeData = {
     },
     TOGGLE_PRIVATEKEY_LOCAL(state, { key, userName }) {
       state.localPrivateKey = key;
-      localStorage.setItem(`${process.env.VUE_APP_CONTRACT_NAME}_${userName}_privatekey`, key);
+      localStorage.setItem(
+        `${process.env.VUE_APP_CONTRACT_NAME}_${userName}_privatekey`,
+        key
+      );
     },
 
     // HANDLE MESSAGE MUTATION
@@ -119,6 +124,11 @@ const storeData = {
     },
     SET_SENT_SEARCH(state, payload) {
       state.sentSearchKeyword = payload;
+    },
+
+    // HANDLE CHECK RECEIVE COIN
+    CHECK_RECEIVE_COIN(state, payload) {
+      state.isReceive = payload;
     },
   },
 };
