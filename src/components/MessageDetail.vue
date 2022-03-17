@@ -149,7 +149,7 @@ export default {
     realTime: {
       immediate: true,
       handler: function () {
-        this.handleFormatTime(this.dataMsg.timestamp);
+        this.handleSetPercent(this.dataMsg.timestamp);
       },
     },
   },
@@ -170,7 +170,7 @@ export default {
       this.showForward = e;
     },
 
-    handleFormatTime(hourSentMsg) {
+    handleSetPercent(hourSentMsg) {
       if (hourSentMsg && this.realTime) {
         const timeConvert = dayjs(this.realTime).diff(
           dayjs(hourSentMsg),

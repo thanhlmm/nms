@@ -29,7 +29,8 @@
           </div>
           <div
             style="position: relative; width: min-content"
-            v-show="this.handleCheck()"
+            v-show="this.handleShowCoinIcon() && !isReceive"
+            @click="handleClaim"
             @mouseover="showTooltip = true"
             @mouseleave="showTooltip = false"
           >
@@ -38,8 +39,8 @@
               style="width: 20px; height: 20px; max-width: min-content"
             />
             <Tooltip :isShow="showTooltip">
-              You can get back NEAR due to the receiver has not replied in 48
-              hours!</Tooltip
+              You can get back {{ this.coinReceive }} NEAR due to the receiver
+              has not replied in 48 hours!</Tooltip
             >
           </div>
         </div>
@@ -67,6 +68,8 @@ export default {
       accountId: null,
       showTooltip: false,
       checkTime: false,
+      coinReceive: 0,
+      isReceive: false,
     };
   },
 
@@ -80,7 +83,7 @@ export default {
     realTime: {
       immediate: true,
       handler: function () {
-        this.handleFormatTime(this.message.timestamp);
+        this.handleCheckTime(this.message.timestamp);
       },
     },
   },
@@ -90,7 +93,7 @@ export default {
       this.$store.commit("MESSAGE_CONVERSATION", id);
     },
 
-    handleFormatTime(hourSentMsg) {
+    handleCheckTime(hourSentMsg) {
       if (hourSentMsg && this.realTime) {
         const timeConvert = dayjs(this.realTime).diff(
           dayjs(hourSentMsg),
@@ -105,7 +108,7 @@ export default {
       }
     },
 
-    handleCheck() {
+    handleShowCoinIcon() {
       const convertSendBackAmount = convertUnit(
         this.message.moneyInfo.sendBackAmount
       );
@@ -116,6 +119,7 @@ export default {
         this.message.moneyInfo.canReceivedAmount
       );
       const backAmount = convertCanReceivedAmount - convertReceivedAmount;
+      this.coinReceive = backAmount;
 
       if (
         this.checkTime &&
@@ -126,6 +130,22 @@ export default {
       } else {
         return false;
       }
+    },
+
+    handleClaim() {
+      window.contract.sendBack({ msgId: this.message.id }).then((data) => {
+        if (data) {
+          this.$toast.success("Success receive NEAR!", {
+            timeout: 2000,
+          });
+          this.isReceive = data;
+        } else {
+          this.$toast.error("Fail receive NEAR!", {
+            timeout: 2000,
+          });
+          this.isReceive = data;
+        }
+      });
     },
   },
 };
