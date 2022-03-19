@@ -149,13 +149,11 @@ export default {
             timeout: 2000,
           });
           this.isReceive = data;
-          this.$store.commit("CHECK_RECEIVE_COIN", data);
         } else {
           this.$toast.error("Fail receive NEAR!", {
             timeout: 2000,
           });
           this.isReceive = data;
-          this.$store.commit("CHECK_RECEIVE_COIN", data);
         }
       });
     },

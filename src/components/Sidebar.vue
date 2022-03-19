@@ -237,9 +237,6 @@ export default {
     darkMode() {
       return this.$store.state.darkMode;
     },
-    isReceive() {
-      return this.$store.state.isReceive;
-    },
   },
 
   mounted() {
@@ -248,6 +245,7 @@ export default {
     this.getStatics();
     this.getBalance();
     this.checkInboxMsgNum();
+    this.checkBalance();
   },
 
   watch: {
@@ -262,14 +260,6 @@ export default {
             key: privateKey,
             userName: this.username,
           });
-        }
-      },
-    },
-    isReceive: {
-      immediate: true,
-      handler: function () {
-        if (this.isReceive) {
-          this.getBalance();
         }
       },
     },
@@ -340,6 +330,13 @@ export default {
       window.setInterval(() => {
         this.getInboxMessageNum();
       }, parseInt(TIME_CHECK));
+    },
+
+    checkBalance() {
+      const TIME_CHECK_BALANCE = process.env.VUE_APP_TIME_CHECK_BALANCE;
+      window.setInterval(() => {
+        this.getBalance();
+      }, parseInt(TIME_CHECK_BALANCE));
     },
 
     showKeyModal() {

@@ -15,7 +15,6 @@ import getConfig from "./config";
 import Convert from "./Convert.vue";
 import ConfirmPasswordModal from "./components/ConfirmPasswordModal.vue";
 import { decryptPrivateKeyWithPasswordConfirm } from "./message";
-import dayjs from "dayjs";
 
 const nearConfig = getConfig(process.env.NODE_ENV || "development");
 console.log(

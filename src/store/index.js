@@ -45,8 +45,6 @@ const storeData = {
     sentSearchKeyword: "",
 
     realTime: null,
-
-    isReceive: false,
   },
 
   mutations: {
@@ -124,11 +122,6 @@ const storeData = {
     },
     SET_SENT_SEARCH(state, payload) {
       state.sentSearchKeyword = payload;
-    },
-
-    // HANDLE CHECK RECEIVE COIN
-    CHECK_RECEIVE_COIN(state, payload) {
-      state.isReceive = payload;
     },
   },
 };
