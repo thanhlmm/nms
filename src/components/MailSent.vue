@@ -1,52 +1,60 @@
 <template>
-  <article
-    class="mail-content__item d-flex"
-    @click="handleSelectedMail(message.id)"
-  >
-    <Avatar :accountId="message.from" size="40" />
+  <div>
+    <article
+      class="mail-content__item d-flex"
+      @click="handleSelectedMail(message.id)"
+    >
+      <Avatar :accountId="message.from" size="40" />
 
-    <div class="content pl-20 pl-md-10 flex-grow-1">
-      <header
-        class="d-flex justify-between mb-10 mb-sm-0 mail-content__item-header"
-      >
-        <div class="flex-grow-1 mail-content__item-header__top pr-20">
-          <div class="name title-16 f-700">To: {{ message.to }}</div>
-          <div :class="{ isPrivate: message.isPrivate }">
-            <img
-              v-if="message.isPrivate"
-              src="../../public/assets/images/privateMsg.svg"
-              class="private-message"
-            />
-            <div class="title f-500">Title: {{ message.title }}</div>
-          </div>
-        </div>
-        <div
-          class="text-right f-500"
-          style="display: flex; flex-direction: column; align-items: flex-end"
+      <div class="content pl-20 pl-md-10 flex-grow-1">
+        <header
+          class="d-flex justify-between mb-10 mb-sm-0 mail-content__item-header"
         >
-          <div class="date-time no-wrap">
-            {{ message.timestamp.toLocaleString() }}
+          <div class="flex-grow-1 mail-content__item-header__top pr-20">
+            <div class="name title-16 f-700">To: {{ message.to }}</div>
+            <div :class="{ isPrivate: message.isPrivate }">
+              <img
+                v-if="message.isPrivate"
+                src="../../public/assets/images/privateMsg.svg"
+                class="private-message"
+              />
+              <div class="title f-500">Title: {{ message.title }}</div>
+            </div>
           </div>
           <div
-            style="position: relative; width: min-content"
-            v-show="this.handleShowCoinIcon && !isReceive"
-            @click="handleClaim"
-            @mouseover="showTooltip = true"
-            @mouseleave="showTooltip = false"
+            class="text-right f-500"
+            style="display: flex; flex-direction: column; align-items: flex-end"
           >
-            <img
-              src="../../public/assets/images/coin.svg"
-              style="width: 20px; height: 20px; max-width: min-content"
-            />
-            <Tooltip :isShow="showTooltip">
-              You can get back {{ this.handleCalculateReceiveCoin() }} NEAR due
-              to the receiver has not replied in 48 hours!</Tooltip
+            <div class="date-time no-wrap">
+              {{ message.timestamp.toLocaleString() }}
+            </div>
+            <div
+              style="position: relative; width: min-content"
+              v-show="this.handleShowCoinIcon && !isReceive"
+              @click="handleConfirmClaim"
+              @mouseover="showTooltip = true"
+              @mouseleave="showTooltip = false"
             >
+              <img
+                src="../../public/assets/images/coin.svg"
+                style="width: 20px; height: 20px; max-width: min-content"
+              />
+              <Tooltip :isShow="showTooltip">
+                You can get back {{ this.handleCalculateReceiveCoin() }} NEAR
+                due to the receiver has not replied in 48 hours!</Tooltip
+              >
+            </div>
           </div>
-        </div>
-      </header>
-    </div>
-  </article>
+        </header>
+      </div>
+    </article>
+    <ConfirmModal
+      :isConfirmReceive="true"
+      :showModal="showModalConfirmReceive"
+      @closeConfirmModal="closeConfirmModal($event)"
+      :handleConfirmFn="handleConfirm"
+    />
+  </div>
 </template>
 
 <script>
@@ -54,6 +62,7 @@ import { convertUnit } from "../utils";
 import Avatar from "./Avatar";
 import dayjs from "dayjs";
 import Tooltip from "./Tooltip.vue";
+import ConfirmModal from "../components/ConfirmModal.vue";
 
 export default {
   props: ["message"],
@@ -61,6 +70,7 @@ export default {
   components: {
     Avatar,
     Tooltip,
+    ConfirmModal,
   },
 
   data() {
@@ -70,6 +80,8 @@ export default {
       checkTime: false,
       coinReceive: 0,
       isReceive: false,
+      handleConfirm: () => {},
+      showModalConfirmReceive: false,
     };
   },
 
@@ -115,6 +127,10 @@ export default {
       this.$store.commit("MESSAGE_CONVERSATION", id);
     },
 
+    closeConfirmModal(e) {
+      this.showModalConfirmReceive = e;
+    },
+
     handleCheckTime(hourSentMsg) {
       if (hourSentMsg && this.realTime) {
         const timeConvert = dayjs(this.realTime).diff(
@@ -140,6 +156,11 @@ export default {
       const backAmount =
         Number(convertCanReceivedAmount) - Number(convertReceivedAmount);
       return backAmount;
+    },
+
+    handleConfirmClaim() {
+      this.showModalConfirmReceive = true;
+      this.handleConfirm = this.handleClaim;
     },
 
     handleClaim() {

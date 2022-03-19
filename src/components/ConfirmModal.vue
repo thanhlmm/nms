@@ -29,9 +29,15 @@
         </div>
       </div>
       <div class="container">
-        <div class="content">Are you sure to override the old key?</div>
+        <div class="content" v-if="!this.isConfirmReceive">
+          Are you sure to override the old key?
+        </div>
         <div class="content">
-          Override new key will make existed privated messages unable to decrypt
+          {{
+            this.isConfirmReceive === true
+              ? "Are you sure to claim back?"
+              : "Override new key will make existed privated messages unable to decrypt"
+          }}
         </div>
         <div class="container-btn">
           <button
@@ -71,6 +77,9 @@
 <script>
 export default {
   props: {
+    isConfirmReceive: {
+      type: Boolean,
+    },
     showModal: {
       type: Boolean,
     },
