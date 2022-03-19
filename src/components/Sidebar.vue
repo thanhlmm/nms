@@ -333,10 +333,9 @@ export default {
     },
 
     checkBalance() {
-      const TIME_CHECK_BALANCE = process.env.VUE_APP_TIME_CHECK_BALANCE;
       window.setInterval(() => {
         this.getBalance();
-      }, parseInt(TIME_CHECK_BALANCE));
+      }, 30000);
     },
 
     showKeyModal() {
