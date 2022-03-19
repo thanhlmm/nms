@@ -90,7 +90,10 @@ const storeData = {
     },
     TOGGLE_PRIVATEKEY_LOCAL(state, { key, userName }) {
       state.localPrivateKey = key;
-      localStorage.setItem(`${process.env.VUE_APP_CONTRACT_NAME}_${userName}_privatekey`, key);
+      localStorage.setItem(
+        `${process.env.VUE_APP_CONTRACT_NAME}_${userName}_privatekey`,
+        key
+      );
     },
 
     // HANDLE MESSAGE MUTATION
