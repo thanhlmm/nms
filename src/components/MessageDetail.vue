@@ -75,7 +75,7 @@
             </div>
             <Tooltip :isShow="this.showTooltip">
               Reply this message to get
-              {{ this.handleCalculateReceivedAmount().toString().slice(0, 6) }}
+              {{ this.handleCalculateReceivedAmount() }}
               NEAR now!
             </Tooltip>
           </div>
