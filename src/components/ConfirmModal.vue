@@ -29,10 +29,7 @@
         </div>
       </div>
       <div class="container">
-        <div class="content">Are you sure to override the old key?</div>
-        <div class="content">
-          Override new key will make existed privated messages unable to decrypt
-        </div>
+        <slot></slot>
         <div class="container-btn">
           <button
             class="
@@ -133,9 +130,6 @@ export default {
   }
   .container {
     width: 100%;
-    .content {
-      font-size: 15px;
-    }
     .container-btn {
       display: flex;
       gap: 1rem;

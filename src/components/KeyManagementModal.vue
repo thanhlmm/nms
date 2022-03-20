@@ -44,21 +44,42 @@
           </div>
           <div class="d-flex flex-col-sm" style="gap: 1rem">
             <button
-              class="btn-sent btn-sent-key cursor-pointer d-flex align-center justify-center flex-shrink-0"
+              class="
+                btn-sent btn-sent-key
+                cursor-pointer
+                d-flex
+                align-center
+                justify-center
+                flex-shrink-0
+              "
               @click="genKeyClick"
             >
               <img src="../../public/assets/images/sent.svg" />
               <span>Generate</span>
             </button>
             <label
-              class="btn-sent btn-sent-key cursor-pointer d-flex align-center justify-center flex-shrink-0"
+              class="
+                btn-sent btn-sent-key
+                cursor-pointer
+                d-flex
+                align-center
+                justify-center
+                flex-shrink-0
+              "
             >
               <img src="../../public/assets/images/sent.svg" />
               <span>Import</span>
               <input type="file" ref="doc" @change="importKeyClick()" />
             </label>
             <button
-              class="btn-sent btn-sent-key cursor-pointer d-flex align-center justify-center flex-shrink-0"
+              class="
+                btn-sent btn-sent-key
+                cursor-pointer
+                d-flex
+                align-center
+                justify-center
+                flex-shrink-0
+              "
               @click="exportKeys"
             >
               <img src="../../public/assets/images/sent.svg" />
@@ -72,7 +93,12 @@
       :showModal="showModalConfirmReGenImport"
       @closeConfirmModal="closeConfirmModal($event)"
       :handleConfirmFn="handleConfirm"
-    />
+    >
+      <div :style="{ fontSize: '15px' }">
+        Are you sure to override the old key? <br />
+        Override new key will make existed privated messages unable to decrypt
+      </div>
+    </ConfirmModal>
     <ConfirmPasswordModal
       :showModalConfirm="showModalPassword"
       @toggleConfirmPasswordModal="toggleConfirmPasswordModal($event)"
