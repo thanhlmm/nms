@@ -4,7 +4,14 @@
       <div class="d-flex align-center">
         <img src="../../public/assets/images/logo.svg" class="flex-shrink-0" />
         <span
-          class="text-logo title-16 f-700 f-obi ml-10 letter-spacing-5 text-justify"
+          class="
+            text-logo
+            title-16
+            f-700 f-obi
+            ml-10
+            letter-spacing-5
+            text-justify
+          "
         >
           Near Messaging Service
         </span>
@@ -238,6 +245,7 @@ export default {
     this.getStatics();
     this.getBalance();
     this.checkInboxMsgNum();
+    this.checkBalance();
   },
 
   watch: {
@@ -321,6 +329,12 @@ export default {
       window.setInterval(() => {
         this.getInboxMessageNum();
       }, parseInt(TIME_CHECK));
+    },
+
+    checkBalance() {
+      window.setInterval(() => {
+        this.getBalance();
+      }, 30000);
     },
 
     showKeyModal() {
