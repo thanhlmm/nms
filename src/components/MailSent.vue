@@ -131,7 +131,6 @@ export default {
     closeConfirmModal(e) {
       this.showModalConfirmReceive = e;
     },
-
     handleCheckTime(hourSentMsg) {
       if (hourSentMsg && this.realTime) {
         const timeConvert = dayjs(this.realTime).diff(
@@ -162,6 +161,22 @@ export default {
     handleConfirmClaim() {
       this.showModalConfirmReceive = true;
       this.handleConfirm = this.handleClaim;
+    },
+
+    handleClaim() {
+      window.contract.sendBack({ msgId: this.message.id }).then((data) => {
+        if (data) {
+          this.$toast.success("Success receive NEAR!", {
+            timeout: 2000,
+          });
+          this.isReceive = data;
+        } else {
+          this.$toast.error("Fail receive NEAR!", {
+            timeout: 2000,
+          });
+          this.isReceive = data;
+        }
+      });
     },
 
     handleClaim() {
