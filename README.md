@@ -13,14 +13,14 @@ NEAR MESSAGING SERVICE (NMS) is convenient service that makes it simple, easy, a
 3. Install dependencies: `yarn install`
 4. Build contract: `yarn build:contract`
 5. Deploy dev contract: `dev:deploy:contract`
-   You will see the contract account in log.
-   You can use near-cli command line to call to the contract.
+  You will see the contract account in log.
+  You can use near-cli command line to call to the contract.
 6. Run the local development server
-   Open the file .env and set value for key `VUE_APP_CONTRACT_NAME` by above contract account.
-   And then run `yarn fe`
-   Now you can view http://localhost:8080 have a local development environment!
-
-Go ahead and play with the app and the code. As you make code changes, the app will automatically reload.
+  Open the file .env and set value for key `VUE_APP_CONTRACT_NAME` by above contract account.
+  And then run `yarn fe`
+  Now you can view http://localhost:8080 have a local development environment!
+  
+  Go ahead and play with the app and the code. As you make code changes, the app will automatically reload.
 
 # How to deploy the NMS Contract
 1. Connect to the NEAR account
@@ -44,11 +44,11 @@ Go ahead and play with the app and the code. As you make code changes, the app w
 
 # How to deploy the NMS Frontend
 1. Config the file .env
-   Open the file .env and set value for key `VUE_APP_CONTRACT_NAME` by the NMS contract: app.nearmessage.testnet
+  Open the file .env and set value for key `VUE_APP_CONTRACT_NAME` by the NMS contract: `app.nearmessage.testnet`
 2. Build the NMS frontend
-   Delete dist folder and run below command:
-   `yarn build-fe`
-   Now, you can upload all files in dist folder to your host. Sometimes you may need to configure more in your server, please see [Server Configurations][vuejs-example-server-configurations]
+  Delete dist folder and run below command:
+  `yarn build-fe`
+  Now, you can upload all files in dist folder to your host. Sometimes you may need to configure more in your server, please see[Server Configurations][vuejs-example-server-configurations]
 
 [nms-website]: https://nearmessage.com/
 [vuejs-example-server-configurations] https://router.vuejs.org/guide/essentials/history-mode.html#example-server-configurations
