@@ -49,11 +49,12 @@
       </div>
     </article>
     <ConfirmModal
-      :isConfirmReceive="true"
       :showModal="showModalConfirmReceive"
       @closeConfirmModal="closeConfirmModal($event)"
       :handleConfirmFn="handleConfirm"
-    />
+    >
+      <div :style="{ fontSize: '15px' }">Are you sure to claim back?</div>
+    </ConfirmModal>
   </div>
 </template>
 

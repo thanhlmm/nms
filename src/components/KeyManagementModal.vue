@@ -90,11 +90,15 @@
       </div>
     </transition>
     <ConfirmModal
-      :isConfirmReceive="false"
       :showModal="showModalConfirmReGenImport"
       @closeConfirmModal="closeConfirmModal($event)"
       :handleConfirmFn="handleConfirm"
-    />
+    >
+      <div :style="{ fontSize: '15px' }">
+        Are you sure to override the old key? <br />
+        Override new key will make existed privated messages unable to decrypt
+      </div>
+    </ConfirmModal>
     <ConfirmPasswordModal
       :showModalConfirm="showModalPassword"
       @toggleConfirmPasswordModal="toggleConfirmPasswordModal($event)"
