@@ -309,9 +309,8 @@ export default {
           "example-account.testnet"
         );
         const balance = await account.getAccountBalance();
-        this.balance = Number(
-          utils.format.formatNearAmount(balance?.available || 0)
-        ).toFixed(2);
+        let available = (balance?.available || 0) / 10**24;
+        this.balance = utils.format.formatNearAmount(balance?.available || 0, 2);
       }
 
       return 0;
