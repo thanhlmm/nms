@@ -48,4 +48,4 @@ NEAR MESSAGING SERVICE (NMS) is convenient service that makes it simple, easy, a
 <br />`yarn build-fe`
 3. Upload to your host
 <br />Now, you can upload all files in dist folder to your host.
-<br />Sometimes you may need to configure more in your server, please see[Server Configurations](https://router.vuejs.org/guide/essentials/history-mode.html#example-server-configurations)
+<br />Sometimes you may need to configure more in your server, please see [Server Configurations](https://router.vuejs.org/guide/essentials/history-mode.html#example-server-configurations)
