@@ -1,82 +1,51 @@
-# near-nms
+# NEAR Messaging Service (NMS)
 
-This [Vue] app was initialized with [create-near-app]
+NEAR MESSAGING SERVICE (NMS) is convenient service that makes it simple, easy, and secure for NEAR accounts to exchange messages with each other. The system is completely decentralized and takes advantage of the advantages and power of the NEAR Protocol. Please see detail at [NMS Official Website](https://nearmessage.com/).
 
-# Quick Start
+# How to run the NMS locally
 
-To run this project locally:
+1. Prerequisites:
+<br />Make sure you've installed [Node.js] ≥ 14
+<br />And then install yarn: `npm install --global yarn`
+<br />On Ubuntu, you may need to install additional tools to build some libraries: `apt-get install build-essential`
+<br />On Window, you may need to install additional tools: Cygwin or MsBuild.
+2. Clone the project from github and change directory to nms foler
+3. Install dependencies: `yarn install`
+4. Build contract: `yarn build:contract`
+5. Deploy dev contract: `dev:deploy:contract`
+<br />You will see the contract account in log.
+<br />You can use near-cli command line to call to the contract.
+6. Run the local development server
+<br />Open the file .env and set value for key `VUE_APP_CONTRACT_NAME` by above contract account.
+<br />And then run `yarn fe`
+<br />Now you can view http://localhost:8080 have a local development environment!
+<br /><br />Go ahead and play with the app and the code. As you make code changes, the app will automatically reload.
 
-1. Prerequisites: Make sure you've installed [Node.js] ≥ 12
-2. Install dependencies: `yarn install`
-3. Run the local development server: `yarn dev` (see `package.json` for a
-   full list of `scripts` you can run with `yarn`)
+# How to deploy the NMS Contract
+1. Connect to the NEAR account
+<br />Install near-cli by command: `npm i -g near-cli`
+<br />Run `near login` and connect to main NEAR account. The account we use is nearmessage.testnet
+2. Create sub account from main NEAR account to receive fee from the app
+<br />`near create-account fee.nearmessage.testnet --masterAccount nearmessage.testnet --initialBalance 0.01`
+3. Create sub account from main NEAR account to deploy the contract
+<br />`near create-account app.nearmessage.testnet --masterAccount nearmessage.testnet --initialBalance 100`
+4. Build the contract
+<br />`yarn build:contract`
+5. Deploy the contract
+<br />`near deploy --accountId app.nearmessage.testnet --wasmFile ./out/main.wasm`
+6. Config the contract
+<br />Run below commands to config the contract:
+<br />`near call app.nearmessage.testnet setOwnerAddress '{"address": "nearmessage.testnet"}' --accountId nearmessage.testnet`
+<br />`near call app.nearmessage.testnet setFeeAddress '{"address": "fee.nearmessage.testnet"}' --accountId nearmessage.testnet`
+<br /><br />And run below command to check:
+<br />`near view app.nearmessage.testnet getStatics '{}' --accountId nearmessage.testnet`
 
-Now you'll have a local development environment backed by the NEAR TestNet!
-
-Go ahead and play with the app and the code. As you make code changes, the app will automatically reload.
-
-# Exploring The Code
-
-1. The "backend" code lives in the `/contract` folder. See the README there for
-   more info.
-2. The frontend code lives in the `/src` folder. `/src/main.js` is a great
-   place to start exploring.
-3. Tests: there are different kinds of tests for the frontend and the smart
-   contract. See `contract/README` for info about how it's tested. The frontend
-   code gets tested with [jest]. You can run both of these at once with `yarn run test`.
-
-# Deploy
-
-Every smart contract in NEAR has its [own associated account][near accounts]. When you run `yarn dev`, your smart contract gets deployed to the live NEAR TestNet with a throwaway account. When you're ready to make it permanent, here's how.
-
-## Step 0: Install near-cli (optional)
-
-[near-cli] is a command line interface (CLI) for interacting with the NEAR blockchain. It was installed to the local `node_modules` folder when you ran `yarn install`, but for best ergonomics you may want to install it globally:
-
-    yarn install --global near-cli
-
-Or, if you'd rather use the locally-installed version, you can prefix all `near` commands with `npx`
-
-Ensure that it's installed with `near --version` (or `npx near --version`)
-
-## Step 1: Create an account for the contract
-
-Each account on NEAR can have at most one contract deployed to it. If you've already created an account such as `your-name.testnet`, you can deploy your contract to `near-nms.your-name.testnet`. Assuming you've already created an account on [NEAR Wallet], here's how to create `near-nms.your-name.testnet`:
-
-1. Authorize NEAR CLI, following the commands it gives you:
-
-   near login
-
-2. Create a subaccount (replace `YOUR-NAME` below with your actual account name):
-
-   near create-account near-nms.YOUR-NAME.testnet --masterAccount YOUR-NAME.testnet
-
-## Step 2: set contract name in code
-
-Modify the line in `src/config.js` that sets the account name of the contract. Set it to the account id you used above.
-
-    const CONTRACT_NAME = process.env.CONTRACT_NAME || 'near-nms.YOUR-NAME.testnet'
-
-## Step 3: deploy!
-
-One command:
-
-    yarn deploy
-
-As you can see in `package.json`, this does two things:
-
-1. builds & deploys smart contract to NEAR TestNet
-2. builds & deploys frontend code to GitHub using [gh-pages]. This will only work if the project already has a repository set up on GitHub. Feel free to modify the `deploy` script in `package.json` to deploy elsewhere.
-
-# Troubleshooting
-
-On Windows, if you're seeing an error containing `EPERM` it may be related to spaces in your path. Please see [this issue](https://github.com/zkat/npx/issues/209) for more details.
-
-[vue]: https://vuejs.org/
-[create-near-app]: https://github.com/near/create-near-app
-[node.js]: https://nodejs.org/en/download/package-manager/
-[jest]: https://jestjs.io/
-[near accounts]: https://docs.near.org/docs/concepts/account
-[near wallet]: https://wallet.testnet.near.org/
-[near-cli]: https://github.com/near/near-cli
-[gh-pages]: https://github.com/tschaub/gh-pages
+# How to deploy the NMS Frontend
+1. Config the file .env
+<br />Open the file .env and set value for key `VUE_APP_CONTRACT_NAME` by the NMS contract: `app.nearmessage.testnet`
+2. Build the NMS frontend
+<br />Delete dist folder and run below command:
+<br />`yarn build-fe`
+3. Upload to your host
+<br />Now, you can upload all files in dist folder to your host.
+<br />Sometimes you may need to configure more in your server, please see [Server Configurations](https://router.vuejs.org/guide/essentials/history-mode.html#example-server-configurations)
