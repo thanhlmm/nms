@@ -178,22 +178,6 @@ export default {
         }
       });
     },
-
-    handleClaim() {
-      window.contract.sendBack({ msgId: this.message.id }).then((data) => {
-        if (data) {
-          this.$toast.success("Success receive NEAR!", {
-            timeout: 2000,
-          });
-          this.isReceive = data;
-        } else {
-          this.$toast.error("Fail receive NEAR!", {
-            timeout: 2000,
-          });
-          this.isReceive = data;
-        }
-      });
-    },
   },
 };
 </script>

@@ -11,7 +11,8 @@
             color: var(--secondary);
             border-bottom: 2px solid var(--secondary);
           "
-          >{{ savedGreeting }}</label
+        >
+          {{ savedGreeting }}</label
         >
         {{ accountId }}
       </h1>
@@ -20,7 +21,8 @@
           <label
             for="greeting"
             style="display: block; color: var(--gray); margin-bottom: 0.5em"
-            >Change greeting</label
+          >
+            Change greeting</label
           >
           <div style="display: flex">
             <input
@@ -57,7 +59,8 @@
             target="_blank"
             rel="noreferrer"
             href="https://docs.near.org/docs/develop/contracts/overview"
-            >smart contract</a
+          >
+            smart contract</a
           >.
         </li>
         <li>
@@ -74,12 +77,12 @@
       <hr />
       <p>
         To keep learning, check out
-        <a target="_blank" rel="noreferrer" href="https://docs.near.org"
-          >the NEAR docs</a
+        <a target="_blank" rel="noreferrer" href="https://docs.near.org">
+          the NEAR docs</a
         >
         or look through some
-        <a target="_blank" rel="noreferrer" href="https://examples.near.org"
-          >example apps</a
+        <a target="_blank" rel="noreferrer" href="https://examples.near.org">
+          example apps</a
         >.
       </p>
     </main>
