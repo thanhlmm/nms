@@ -32,10 +32,9 @@ NEAR MESSAGING SERVICE (NMS) is convenient service that makes it simple, easy, a
 4. Build the contract
 <br />`yarn build:contract`
 5. Deploy the contract
-<br />`near deploy --accountId app.nearmessage.testnet --wasmFile ./out/main.wasm`
+<br />`near deploy --wasmFile ./out/main.wasm --initFunction "setOwnerAddress" --initArgs '{"address": "nearmessage.testnet"}' --accountId app.nearmessage.testnet`
 6. Config the contract
 <br />Run below commands to config the contract:
-<br />`near call app.nearmessage.testnet setOwnerAddress '{"address": "nearmessage.testnet"}' --accountId nearmessage.testnet`
 <br />`near call app.nearmessage.testnet setFeeAddress '{"address": "fee.nearmessage.testnet"}' --accountId nearmessage.testnet`
 <br /><br />And run below command to check:
 <br />`near view app.nearmessage.testnet getStatics '{}' --accountId nearmessage.testnet`
