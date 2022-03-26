@@ -175,16 +175,12 @@ export function getInboxMessages(accountId: string, fromIndex: i32, toIndex: i32
  * @param expiredTime
  */
 export function sendMessage(to: string, title: string, data: string, baseSite: string, prevMsgId: i32, expiredTime: u64): boolean {
-    // Checking input
-    if (!env.isValidAccountID(to)) {
-        logging.log("To account is invalid!");
-        return false;
-    }
+    // Checking to account
+    assert(env.isValidAccountID(to), "Invalid account");
+
+    // Checking attached deposit
     let attachedDeposit = Context.attachedDeposit;
-    if (u128.lt(attachedDeposit, NEAR_SEND_MIN)) {
-        logging.log("Attached deposit is too small!");
-        return false;
-    }
+    assert(u128.ge(attachedDeposit, NEAR_SEND_MIN), "Attached deposit is too small");
 
     // Get static info
     let staticsInfo = getStaticsInfo();
@@ -266,28 +262,28 @@ export function sendMessage(to: string, title: string, data: string, baseSite: s
  export function sendBack(msgId: i32): bool {
     // Checking msgIndex
     let index = msgId - 1;
-    if (index<0 || index>=messages.length) {
-        // Invalid input
-        return false;
-    };
+    assert(index>=0 && index<messages.length, "Invalid msgId");
 
-    // Checking message
+    // Checking MoneyInfo
     let msg = messages[index];
-    if (!msg.moneyInfo) return false;
-    if (!msg.moneyInfo.sendBackAmount.isZero()) return false;
+    assert(msg.moneyInfo, "No MoneyInfo");
+    assert(msg.moneyInfo.sendBackAmount.isZero(), "The message is claimed");
+
+    // Check time
     let backTime = env.block_timestamp();
     let period = u64(backTime - msg.timestamp);
-    if (period<=TWO_DAY) return false;
+    assert(period>TWO_DAY, "Only claim after two days");
 
+    // Check NEAR amount
     let backAmount = msg.moneyInfo.canReceivedAmount - msg.moneyInfo.receivedAmount;
-    if (backAmount>u128.from(0)) {
-        msg.moneyInfo.sendBackAmount = backAmount;
-        msg.moneyInfo.sendBackTime = backTime;
-        messages.replace(index, msg);
-        ContractPromiseBatch.create(msg.from).transfer(backAmount);
-        return true;
-    }
-    return false;
+    assert(backAmount>u128.from(0), "No remain NEAR to claim");
+
+    // Process
+    msg.moneyInfo.sendBackAmount = backAmount;
+    msg.moneyInfo.sendBackTime = backTime;
+    messages.replace(index, msg);
+    ContractPromiseBatch.create(msg.from).transfer(backAmount);
+    return true;
 }
 
 export function getStatics(): StaticsInfo | null {
