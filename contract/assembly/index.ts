@@ -169,19 +169,18 @@ export function getInboxMessages(accountId: string, fromIndex: i32, toIndex: i32
  * NOTE: This is a change method. Which means it will modify the state.
  * @param to The account id that will receive the message
  * @param title Title of message
- * @param content Content of message
+ * @param data Content of message
+ * @param baseSite
+ * @param prevMsgId 
+ * @param expiredTime
  */
 export function sendMessage(to: string, title: string, data: string, baseSite: string, prevMsgId: i32, expiredTime: u64): boolean {
-    // Checking input
-    if (!env.isValidAccountID(to)) {
-        logging.log("To account is invalid!");
-        return false;
-    }
+    // Checking to account
+    assert(env.isValidAccountID(to), "Invalid account");
+
+    // Checking attached deposit
     let attachedDeposit = Context.attachedDeposit;
-    if (u128.lt(attachedDeposit, NEAR_SEND_MIN)) {
-        logging.log("Attached deposit is too small!");
-        return false;
-    }
+    assert(u128.ge(attachedDeposit, NEAR_SEND_MIN), "Attached deposit is too small");
 
     // Get static info
     let staticsInfo = getStaticsInfo();
@@ -225,8 +224,6 @@ export function sendMessage(to: string, title: string, data: string, baseSite: s
 
     // Send NEAR Fee to DAO account
     if (!attachedDeposit.isZero()) {
-        // let userAmount = attachedDeposit*staticsInfo.userRate/u128.from(1000);
-        // ContractPromiseBatch.create(to).transfer(userAmount);
         ContractPromiseBatch.create(staticsInfo.feeAddress).transfer(moneyInfo.appFee);
     }
 
@@ -246,10 +243,10 @@ export function sendMessage(to: string, title: string, data: string, baseSite: s
                 receivedAmount = preMsg.moneyInfo.canReceivedAmount/u128.from(10);                      // 10%
             }
             if (!receivedAmount.isZero()) {
-                ContractPromiseBatch.create(accountId).transfer(receivedAmount);
                 preMsg.moneyInfo.receivedAmount = receivedAmount;
                 preMsg.moneyInfo.receivedTime = receivedTime;
                 messages.replace(msgIdx, preMsg);
+                ContractPromiseBatch.create(accountId).transfer(receivedAmount);
             }
         }
     }
@@ -265,28 +262,28 @@ export function sendMessage(to: string, title: string, data: string, baseSite: s
  export function sendBack(msgId: i32): bool {
     // Checking msgIndex
     let index = msgId - 1;
-    if (index<0 || index>=messages.length) {
-        // Invalid input
-        return false;
-    };
+    assert(index>=0 && index<messages.length, "Invalid msgId");
 
-    // Checking message
+    // Checking MoneyInfo
     let msg = messages[index];
-    if (!msg.moneyInfo) return false;
-    if (!msg.moneyInfo.sendBackAmount.isZero()) return false;
+    assert(msg.moneyInfo, "No MoneyInfo");
+    assert(msg.moneyInfo.sendBackAmount.isZero(), "The message is claimed");
+
+    // Check time
     let backTime = env.block_timestamp();
     let period = u64(backTime - msg.timestamp);
-    if (period<=TWO_DAY) return false;
+    assert(period>TWO_DAY, "Only claim after two days");
 
+    // Check NEAR amount
     let backAmount = msg.moneyInfo.canReceivedAmount - msg.moneyInfo.receivedAmount;
-    if (backAmount>u128.from(0)) {
-        ContractPromiseBatch.create(msg.from).transfer(backAmount);
-        msg.moneyInfo.sendBackAmount = backAmount;
-        msg.moneyInfo.sendBackTime = backTime;
-        messages.replace(index, msg);
-        return true;
-    }
-    return false;
+    assert(backAmount>u128.from(0), "No remain NEAR to claim");
+
+    // Process
+    msg.moneyInfo.sendBackAmount = backAmount;
+    msg.moneyInfo.sendBackTime = backTime;
+    messages.replace(index, msg);
+    ContractPromiseBatch.create(msg.from).transfer(backAmount);
+    return true;
 }
 
 export function getStatics(): StaticsInfo | null {
