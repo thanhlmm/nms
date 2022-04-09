@@ -4,7 +4,7 @@
     :class="{ 'd-block': windowWidth <= 1024 && msgInboxId }"
   >
     <header class="mail-right__header">
-      <div class="mail-right__header-title f-700 mb-4 d-flex align-center">
+      <div class="mb-4 mail-right__header-title f-700 d-flex align-center">
         <img
           src="../../public/assets/images/logo.svg"
           style="max-width: 29px"
@@ -18,8 +18,9 @@
       <div :class="[{ 'is-hidden': msgInboxId }, 'mail-right__no-selected']">
         No conversations selected.
       </div>
-
+      <div class="loading" v-show="isLoading">Loading your messages</div>
       <div
+        v-show="!isLoading"
         :class="[
           { 'is-hidden': !msgInboxId },
           'mail-right__selected scrollbar',
@@ -50,6 +51,7 @@ export default {
     return {
       windowWidth: window.innerWidth,
       dataMsgConversation: [],
+      isLoading: false,
     };
   },
 
@@ -62,6 +64,9 @@ export default {
   },
 
   computed: {
+    username() {
+      return window.walletConnection.getAccountId();
+    },
     userLogin() {
       return this.$store.state.auth.auth.isLogin;
     },
@@ -104,6 +109,7 @@ export default {
 
     getMessages(id) {
       if (id === null) return;
+      this.isLoading = true;
 
       let privateKeyDecrypt = null;
       if (this.passwordConfirm && this.localPrivateKey) {
@@ -120,14 +126,19 @@ export default {
           privateKeyDecrypt !== null ? privateKeyDecrypt.slice(5) : null,
       };
 
-      const cacheMsg = window.localStorage.getItem(`msg-${id}`);
+      const cacheMsg = window.localStorage.getItem(
+        `${this.username}-msg-${id}`
+      );
       if (cacheMsg) {
         this.updateDataMessage(JSON.parse(cacheMsg), opts);
         return;
       }
 
       window.contract.getMessage({ msgId: id }).then((data) => {
-        window.localStorage.setItem(`msg-${id}`, JSON.stringify(data));
+        window.localStorage.setItem(
+          `${this.username}-msg-${id}`,
+          JSON.stringify(data)
+        );
         this.updateDataMessage(data, opts);
       });
     },
@@ -144,13 +155,16 @@ export default {
         title: msg.title,
         to: msg.to,
         moneyInfo: msg.moneyInfo,
-        isPrivate: msg.data.includes("DIRECT-PRI"),
+        isPrivate: ["#DIRECT-PRI", "#IPFS-PRI"].some((condition) =>
+          msg.data.includes(condition)
+        ),
       };
       const eachMsg = await message.depackMessage(structMsg, opts);
 
       if (eachMsg.prevMsgId === 0) {
         this.dataMsgConversation.push(eachMsg);
         this.dataMsgConversation.reverse();
+        this.isLoading = false;
       } else {
         this.getMessages(eachMsg.prevMsgId);
         const newData = [...this.dataMsgConversation];
@@ -162,4 +176,10 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.loading {
+  padding: 60px 40px 30px;
+  color: var(--color-menu);
+  font-size: 16px;
+}
+</style>
