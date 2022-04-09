@@ -18,8 +18,9 @@
       <div :class="[{ 'is-hidden': msgInboxId }, 'mail-right__no-selected']">
         No conversations selected.
       </div>
-
+      <div class="loading" v-show="isLoading">Loading your messages</div>
       <div
+        v-show="!isLoading"
         :class="[
           { 'is-hidden': !msgInboxId },
           'mail-right__selected scrollbar',
@@ -50,6 +51,7 @@ export default {
     return {
       windowWidth: window.innerWidth,
       dataMsgConversation: [],
+      isLoading: false,
     };
   },
 
@@ -107,6 +109,7 @@ export default {
 
     getMessages(id) {
       if (id === null) return;
+      this.isLoading = true;
 
       let privateKeyDecrypt = null;
       if (this.passwordConfirm && this.localPrivateKey) {
@@ -161,6 +164,7 @@ export default {
       if (eachMsg.prevMsgId === 0) {
         this.dataMsgConversation.push(eachMsg);
         this.dataMsgConversation.reverse();
+        this.isLoading = false;
       } else {
         this.getMessages(eachMsg.prevMsgId);
         const newData = [...this.dataMsgConversation];
@@ -172,4 +176,10 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.loading {
+  padding: 60px 40px 30px;
+  color: var(--color-menu);
+  font-size: 16px;
+}
+</style>
