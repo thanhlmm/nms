@@ -30,6 +30,7 @@ export default {
     return {
       dataMsgInbox: [],
       accountId: null,
+      msgRaw: [],
     };
   },
 
@@ -58,20 +59,19 @@ export default {
 
   watch: {
     passwordConfirm() {
-      this.getInboxMsg();
+      this.processMessage();
     },
     page() {
       this.getInboxMsg();
     },
     inboxMsgNum() {
-      this.getInboxMsg();
       this.recallInboxMsgNumApi();
     },
     localPrivateKey() {
-      this.getInboxMsg();
+      this.processMessage();
     },
     routePathInbox() {
-      this.getInboxMsg();
+      this.processMessage();
     },
   },
 
@@ -86,6 +86,37 @@ export default {
     },
 
     getInboxMsg() {
+      const indexInfo = getIndexInfo(this.inboxMsgNum, this.page, 10);
+      window.contract
+        .getInboxMessages({
+          accountId: this.accountId,
+          fromIndex: indexInfo.fromIndex,
+          toIndex: indexInfo.toIndex,
+        })
+        .then((data) => {
+          this.msgRaw = data.map((item) => {
+            return {
+              baseSite: item.baseSite,
+              expiredTime: item.expiredTime,
+              from: item.from,
+              to: item.to,
+              timestamp: item.timestamp,
+              id: item.id,
+              prevMsgId: item.prevMsgId,
+              title: item.title,
+              data: item.data,
+              isPrivate: ["#DIRECT-PRI", "#IPFS-PRI"].some((condition) =>
+                item.data.includes(condition)
+              ),
+            };
+          });
+        })
+        .then(() => {
+          this.processMessage();
+        });
+    },
+
+    processMessage() {
       if (this.inboxMsgNum === 0) {
         return;
       }
@@ -105,37 +136,16 @@ export default {
           privateKeyDecrypt !== null ? privateKeyDecrypt.slice(5) : null,
       };
 
-      const indexInfo = getIndexInfo(this.inboxMsgNum, this.page, 20);
+      const indexInfo = getIndexInfo(this.inboxMsgNum, this.page, 10);
       if (indexInfo.fromIndex === 0) {
         this.$store.commit("SET_PREVENT_PAGINATION", true);
       } else {
         this.$store.commit("SET_PREVENT_PAGINATION", false);
       }
 
-      window.contract
-        .getInboxMessages({
-          accountId: this.accountId,
-          fromIndex: indexInfo.fromIndex,
-          toIndex: indexInfo.toIndex,
-        })
-        .then((data) => {
-          let eachData = data.map((item) => {
-            return {
-              baseSite: item.baseSite,
-              expiredTime: item.expiredTime,
-              from: item.from,
-              to: item.to,
-              timestamp: item.timestamp,
-              id: item.id,
-              prevMsgId: item.prevMsgId,
-              title: item.title,
-              data: item.data,
-              isPrivate: ["DIRECT-PRI", "#IPFS-PRI"].some((condition) =>
-                item.data.includes(condition)
-              ),
-            };
-          });
-          const structEachData = eachData.map((item) => {
+      Promise.resolve(true)
+        .then(() => {
+          const structEachData = this.msgRaw.map((item) => {
             return this.updateDataMessage(item, opts);
           });
           return Promise.all(structEachData);

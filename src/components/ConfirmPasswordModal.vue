@@ -38,6 +38,7 @@
             placeholder="Enter your password"
             type="password"
             v-model="password"
+            @keydown="handleCheckEnter"
           />
           <div class="line" :class="[{ isEmpty: checkPasswordInput }]"></div>
         </div>
@@ -81,6 +82,12 @@ export default {
     handleCloseModal() {
       this.$emit("toggleConfirmPasswordModal", false);
       this.password = "";
+    },
+
+    handleCheckEnter(e) {
+      if (e.keyCode === 13) {
+        this.handleConfirm();
+      }
     },
 
     handleConfirm() {
