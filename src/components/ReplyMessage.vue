@@ -3,16 +3,16 @@
     <header class="mail-right__item-header d-flex">
       <Avatar :accountId="from" size="60" />
       <div
-        class="info pl-30 pl-xl-16 pl-md-16 pl-sm-10 flex-grow-1 d-flex justify-between"
+        class="justify-between info pl-30 pl-xl-16 pl-md-16 pl-sm-10 flex-grow-1 d-flex"
       >
         <div>
-          <div class="name title-20 mb-10 f-700">{{ from }}</div>
+          <div class="mb-10 name title-20 f-700">{{ from }}</div>
           <div class="to f-500">To: {{ to }}</div>
         </div>
         <div class="btnModalForwardReplayContainer">
           <div class="text-right">
             <button
-              class="btn-sent text-btn-sent cursor-pointer d-flex align-center"
+              class="cursor-pointer btn-sent text-btn-sent d-flex align-center"
               @click="handleReply"
             >
               <img src="../../public/assets/images/sent.svg" />
@@ -20,7 +20,7 @@
             </button>
           </div>
           <button
-            class="btn-cancelForwardReply btn-sent cursor-pointer d-flex align-center flex-shrink-0"
+            class="flex-shrink-0 cursor-pointer btn-cancelForwardReply btn-sent d-flex align-center"
             @click="handleCancelReply"
           >
             Cancel
@@ -30,13 +30,13 @@
     </header>
     <section>
       <div class="content">
-        <div class="title title-20 f-700 mb-10">
+        <div class="mb-10 title title-20 f-700">
           <div class="textInput-ForwardAndReply">
             <div>Re:</div>
             <input v-model="titleData" />
           </div>
         </div>
-        <div class="description mb-10">
+        <div class="mb-10 description">
           <TipTap
             :modelValue="data"
             :isDetail="false"
@@ -46,10 +46,10 @@
       </div>
 
       <div class="mb-16">
-        <div class="f-500 mb-16">Select message type:</div>
+        <div class="mb-16 f-500">Select message type:</div>
         <div class="near__value-list d-flex">
           <div
-            class="near__value-item cursor-pointer"
+            class="cursor-pointer near__value-item"
             v-bind:class="{
               active: type === 'PUBLIC',
             }"
@@ -58,7 +58,7 @@
             Public
           </div>
           <div
-            class="near__value-item cursor-pointer"
+            class="cursor-pointer near__value-item"
             v-bind:class="{
               active: type === 'PRIVATE',
             }"
@@ -73,7 +73,7 @@
         <div class="f-500">Select NEAR to send:</div>
         <div class="near__value-list d-flex">
           <div
-            class="near__value-item cursor-pointer"
+            class="cursor-pointer near__value-item"
             v-bind:class="{
               active: amount === 0.05,
             }"
@@ -82,7 +82,7 @@
             0.05 NEAR
           </div>
           <div
-            class="near__value-item cursor-pointer"
+            class="cursor-pointer near__value-item"
             v-bind:class="{
               active: amount === 0.1,
             }"
@@ -91,7 +91,7 @@
             0.1 NEAR
           </div>
           <div
-            class="near__value-item cursor-pointer"
+            class="cursor-pointer near__value-item"
             v-bind:class="{
               active: amount === 0.2,
             }"
@@ -100,7 +100,7 @@
             0.2 NEAR
           </div>
           <div
-            class="near__value-item cursor-pointer"
+            class="cursor-pointer near__value-item"
             v-bind:class="{
               active: amount === 1,
             }"
@@ -177,7 +177,7 @@ export default {
         }
 
         if (this.id) {
-          window.localStorage.removeItem(`msg-${this.id}`);
+          window.localStorage.removeItem(`${this.username}-msg-${id}`);
         }
 
         if (this.amount) {

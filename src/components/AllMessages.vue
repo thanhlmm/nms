@@ -4,7 +4,7 @@
     :class="{ 'd-block': windowWidth <= 1024 && msgInboxId }"
   >
     <header class="mail-right__header">
-      <div class="mail-right__header-title f-700 mb-4 d-flex align-center">
+      <div class="mb-4 mail-right__header-title f-700 d-flex align-center">
         <img
           src="../../public/assets/images/logo.svg"
           style="max-width: 29px"
@@ -62,6 +62,9 @@ export default {
   },
 
   computed: {
+    username() {
+      return window.walletConnection.getAccountId();
+    },
     userLogin() {
       return this.$store.state.auth.auth.isLogin;
     },
@@ -120,14 +123,19 @@ export default {
           privateKeyDecrypt !== null ? privateKeyDecrypt.slice(5) : null,
       };
 
-      const cacheMsg = window.localStorage.getItem(`msg-${id}`);
+      const cacheMsg = window.localStorage.getItem(
+        `${this.username}-msg-${id}`
+      );
       if (cacheMsg) {
         this.updateDataMessage(JSON.parse(cacheMsg), opts);
         return;
       }
 
       window.contract.getMessage({ msgId: id }).then((data) => {
-        window.localStorage.setItem(`msg-${id}`, JSON.stringify(data));
+        window.localStorage.setItem(
+          `${this.username}-msg-${id}`,
+          JSON.stringify(data)
+        );
         this.updateDataMessage(data, opts);
       });
     },
@@ -144,7 +152,9 @@ export default {
         title: msg.title,
         to: msg.to,
         moneyInfo: msg.moneyInfo,
-        isPrivate: msg.data.includes("DIRECT-PRI"),
+        isPrivate: ["#DIRECT-PRI", "#IPFS-PRI"].some((condition) =>
+          msg.data.includes(condition)
+        ),
       };
       const eachMsg = await message.depackMessage(structMsg, opts);
 
