@@ -1,6 +1,5 @@
 const CONTRACT_NAME = process.env.VUE_APP_CONTRACT_NAME || 'near-nms'
 
-
 function getConfig(env) {
   switch (env) {
 
