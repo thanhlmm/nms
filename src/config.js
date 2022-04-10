@@ -1,4 +1,6 @@
-const CONTRACT_NAME = process.env.VUE_APP_CONTRACT_NAME ||'near-nms'
+const CONTRACT_NAME = process.env.VUE_APP_CONTRACT_NAME || 'near-nms'
+
+export const ITEM_PER_PAGE = 10;
 
 function getConfig(env) {
   switch (env) {

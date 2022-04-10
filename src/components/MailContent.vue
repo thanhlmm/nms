@@ -23,12 +23,7 @@
           </div>
         </div>
         <div
-          class="
-            d-flex
-            align-center
-            justify-between
-            mail-content__header-col mail-content__header-col-right
-          "
+          class="d-flex align-center justify-between mail-content__header-col mail-content__header-col-right"
         >
           <div class="d-flex align-center no-wrap text-right top">
             <div>Page {{ page }}</div>
@@ -74,6 +69,7 @@
 
 <script>
 import AllMessages from "./AllMessages.vue";
+import { ITEM_PER_PAGE } from "../config";
 
 export default {
   components: {
@@ -116,7 +112,7 @@ export default {
       return this.$store.state.page;
     },
     reachMaxPage() {
-      return this.page * 20 > this.totalMsg;
+      return this.page * ITEM_PER_PAGE > this.totalMsg;
     },
     preventPagination() {
       return this.$store.state.preventPagination;
