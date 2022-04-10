@@ -69,7 +69,7 @@
 
 <script>
 import AllMessages from "./AllMessages.vue";
-import { ITEM_PER_PAGE } from "../config";
+import { ITEM_PER_PAGE } from "../constant";
 
 export default {
   components: {

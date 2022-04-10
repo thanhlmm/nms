@@ -20,7 +20,7 @@ import message from "../message";
 import { getIndexInfo } from "../utils";
 import { decryptPrivateKeyWithPasswordConfirm } from "../message";
 import MailInbox from "./MailInbox.vue";
-import { ITEM_PER_PAGE } from "../config";
+import { ITEM_PER_PAGE } from "../constant";
 
 export default {
   components: {
