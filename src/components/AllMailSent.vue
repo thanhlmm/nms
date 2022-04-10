@@ -20,7 +20,7 @@ import { getIndexInfo } from "../utils";
 import message from "../message";
 import { decryptPrivateKeyWithPasswordConfirm } from "../message";
 import MailSent from "./MailSent.vue";
-import { ITEM_PER_PAGE } from "../config";
+import { ITEM_PER_PAGE } from "../constant";
 
 export default {
   components: {
