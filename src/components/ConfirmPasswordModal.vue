@@ -5,7 +5,7 @@
         <div class="title title-20 f-700 d-flex align-center">
           Enter password for private message
         </div>
-        <div class="action">
+        <div class="action" v-if="!this.isReGenOrImport">
           <span class="btn-close cursor-pointer" @click="handleCloseModal">
             <svg
               width="18"
@@ -42,7 +42,24 @@
           />
           <div class="line" :class="[{ isEmpty: checkPasswordInput }]"></div>
         </div>
-
+        <div
+          v-if="
+            localPrivateKey && isPrivateKeyNotDecrypt && !this.isReGenOrImport
+          "
+          class="form-input d-flex pb-10 mb-20"
+        >
+          <div>
+            If you do not remember the password, please click
+            <span
+              style="text-decoration: underline; cursor: pointer"
+              @click="handleShowKeyModal"
+            >
+              here</span
+            >
+            to import the key and reset the password.
+          </div>
+          <div class="line"></div>
+        </div>
         <button
           class="
             btn-sent btn-sent-key
@@ -63,6 +80,8 @@
 </template>
 
 <script>
+import { decryptPrivateKeyWithPasswordConfirm } from "../message";
+
 export default {
   props: {
     showModalConfirm: {
@@ -71,17 +90,45 @@ export default {
     onPasswordConfirm: {
       type: Function,
     },
+    isGenOrImport: {
+      type: Boolean,
+    },
   },
+
   data() {
     return {
       password: "",
       checkPasswordInput: false,
+      show: false,
+      isReGenOrImport: false,
     };
   },
+
+  computed: {
+    localPrivateKey() {
+      return this.$store.state.localPrivateKey;
+    },
+    isPrivateKeyNotDecrypt() {
+      return this.$store.state.isPrivateKeyNotDecrypt;
+    },
+  },
+
   methods: {
     handleCloseModal() {
+      this.$store.commit("IS_PRIVATE_KEY_NOT_DECRYPT", true);
+      this.$store.commit("SHOW_CONFIRM_PASSWORD_MODAL", false);
       this.$emit("toggleConfirmPasswordModal", false);
       this.password = "";
+    },
+
+    handleShowKeyModal() {
+      this.isReGenOrImport = true;
+      this.$emit("handleReShowKeyManagementModal");
+      this.$emit("toggleConfirmPasswordModal", false);
+      this.password = "";
+      this.$store.commit("IS_PRIVATE_KEY_NOT_DECRYPT", false);
+      this.$store.commit("SHOW_CONFIRM_PASSWORD_MODAL", false);
+      this.$store.commit("TOGGLE_KEY_MODAL");
     },
 
     handleCheckEnter(e) {
@@ -96,9 +143,30 @@ export default {
       } else {
         this.checkPasswordInput = false;
         if (this.onPasswordConfirm) {
-          this.onPasswordConfirm(this.password);
+          this.$store.commit("PASSWORD_CONFIRM", this.password);
+          if (this.localPrivateKey !== null && !this.isReGenOrImport) {
+            const privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
+              this.password,
+              this.localPrivateKey
+            );
+            if (privateKeyDecrypt.includes("TEST")) {
+              this.onPasswordConfirm(this.password);
+              this.$toast.success("Password is correct");
+              this.$store.commit("IS_PRIVATE_KEY_NOT_DECRYPT", false);
+              this.$store.commit("SHOW_CONFIRM_PASSWORD_MODAL", false);
+              this.isReGenOrImport = false;
+            } else {
+              this.$toast.error("Your Confirmation Password is incorrect");
+              this.$store.commit("IS_PRIVATE_KEY_NOT_DECRYPT", true);
+              this.$store.commit("SHOW_CONFIRM_PASSWORD_MODAL", false);
+              this.isReGenOrImport = false;
+            }
+          } else {
+            this.onPasswordConfirm(this.password);
+          }
         }
-        this.handleCloseModal();
+        this.$emit("toggleConfirmPasswordModal", false);
+        this.password = "";
       }
     },
   },
