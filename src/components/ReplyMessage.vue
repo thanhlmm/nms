@@ -177,7 +177,7 @@ export default {
         }
 
         if (this.id) {
-          window.localStorage.removeItem(`${this.username}-msg-${id}`);
+          window.localStorage.removeItem(`${this.username}-msg-${this.id}`);
         }
 
         if (this.amount) {
