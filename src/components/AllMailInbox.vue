@@ -20,6 +20,7 @@ import message from "../message";
 import { getIndexInfo } from "../utils";
 import { decryptPrivateKeyWithPasswordConfirm } from "../message";
 import MailInbox from "./MailInbox.vue";
+import { ITEM_PER_PAGE } from "../config";
 
 export default {
   components: {
@@ -86,7 +87,11 @@ export default {
     },
 
     getInboxMsg() {
-      const indexInfo = getIndexInfo(this.inboxMsgNum, this.page, 10);
+      const indexInfo = getIndexInfo(
+        this.inboxMsgNum,
+        this.page,
+        ITEM_PER_PAGE
+      );
       window.contract
         .getInboxMessages({
           accountId: this.accountId,

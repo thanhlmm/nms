@@ -20,6 +20,7 @@ import { getIndexInfo } from "../utils";
 import message from "../message";
 import { decryptPrivateKeyWithPasswordConfirm } from "../message";
 import MailSent from "./MailSent.vue";
+import { ITEM_PER_PAGE } from "../config";
 
 export default {
   components: {
@@ -87,7 +88,7 @@ export default {
     },
 
     getSentMsg() {
-      const indexInfo = getIndexInfo(this.sentMsgNum, this.page, 10);
+      const indexInfo = getIndexInfo(this.sentMsgNum, this.page, ITEM_PER_PAGE);
       window.contract
         .getSentMessages({
           accountId: this.accountId,
