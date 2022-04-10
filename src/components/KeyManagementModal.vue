@@ -52,7 +52,7 @@
           </div>
           <div
             v-if="!localPrivateKey || hiddenExport"
-            class="form-input d-flex pb-10 mb-20"
+            class="form-input d-flex pb-10 mb-20 font-italic"
           >
             <div>
               Please click "Generate" button to generate new key or click
@@ -164,9 +164,6 @@ export default {
   computed: {
     showModal() {
       return this.$store.state.keyModal;
-    },
-    passwordConfirm() {
-      return this.$store.state.passwordConfirm;
     },
     username() {
       return window.walletConnection.getAccountId();
@@ -350,29 +347,20 @@ export default {
           `${process.env.VUE_APP_CONTRACT_NAME}_${this.username}_privatekey`
         )
       ) {
-        // this.showModalPassword = true;
-        // this.handlePasswordConfirm = (password) => {
-        //   const privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
-        //     password,
-        //     localStorage.getItem(
-        //       `${process.env.VUE_APP_CONTRACT_NAME}_${this.username}_privatekey`
-        //     )
-        //   );
-        //   if (privateKeyDecrypt.includes("TEST")) {
-        //     this.handleExportKeys(privateKeyDecrypt);
-        //   } else {
-        //     this.$toast.error("Your Confirmation Password is incorrect.");
-        //   }
-        // };
-        if (this.passwordConfirm) {
+        this.showModalPassword = true;
+        this.handlePasswordConfirm = (password) => {
           const privateKeyDecrypt = decryptPrivateKeyWithPasswordConfirm(
-            this.passwordConfirm,
+            password,
             localStorage.getItem(
               `${process.env.VUE_APP_CONTRACT_NAME}_${this.username}_privatekey`
             )
           );
-          this.handleExportKeys(privateKeyDecrypt);
-        }
+          if (privateKeyDecrypt.includes("TEST")) {
+            this.handleExportKeys(privateKeyDecrypt);
+          } else {
+            this.$toast.error("Your Confirmation Password is incorrect");
+          }
+        };
       }
     },
 

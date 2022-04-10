@@ -344,7 +344,6 @@ export default {
     },
 
     showKeyModal() {
-      console.log("isPrivateKeyNotDecrypt: ", this.isPrivateKeyNotDecrypt);
       if (!this.isPrivateKeyNotDecrypt) {
         this.$store.commit("SHOW_CONFIRM_PASSWORD_MODAL", false);
         this.$store.commit("TOGGLE_KEY_MODAL");

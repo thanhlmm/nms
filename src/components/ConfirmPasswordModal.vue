@@ -46,7 +46,7 @@
           v-if="
             localPrivateKey && isPrivateKeyNotDecrypt && !this.isReGenOrImport
           "
-          class="form-input d-flex pb-10 mb-20"
+          class="form-input d-flex pb-10 mb-20 font-italic"
         >
           <div>
             If you do not remember the password, please click
