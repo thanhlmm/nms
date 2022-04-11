@@ -371,13 +371,16 @@ export default {
         });
         if (window.navigator.msSaveOrOpenBlob)
           // IE10+
-          window.navigator.msSaveOrOpenBlob(file, "PrivateKeys.pem");
+          window.navigator.msSaveOrOpenBlob(
+            file,
+            `nms-${this.username}-key.pem`
+          );
         else {
           // Others
           var a = document.createElement("a"),
             url = URL.createObjectURL(file);
           a.href = url;
-          a.download = "PrivateKeys.pem";
+          a.download = `nms-${this.username}-key.pem`;
           document.body.appendChild(a);
           a.click();
           setTimeout(function () {

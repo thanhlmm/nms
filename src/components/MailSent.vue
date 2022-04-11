@@ -37,7 +37,12 @@
             >
               <img
                 src="../../public/assets/images/coin.svg"
-                style="width: 20px; height: 20px; max-width: min-content"
+                style="
+                  width: 20px;
+                  height: 20px;
+                  max-width: min-content;
+                  color: #333;
+                "
               />
               <Tooltip :isShow="showTooltip">
                 You can get back {{ this.handleCalculateReceiveCoin() }} NEAR
