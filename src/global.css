@@ -110,6 +110,11 @@ body {
   font-style: italic;
 }
 
+.highlight-text {
+  font-weight: bolder;
+  color: #fff;
+}
+
 @media (max-width: 767px) {
   body {
     font-size: 10px;

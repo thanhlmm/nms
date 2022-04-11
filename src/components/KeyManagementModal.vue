@@ -54,7 +54,16 @@
             v-if="!localPrivateKey || hiddenExport"
             class="form-input d-flex pb-10 mb-20 font-italic"
           >
-            <div>
+            <div v-if="hiddenPubKey">
+              We found your public key on the system. Please click the
+              <span class="highlight-text"> "Import"</span>
+              button to import your corresponding key. In case you don't
+              remember the key, please click
+              <span class="highlight-text">"Generate"</span> button to generate
+              new key. If you generate a new key, you won't be able to view the
+              content of old private messages.
+            </div>
+            <div v-else>
               Please click "Generate" button to generate new key or click
               "Import" button to import old key!
             </div>
@@ -200,6 +209,7 @@ export default {
   },
 
   mounted() {
+    this.getUserPublicKey();
     if (
       localStorage.getItem(
         `${process.env.VUE_APP_CONTRACT_NAME}_${this.username}_privatekey`
@@ -246,6 +256,16 @@ export default {
     // handle Modal Confirm ReGen or ReImport
     closeConfirmModal(e) {
       this.showModalConfirmReGenImport = e;
+    },
+
+    getUserPublicKey() {
+      window.contract
+        .getPublicKey({ accountId: this.username })
+        .then((data) => {
+          if (data) {
+            this.publicKey = data;
+          }
+        });
     },
 
     //handle save Public Key to server
