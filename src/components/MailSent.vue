@@ -4,7 +4,7 @@
       class="mail-content__item d-flex"
       @click="handleSelectedMail(message.id)"
     >
-      <Avatar :accountId="message.from" size="40" />
+      <Avatar :accountId="message.to" size="40" />
 
       <div class="content pl-20 pl-md-10 flex-grow-1">
         <header
