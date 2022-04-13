@@ -66,7 +66,7 @@ export default {
       this.getSentMsg();
     },
     sentMsgNum() {
-      this.processMessage();
+      this.getSentMsg();
     },
     localPrivateKey() {
       this.processMessage();
