@@ -87,6 +87,7 @@ export default {
     },
 
     getSentMsg() {
+      if (this.sentMsgNum <= 0) return;
       const indexInfo = getIndexInfo(this.sentMsgNum, this.page, 10);
       window.contract
         .getSentMessages({

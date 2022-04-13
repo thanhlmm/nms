@@ -86,6 +86,7 @@ export default {
     },
 
     getInboxMsg() {
+      if (this.inboxMsgNum <= 0) return;
       const indexInfo = getIndexInfo(this.inboxMsgNum, this.page, 10);
       window.contract
         .getInboxMessages({
