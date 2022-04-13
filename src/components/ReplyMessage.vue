@@ -3,7 +3,13 @@
     <header class="mail-right__item-header d-flex">
       <Avatar :accountId="from" size="60" />
       <div
-        class="justify-between info pl-30 pl-xl-16 pl-md-16 pl-sm-10 flex-grow-1 d-flex"
+        class="
+          justify-between
+          info
+          pl-30 pl-xl-16 pl-md-16 pl-sm-10
+          flex-grow-1
+          d-flex
+        "
       >
         <div>
           <div class="mb-10 name title-20 f-700">{{ from }}</div>
@@ -20,7 +26,13 @@
             </button>
           </div>
           <button
-            class="flex-shrink-0 cursor-pointer btn-cancelForwardReply btn-sent d-flex align-center"
+            class="
+              flex-shrink-0
+              cursor-pointer
+              btn-cancelForwardReply btn-sent
+              d-flex
+              align-center
+            "
             @click="handleCancelReply"
           >
             Cancel
@@ -177,7 +189,7 @@ export default {
         }
 
         if (this.id) {
-          window.localStorage.removeItem(`${this.username}-msg-${id}`);
+          window.localStorage.removeItem(`${this.username}-msg-${this.id}`);
         }
 
         if (this.amount) {
