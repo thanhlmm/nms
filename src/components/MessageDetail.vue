@@ -3,7 +3,13 @@
     <header class="mail-right__item-header d-flex">
       <Avatar :accountId="from" size="60" />
       <div
-        class="info pl-30 pl-xl-16 pl-md-16 pl-sm-10 flex-grow-1 d-flex justify-between"
+        class="
+          info
+          pl-30 pl-xl-16 pl-md-16 pl-sm-10
+          flex-grow-1
+          d-flex
+          justify-between
+        "
       >
         <div>
           <div class="name title-20 mb-10 f-700">{{ dataMsg.from }}</div>
@@ -13,7 +19,15 @@
           <div class="action mb-10 mb-sm-4 d-flex" style="position: relative">
             <div style="position: relative">
               <div
-                class="action-sent reply cursor-pointer d-flex align-center mr-40 mr-xl-20 md-md-20 md-sm-20"
+                class="
+                  action-sent
+                  reply
+                  cursor-pointer
+                  d-flex
+                  align-center
+                  mr-40 mr-xl-20
+                  md-md-20 md-sm-20
+                "
                 @click="handleShowReply"
               >
                 <svg
@@ -101,6 +115,7 @@
         :title="dataMsg.title"
         :to="dataMsg.to"
         :from="dataMsg.from"
+        :content="dataMsg.content"
         :showForward="showForward"
         @cancelForward="cancelForward"
       />
