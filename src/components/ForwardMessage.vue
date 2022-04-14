@@ -44,7 +44,7 @@
       <div class="content">
         <div class="title title-20 f-700 mb-10">
           <div class="textInput-ForwardAndReply">
-            <div>Fw:</div>
+            <div>[FWD]</div>
             <input v-model="titleData" />
           </div>
         </div>

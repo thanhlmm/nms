@@ -44,7 +44,7 @@
       <div class="content">
         <div class="mb-10 title title-20 f-700">
           <div class="textInput-ForwardAndReply">
-            <div>Re:</div>
+            <div>[Re]</div>
             <input v-model="titleData" />
           </div>
         </div>
