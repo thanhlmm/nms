@@ -256,7 +256,7 @@ export default {
                 .getPublicKey({ accountId: this.username })
                 .then((publicKey) => {
                   this.packMassage({
-                    title: "RE: ".concat(this.titleData),
+                    title: "[RE] ".concat(this.titleData),
                     content: this.data,
                     attachmentFiles: {},
                     type: this.type,
@@ -268,7 +268,7 @@ export default {
                 });
             }
             this.packMassage({
-              title: "RE: ".concat(this.titleData),
+              title: "[RE] ".concat(this.titleData),
               content: this.data,
               attachmentFiles: {},
               type: this.type,
@@ -287,7 +287,7 @@ export default {
       }
       if (this.type === "PUBLIC") {
         this.packMassage({
-          title: "RE: ".concat(this.titleData),
+          title: "[RE] ".concat(this.titleData),
           content: this.data,
           attachmentFiles: {},
           type: this.type,

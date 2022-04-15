@@ -264,7 +264,7 @@ export default {
                   .getPublicKey({ accountId: this.username })
                   .then((publicKey) => {
                     this.packMassage({
-                      title: "FWD: ".concat(this.titleData),
+                      title: "[FWD] ".concat(this.titleData),
                       content: this.contentData,
                       attachmentFiles: {},
                       type: this.type,
@@ -276,7 +276,7 @@ export default {
                   });
               }
               this.packMassage({
-                title: "FWD: ".concat(this.titleData),
+                title: "[FWD] ".concat(this.titleData),
                 content: this.contentData,
                 attachmentFiles: {},
                 type: this.type,
@@ -295,7 +295,7 @@ export default {
       }
       if (this.type === "PUBLIC") {
         this.packMassage({
-          title: "FWD: ".concat(this.titleData),
+          title: "[FWD] ".concat(this.titleData),
           content: this.contentData,
           attachmentFiles: {},
           type: this.type,
