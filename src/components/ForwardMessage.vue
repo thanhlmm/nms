@@ -45,7 +45,6 @@
         <div class="title title-20 f-700 mb-10">
           <div class="textInput-ForwardAndReply">
             <div>Title:</div>
-            <div>[FWD]</div>
             <input v-model="titleData" />
           </div>
         </div>
@@ -143,7 +142,7 @@ export default {
   data() {
     return {
       toUser: "",
-      titleData: this.title,
+      titleData: "[Fwd] ".concat(this.title),
       contentData: this.content,
       amount: 0.05,
       type: "PUBLIC",
@@ -264,7 +263,7 @@ export default {
                   .getPublicKey({ accountId: this.username })
                   .then((publicKey) => {
                     this.packMassage({
-                      title: "[FWD] ".concat(this.titleData),
+                      title: this.titleData,
                       content: this.contentData,
                       attachmentFiles: {},
                       type: this.type,
@@ -276,7 +275,7 @@ export default {
                   });
               }
               this.packMassage({
-                title: "[FWD] ".concat(this.titleData),
+                title: this.titleData,
                 content: this.contentData,
                 attachmentFiles: {},
                 type: this.type,
@@ -295,7 +294,7 @@ export default {
       }
       if (this.type === "PUBLIC") {
         this.packMassage({
-          title: "[FWD] ".concat(this.titleData),
+          title: this.titleData,
           content: this.contentData,
           attachmentFiles: {},
           type: this.type,
