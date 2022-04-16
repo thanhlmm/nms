@@ -141,7 +141,9 @@ export default {
   data() {
     return {
       data: "",
-      titleData: "[Re] ".concat(this.title),
+      titleData: this.title.includes("[Re]")
+        ? this.title
+        : "[Re] ".concat(this.title),
       amount: 0.05,
       type: "PUBLIC",
       senderKey: null,

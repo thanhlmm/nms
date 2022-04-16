@@ -142,7 +142,9 @@ export default {
   data() {
     return {
       toUser: "",
-      titleData: "[Fwd] ".concat(this.title),
+      titleData: this.title.includes("[Fwd]")
+        ? this.title
+        : "[Fwd] ".concat(this.title),
       contentData: this.content,
       amount: 0.05,
       type: "PUBLIC",
