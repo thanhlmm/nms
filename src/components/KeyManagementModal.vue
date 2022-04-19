@@ -34,16 +34,46 @@
         <div class="container">
           <div class="form-input d-flex pb-10 mb-20">
             <span>Public Key: </span>
-            <input placeholder="*****" v-model="hiddenPubKey" disabled />
+            <input
+              placeholder="NO PUBLIC KEY"
+              v-model="hiddenPubKey"
+              disabled
+            />
             <div class="line"></div>
           </div>
           <div class="form-input d-flex pb-10 mb-20">
             <span>Private Key: </span>
-            <input placeholder="*****" v-model="hiddenPriKey" disabled />
+            <input
+              placeholder="NO PRIVATE KEY"
+              v-model="hiddenPriKey"
+              disabled
+            />
+            <div class="line"></div>
+          </div>
+          <div
+            v-if="!localPrivateKey || hiddenExport"
+            class="form-input d-flex pb-10 mb-20 font-italic"
+          >
+            <div v-if="hiddenPubKey">
+              We found your public key on the system. Please click the
+              <span class="highlight-text"> "Import"</span>
+              button to import your corresponding key. In case you don't
+              remember the key, please click
+              <span class="highlight-text">"Generate"</span> button to generate
+              new key. If you generate a new key, you won't be able to view the
+              content of old private messages.
+            </div>
+            <div v-else>
+              Please click "Generate" button to generate new key or click
+              "Import" button to import old key!
+            </div>
             <div class="line"></div>
           </div>
           <div class="d-flex flex-col-sm" style="gap: 1rem">
             <button
+              v-if="
+                (!isPrivateKeyNotDecrypt && !localPrivateKey) || hiddenExport
+              "
               class="
                 btn-sent btn-sent-key
                 cursor-pointer
@@ -58,6 +88,9 @@
               <span>Generate</span>
             </button>
             <label
+              v-if="
+                (!isPrivateKeyNotDecrypt && !localPrivateKey) || hiddenExport
+              "
               class="
                 btn-sent btn-sent-key
                 cursor-pointer
@@ -72,6 +105,7 @@
               <input type="file" ref="doc" @change="importKeyClick()" />
             </label>
             <button
+              v-if="!hiddenExport && localPrivateKey"
               class="
                 btn-sent btn-sent-key
                 cursor-pointer
@@ -103,6 +137,7 @@
       :showModalConfirm="showModalPassword"
       @toggleConfirmPasswordModal="toggleConfirmPasswordModal($event)"
       :onPasswordConfirm="handlePasswordConfirm"
+      @handleReShowKeyManagementModal="handleReShowKeyManagementModal()"
     />
   </div>
 </template>
@@ -131,6 +166,7 @@ export default {
       showModalPassword: false,
       handleConfirm: () => {},
       handlePasswordConfirm: () => {},
+      hiddenExport: false,
     };
   },
 
@@ -138,14 +174,11 @@ export default {
     showModal() {
       return this.$store.state.keyModal;
     },
-    passwordConfirm() {
-      return this.$store.state.passwordConfirm;
-    },
     username() {
       return window.walletConnection.getAccountId();
     },
     hiddenPubKey() {
-      if (this.publicKey) {
+      if (this.publicKey && !this.hiddenExport) {
         return (
           this.publicKey.slice(0, 10) +
           "********************" +
@@ -155,7 +188,7 @@ export default {
       return "";
     },
     hiddenPriKey() {
-      if (this.privateKey) {
+      if (this.privateKey && !this.hiddenExport) {
         return (
           this.privateKey.slice(0, 10) +
           "********************" +
@@ -164,9 +197,19 @@ export default {
       }
       return "";
     },
+    localPrivateKey() {
+      return this.$store.state.localPrivateKey;
+    },
+    showConfirmModal() {
+      return this.$store.state.showConfirmModal;
+    },
+    isPrivateKeyNotDecrypt() {
+      return this.$store.state.isPrivateKeyNotDecrypt;
+    },
   },
 
   mounted() {
+    this.getUserPublicKey();
     if (
       localStorage.getItem(
         `${process.env.VUE_APP_CONTRACT_NAME}_${this.username}_privatekey`
@@ -187,14 +230,42 @@ export default {
     }
   },
 
+  watch: {
+    showConfirmModal: {
+      immediate: true,
+      handler: function () {
+        if (this.showConfirmModal) {
+          this.showModalPassword = true;
+        } else {
+          this.showModalPassword = false;
+        }
+      },
+    },
+  },
+
   methods: {
     handleCloseModal() {
       this.$store.commit("TOGGLE_KEY_MODAL");
     },
 
+    // handle Re-show Key Management Modal
+    handleReShowKeyManagementModal() {
+      this.hiddenExport = true;
+    },
+
     // handle Modal Confirm ReGen or ReImport
     closeConfirmModal(e) {
       this.showModalConfirmReGenImport = e;
+    },
+
+    getUserPublicKey() {
+      window.contract
+        .getPublicKey({ accountId: this.username })
+        .then((data) => {
+          if (data) {
+            this.publicKey = data;
+          }
+        });
     },
 
     //handle save Public Key to server
@@ -252,6 +323,7 @@ export default {
           )
         );
         this.$store.commit("PASSWORD_CONFIRM", password);
+        this.hiddenExport = false;
       };
     },
 
@@ -274,6 +346,7 @@ export default {
               encryptPrivateKeyWithPasswordConfirm(password, privateKeyImport)
             );
             this.$store.commit("PASSWORD_CONFIRM", password);
+            this.hiddenExport = false;
           };
         };
         reader.onerror = (err) => console.log(err);
@@ -305,7 +378,7 @@ export default {
           if (privateKeyDecrypt.includes("TEST")) {
             this.handleExportKeys(privateKeyDecrypt);
           } else {
-            this.$toast.error("Your Confirmation Password is incorrect.");
+            this.$toast.error("Your Confirmation Password is incorrect");
           }
         };
       }
@@ -318,13 +391,16 @@ export default {
         });
         if (window.navigator.msSaveOrOpenBlob)
           // IE10+
-          window.navigator.msSaveOrOpenBlob(file, "PrivateKeys.pem");
+          window.navigator.msSaveOrOpenBlob(
+            file,
+            `nms-${this.username}-key.pem`
+          );
         else {
           // Others
           var a = document.createElement("a"),
             url = URL.createObjectURL(file);
           a.href = url;
-          a.download = "PrivateKeys.pem";
+          a.download = `nms-${this.username}-key.pem`;
           document.body.appendChild(a);
           a.click();
           setTimeout(function () {

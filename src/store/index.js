@@ -45,12 +45,25 @@ const storeData = {
     sentSearchKeyword: "",
 
     realTime: null,
+
+    isPrivateKeyNotDecrypt: false,
+    showConfirmModal: false,
   },
 
   mutations: {
     // GET REAL TIME
     SAVE_REAL_TIME(state, payload) {
       state.realTime = payload;
+    },
+
+    // CHECK PRIVATE KEY DECRYPT WITH PASSWORD
+    IS_PRIVATE_KEY_NOT_DECRYPT(state, payload) {
+      state.isPrivateKeyNotDecrypt = payload;
+    },
+
+    // SHOW CONFIRM PASSWORD MODAL
+    SHOW_CONFIRM_PASSWORD_MODAL(state, payload) {
+      state.showConfirmModal = payload;
     },
 
     // ACTIVE DARK MODE MUTATION

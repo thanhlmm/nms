@@ -237,6 +237,9 @@ export default {
     darkMode() {
       return this.$store.state.darkMode;
     },
+    isPrivateKeyNotDecrypt() {
+      return this.$store.state.isPrivateKeyNotDecrypt;
+    },
   },
 
   mounted() {
@@ -317,8 +320,11 @@ export default {
           "example-account.testnet"
         );
         const balance = await account.getAccountBalance();
-        let available = (balance?.available || 0) / 10**24;
-        this.balance = utils.format.formatNearAmount(balance?.available || 0, 2);
+        let available = (balance?.available || 0) / 10 ** 24;
+        this.balance = utils.format.formatNearAmount(
+          balance?.available || 0,
+          2
+        );
       }
 
       return 0;
@@ -338,7 +344,12 @@ export default {
     },
 
     showKeyModal() {
-      this.$store.commit("TOGGLE_KEY_MODAL");
+      if (!this.isPrivateKeyNotDecrypt) {
+        this.$store.commit("SHOW_CONFIRM_PASSWORD_MODAL", false);
+        this.$store.commit("TOGGLE_KEY_MODAL");
+      } else {
+        this.$store.commit("SHOW_CONFIRM_PASSWORD_MODAL", true);
+      }
     },
   },
 };

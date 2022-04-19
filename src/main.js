@@ -9,9 +9,16 @@ import "vue-toastification/dist/index.css";
 
 import { initContract } from "./utils";
 
+const filterBeforeCreate = (toast, toasts) => {
+  if (toasts.filter((t) => t.type === toast.type).length !== 0) {
+    return false;
+  }
+  return toast;
+};
+
 Vue.config.productionTip = false;
 Vue.use(VueRouter);
-Vue.use(Toast);
+Vue.use(Toast, { filterBeforeCreate });
 
 const routes = [
   { path: "/", component: AllMailInbox, name: "inbox" },

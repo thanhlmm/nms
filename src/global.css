@@ -106,6 +106,15 @@ body {
   box-shadow: var(--body-box-shadow);
 }
 
+.font-italic {
+  font-style: italic;
+}
+
+.highlight-text {
+  font-weight: bolder;
+  color: #fff;
+}
+
 @media (max-width: 767px) {
   body {
     font-size: 10px;
