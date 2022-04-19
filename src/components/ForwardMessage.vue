@@ -44,16 +44,17 @@
       <div class="content">
         <div class="title title-20 f-700 mb-10">
           <div class="textInput-ForwardAndReply">
-            <div>Fw:</div>
+            <div>Title:</div>
             <input v-model="titleData" />
           </div>
         </div>
-        <div class="description mb-10">
-          <TipTap
-            :modelValue="data"
-            :isDetail="false"
-            @updateModelValue="updateModelValue"
-          />
+        <div class="form-input d-flex pb-10 mb-10">
+          <span :class="[{ isEmptyText: checkToInput }]">To: </span>
+          <input placeholder="Enter the NEAR account here" v-model="toUser" />
+          <div class="line" :class="[{ isEmpty: checkToInput }]"></div>
+        </div>
+        <div class="description">
+          <TipTap :modelValue="contentData" :isDetail="true" />
         </div>
       </div>
 
@@ -137,14 +138,18 @@ export default {
     Avatar,
     TipTap,
   },
-  props: ["id", "title", "to", "from", "showForward"],
+  props: ["id", "title", "to", "from", "content", "showForward"],
   data() {
     return {
-      data: "",
-      titleData: this.title,
+      toUser: "",
+      titleData: this.title.includes("[Fwd]")
+        ? this.title
+        : "[Fwd] ".concat(this.title),
+      contentData: this.content,
       amount: 0.05,
       type: "PUBLIC",
       senderKey: null,
+      checkToInput: false,
     };
   },
 
@@ -175,10 +180,6 @@ export default {
   },
 
   methods: {
-    updateModelValue(e) {
-      this.data = e;
-    },
-
     async packMassage(msgForward) {
       try {
         console.log("start send", msgForward, tranformUnit(this.amount));
@@ -192,7 +193,7 @@ export default {
           window.contract
             .sendMessage(
               {
-                to: this.to,
+                to: this.toUser,
                 title: resp.title,
                 data: resp.data,
                 baseSite: window.location.origin,
@@ -243,47 +244,60 @@ export default {
         });
         return;
       }
-      if (this.type === "PRIVATE") {
-        window.contract.getPublicKey({ accountId: this.to }).then((data) => {
-          if (data) {
-            if (this.privateKeyLocal) {
-              window.contract
-                .getPublicKey({ accountId: this.username })
-                .then((publicKey) => {
-                  this.packMassage({
-                    title: this.title,
-                    content: this.data,
-                    attachmentFiles: {},
-                    type: this.type,
-                    keys: {
-                      sender: publicKey,
-                      receiver: data,
-                    },
-                  });
-                });
-            }
-            this.packMassage({
-              title: this.titleData,
-              content: this.data,
-              attachmentFiles: {},
-              type: this.type,
-              keys: {
-                sender: this.senderKey,
-                receiver: data,
-              },
-            });
-          } else {
-            this.$toast.error("Receiver doesn't have public key!", {
-              timeout: 2000,
-            });
-            return;
-          }
+
+      if (!this.toUser.length) {
+        this.$toast.error("Please enter the field 'To'!", {
+          timeout: 2000,
         });
+        this.checkToInput = true;
+        return;
+      } else {
+        this.checkToInput = false;
+      }
+
+      if (this.type === "PRIVATE") {
+        window.contract
+          .getPublicKey({ accountId: this.toUser })
+          .then((data) => {
+            if (data) {
+              if (this.privateKeyLocal) {
+                window.contract
+                  .getPublicKey({ accountId: this.username })
+                  .then((publicKey) => {
+                    this.packMassage({
+                      title: this.titleData,
+                      content: this.contentData,
+                      attachmentFiles: {},
+                      type: this.type,
+                      keys: {
+                        sender: publicKey,
+                        receiver: data,
+                      },
+                    });
+                  });
+              }
+              this.packMassage({
+                title: this.titleData,
+                content: this.contentData,
+                attachmentFiles: {},
+                type: this.type,
+                keys: {
+                  sender: this.senderKey,
+                  receiver: data,
+                },
+              });
+            } else {
+              this.$toast.error("Receiver doesn't have public key!", {
+                timeout: 2000,
+              });
+              return;
+            }
+          });
       }
       if (this.type === "PUBLIC") {
         this.packMassage({
           title: this.titleData,
-          content: this.data,
+          content: this.contentData,
           attachmentFiles: {},
           type: this.type,
           keys: {
@@ -295,8 +309,9 @@ export default {
     },
 
     handleCancelForward() {
-      this.data = "";
+      this.checkToInput = false;
       this.titleData = this.title;
+      this.contentData = this.content;
       this.amount = 0.05;
       this.type = "PUBLIC";
       this.$emit("cancelForward", !this.showForward);
@@ -306,11 +321,64 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.form-input {
+  font-size: 16px;
+  line-height: 22px;
+  position: relative;
+}
+
+.form-input .line {
+  content: " ";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--main-color);
+  -webkit-transform: scaleY(0.5);
+  -moz-transform: scaleY(0.5);
+  -ms-transform: scaleY(0.5);
+  -o-transform: scaleY(0.5);
+  transform: scaleY(0.5);
+}
+
+.form-input span {
+  color: var(--color-mail-item);
+}
+
+.form-input input {
+  background: transparent;
+  width: 100%;
+  border: 0;
+  color: var(--color-menu);
+  padding-left: 20px;
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 700;
+}
+
+.form-input input::-webkit-input-placeholder,
+.form-input input:-moz-placeholder,
+.form-input input:-ms-input-placeholder,
+.form-input input::placeholder {
+  font-weight: 500;
+}
+
+.form-input input:focus {
+  outline: none;
+}
 .text-btn-sent {
   background: #fcb641;
 }
 .text-btn-sent span {
   font-weight: 500;
   color: #353739;
+}
+.isEmpty {
+  background: red !important;
+}
+.isEmptyText {
+  color: red !important;
 }
 </style>

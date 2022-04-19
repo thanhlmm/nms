@@ -3,7 +3,13 @@
     <header class="mail-right__item-header d-flex">
       <Avatar :accountId="from" size="60" />
       <div
-        class="justify-between info pl-30 pl-xl-16 pl-md-16 pl-sm-10 flex-grow-1 d-flex"
+        class="
+          justify-between
+          info
+          pl-30 pl-xl-16 pl-md-16 pl-sm-10
+          flex-grow-1
+          d-flex
+        "
       >
         <div>
           <div class="mb-10 name title-20 f-700">{{ from }}</div>
@@ -20,7 +26,13 @@
             </button>
           </div>
           <button
-            class="flex-shrink-0 cursor-pointer btn-cancelForwardReply btn-sent d-flex align-center"
+            class="
+              flex-shrink-0
+              cursor-pointer
+              btn-cancelForwardReply btn-sent
+              d-flex
+              align-center
+            "
             @click="handleCancelReply"
           >
             Cancel
@@ -32,7 +44,7 @@
       <div class="content">
         <div class="mb-10 title title-20 f-700">
           <div class="textInput-ForwardAndReply">
-            <div>Re:</div>
+            <div>Title:</div>
             <input v-model="titleData" />
           </div>
         </div>
@@ -129,7 +141,9 @@ export default {
   data() {
     return {
       data: "",
-      titleData: this.title,
+      titleData: this.title.includes("[Re]")
+        ? this.title
+        : "[Re] ".concat(this.title),
       amount: 0.05,
       type: "PUBLIC",
       senderKey: null,
@@ -243,7 +257,7 @@ export default {
                 .getPublicKey({ accountId: this.username })
                 .then((publicKey) => {
                   this.packMassage({
-                    title: this.title,
+                    title: this.titleData,
                     content: this.data,
                     attachmentFiles: {},
                     type: this.type,

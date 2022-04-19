@@ -4,7 +4,7 @@
       class="mail-content__item d-flex"
       @click="handleSelectedMail(message.id)"
     >
-      <Avatar :accountId="message.from" size="40" />
+      <Avatar :accountId="message.to" size="40" />
 
       <div class="content pl-20 pl-md-10 flex-grow-1">
         <header
@@ -37,7 +37,12 @@
             >
               <img
                 src="../../public/assets/images/coin.svg"
-                style="width: 20px; height: 20px; max-width: min-content"
+                style="
+                  width: 20px;
+                  height: 20px;
+                  max-width: min-content;
+                  color: #333;
+                "
               />
               <Tooltip :isShow="showTooltip">
                 You can get back {{ this.handleCalculateReceiveCoin() }} NEAR

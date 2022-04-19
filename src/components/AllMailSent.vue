@@ -67,7 +67,7 @@ export default {
       this.getSentMsg();
     },
     sentMsgNum() {
-      this.processMessage();
+      this.getSentMsg();
     },
     localPrivateKey() {
       this.processMessage();
@@ -88,6 +88,7 @@ export default {
     },
 
     getSentMsg() {
+      if (this.sentMsgNum <= 0) return;
       const indexInfo = getIndexInfo(this.sentMsgNum, this.page, ITEM_PER_PAGE);
       window.contract
         .getSentMessages({

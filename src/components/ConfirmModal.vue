@@ -81,6 +81,7 @@ export default {
     },
     handleConfirm() {
       this.$emit("closeConfirmModal", false);
+      this.$store.commit("TOGGLE_KEY_MODAL");
       this.handleConfirmFn();
     },
   },

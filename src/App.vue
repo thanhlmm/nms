@@ -131,12 +131,12 @@ export default {
           this.localPrivateKey
         );
         if (privateKeyDecrypt.includes("TEST")) {
-          this.$store.commit("PASSWORD_CONFIRM", password);
           this.$toast.success("Password is correct");
+          this.$store.commit("PASSWORD_CONFIRM", password);
+          this.$store.commit("IS_PRIVATE_KEY_NOT_DECRYPT", false);
         } else {
-          this.$toast.error(
-            "Your Confirmation Password is incorrect. Refresh to retry"
-          );
+          this.$toast.error("Your Confirmation Password is incorrect");
+          this.$store.commit("IS_PRIVATE_KEY_NOT_DECRYPT", true);
         }
       };
     }
