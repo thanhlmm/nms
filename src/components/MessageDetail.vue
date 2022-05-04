@@ -12,7 +12,9 @@
         "
       >
         <div>
-          <div class="name title-20 mb-10 f-700">{{ dataMsg.from }}</div>
+          <div class="name title-20 mb-10 f-700">
+            {{ dataMsg.from }}
+          </div>
           <div class="to f-500">To: {{ dataMsg.to }}</div>
         </div>
         <div class="text-right">
