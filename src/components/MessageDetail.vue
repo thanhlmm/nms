@@ -110,6 +110,7 @@
           :to="dataMsg.from"
           :from="dataMsg.to"
           :showReply="showReply"
+          :isPrivate="dataMsg.isPrivate"
           @cancelReplay="cancelReplay"
         />
         <ForwardMessage
