@@ -102,25 +102,27 @@
           <TipTap :modelValue="dataMsg.content" :isDetail="true" />
         </div>
       </div>
-      <ReplyMessage
-        :class="{ 'is-hidden': !showReply }"
-        :id="dataMsg.id"
-        :title="dataMsg.title"
-        :to="dataMsg.from"
-        :from="dataMsg.to"
-        :showReply="showReply"
-        @cancelReplay="cancelReplay"
-      />
-      <ForwardMessage
-        :class="{ 'is-hidden': !showForward }"
-        :id="dataMsg.id"
-        :title="dataMsg.title"
-        :to="dataMsg.to"
-        :from="dataMsg.from"
-        :content="dataMsg.content"
-        :showForward="showForward"
-        @cancelForward="cancelForward"
-      />
+      <div ref="feedback">
+        <ReplyMessage
+          :class="{ 'is-hidden': !showReply }"
+          :id="dataMsg.id"
+          :title="dataMsg.title"
+          :to="dataMsg.from"
+          :from="dataMsg.to"
+          :showReply="showReply"
+          @cancelReplay="cancelReplay"
+        />
+        <ForwardMessage
+          :class="{ 'is-hidden': !showForward }"
+          :id="dataMsg.id"
+          :title="dataMsg.title"
+          :to="dataMsg.to"
+          :from="dataMsg.from"
+          :content="dataMsg.content"
+          :showForward="showForward"
+          @cancelForward="cancelForward"
+        />
+      </div>
     </section>
   </article>
 </template>
@@ -167,6 +169,30 @@ export default {
       immediate: true,
       handler: function () {
         this.handleSetPercent(this.dataMsg.timestamp);
+      },
+    },
+    showReply: {
+      immediate: true,
+      handler: function () {
+        if (this.showReply) {
+          const el = this.$refs.feedback;
+
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth" });
+          }
+        }
+      },
+    },
+    showForward: {
+      immediate: true,
+      handler: function () {
+        if (this.showForward) {
+          const el = this.$refs.feedback;
+
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth" });
+          }
+        }
       },
     },
   },
