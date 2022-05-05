@@ -55,6 +55,7 @@
       :showModal="showModalConfirmReceive"
       @closeConfirmModal="closeConfirmModal($event)"
       :handleConfirmFn="handleConfirm"
+      :isShowKeyModal="false"
     >
       <div :style="{ fontSize: '15px' }">Are you sure to claim back?</div>
     </ConfirmModal>
@@ -134,6 +135,7 @@ export default {
     closeConfirmModal(e) {
       this.showModalConfirmReceive = e;
     },
+
     handleCheckTime(hourSentMsg) {
       if (hourSentMsg && this.realTime) {
         const timeConvert = dayjs(this.realTime).diff(
