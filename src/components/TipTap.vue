@@ -1,7 +1,7 @@
 <template>
   <div
     class="editor"
-    :style="[!isDetail ? { height: '260px' } : { height: 'auto' }]"
+    :style="[isDetail ? { height: 'auto' } : { minHeight: '80px' }]"
     v-if="editor"
   >
     <MenuBarTipTap class="editor__header" :editor="editor" v-show="!isDetail" />
@@ -111,7 +111,7 @@ export default {
 .editor {
   display: flex;
   flex-direction: column;
-  max-height: 26rem;
+  height: 215px;
   color: #0d0d0d;
   background-color: #fff;
   border: none;
@@ -127,7 +127,8 @@ export default {
   }
 
   &__content {
-    max-width: 578px;
+    // max-width: 578px;
+    width: 100%;
     padding: 1.25rem 1rem;
     flex: 1 1 auto;
     overflow-x: hidden;
@@ -141,7 +142,7 @@ export default {
 
   @media (max-width: 1024px) {
     &__content {
-      width: 420px;
+      // width: 420px;
       padding: 1.25rem 0;
       margin: 0 auto;
     }
@@ -154,10 +155,15 @@ export default {
 
   @media (max-width: 767px) {
     &__content {
-      width: 300px;
+      // width: 300px;
       padding: 1.25rem 0;
       margin: 0 auto;
     }
+  }
+}
+@media (max-width: 767px) {
+  .editor {
+    height: 250px;
   }
 }
 .collaboration-cursor__caret {

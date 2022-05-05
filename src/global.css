@@ -2853,13 +2853,15 @@ p {
   z-index: 99;
 }
 
+.ProseMirror {
+  min-height: 80px;
+  width: 100%;
+  overflow-y: scroll;
+}
+
 .ProseMirror:focus {
   outline: none;
 }
-
-/* .ProseMirror {
-  border: 1px solid green;
-} */
 
 .ProseMirror code {
   font-size: 0.9rem;
@@ -2903,6 +2905,10 @@ p {
   
   .mail-right__sent {
     padding: 20px;
+  }
+  
+  .ProseMirror {
+    padding: 0 1rem;
   }
 }
 
