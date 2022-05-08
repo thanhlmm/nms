@@ -1,7 +1,7 @@
 <template>
   <div
     class="editor"
-    :style="[isDetail ? { height: 'auto' } : { minHeight: '80px' }]"
+    :style="[isDetail ? { height: 'auto' } : { minHeight: '100px' }]"
     v-if="editor"
   >
     <MenuBarTipTap class="editor__header" :editor="editor" v-show="!isDetail" />
@@ -111,7 +111,7 @@ export default {
 .editor {
   display: flex;
   flex-direction: column;
-  height: 215px;
+  height: 205px;
   color: #0d0d0d;
   background-color: #fff;
   border: none;
@@ -129,7 +129,7 @@ export default {
   &__content {
     // max-width: 578px;
     width: 100%;
-    padding: 1.25rem 1rem;
+    padding: 0.25rem 1rem;
     flex: 1 1 auto;
     overflow-x: hidden;
     overflow-y: auto;
@@ -143,12 +143,12 @@ export default {
   @media (max-width: 1024px) {
     &__content {
       // width: 420px;
-      padding: 1.25rem 0;
+      padding: 0.25rem 0;
       margin: 0 auto;
     }
     &__content.modal-expand {
       width: 700px;
-      padding: 1.25rem 0;
+      padding: 0.25rem 0;
       margin: 0 auto;
     }
   }
@@ -156,14 +156,24 @@ export default {
   @media (max-width: 767px) {
     &__content {
       // width: 300px;
-      padding: 1.25rem 0;
+      padding: 0.25rem 0;
       margin: 0 auto;
     }
   }
 }
-@media (max-width: 767px) {
+@media (max-width: 1024px) {
   .editor {
-    height: 250px;
+    height: 180px;
+  }
+}
+@media (max-width: 900px) {
+  .editor {
+    height: 205px;
+  }
+}
+@media (max-width: 500px) {
+  .editor {
+    height: 235px;
   }
 }
 .collaboration-cursor__caret {
