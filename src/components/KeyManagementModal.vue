@@ -178,7 +178,6 @@ export default {
     showModal() {
       return this.$store.state.keyModal;
     },
-
     username() {
       return window.walletConnection.getAccountId();
     },
@@ -204,15 +203,12 @@ export default {
       }
       return "";
     },
-
     localPrivateKey() {
       return this.$store.state.localPrivateKey;
     },
-
     showConfirmModal() {
       return this.$store.state.showConfirmModal;
     },
-
     isPrivateKeyNotDecrypt() {
       return this.$store.state.isPrivateKeyNotDecrypt;
     },
@@ -220,7 +216,6 @@ export default {
 
   mounted() {
     this.getUserPublicKey();
-
     if (
       localStorage.getItem(
         `${process.env.VUE_APP_CONTRACT_NAME}_${this.username}_privatekey`
